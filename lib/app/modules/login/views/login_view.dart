@@ -45,7 +45,7 @@ class LoginView extends GetView<LoginController> {
             const SizedBox(height: 16),
             TextButton(
               onPressed: controller.signup,
-              child: const Text('Don\'t have an account? Sign Up'),
+              child: const Text('Belum Punya Akun? Sign Up'),
             ),
           ],
         ),
