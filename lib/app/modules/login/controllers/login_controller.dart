@@ -10,7 +10,7 @@ class LoginController extends GetxController {
   }
 
   void signup() {
-    print('Navigate to Sign Up');
+    Get.toNamed('/signup');
   }
 
   @override
