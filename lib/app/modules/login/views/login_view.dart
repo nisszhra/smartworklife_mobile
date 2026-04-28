@@ -38,7 +38,7 @@ class LoginView extends GetView<LoginController> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: controller.home,
+                onPressed: controller.login,
                 child: const Text('Login', style: TextStyle(fontSize: 16)),
               ),
             ),
