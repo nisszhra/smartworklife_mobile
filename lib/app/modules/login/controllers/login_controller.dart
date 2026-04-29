@@ -7,6 +7,7 @@ class LoginController extends GetxController {
 
   void login() {
     print('Login with ${emailController.text}');
+    Get.offAllNamed('/home');
   }
 
   void signup() {
