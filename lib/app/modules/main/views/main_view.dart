@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../controllers/main_controller.dart';
 import '../../home/views/home_view.dart';
+import '../../health/views/health_view.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -16,7 +17,7 @@ class MainView extends GetView<MainController> {
           HomeView(),
           Center(child: Text('Pomodoro')),
           Center(child: Text('Stretching')),
-          Center(child: Text('Health')),
+          HealthView(),
           Center(child: Text('Notes')),
         ],
       )),
