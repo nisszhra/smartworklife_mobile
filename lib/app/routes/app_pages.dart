@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/health/bindings/health_binding.dart';
+import '../modules/health/views/health_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
