@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../controllers/main_controller.dart';
 import '../../home/views/home_view.dart';
 import '../../health/views/health_view.dart';
+import '../../pomodoro/views/pomodoro_view.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -15,7 +16,7 @@ class MainView extends GetView<MainController> {
         index: controller.currentIndex.value,
         children: const [
           HomeView(),
-          Center(child: Text('Pomodoro')),
+          PomodoroView(),
           Center(child: Text('Stretching')),
           HealthView(),
           Center(child: Text('Notes')),
