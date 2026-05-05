@@ -10,6 +10,10 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.person_outline),
+          onPressed: () => Get.toNamed('/profile'),
+        ),
         title: const Text('Smart-WorkLife', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,

@@ -12,6 +12,8 @@ import '../modules/notulen/bindings/notulen_binding.dart';
 import '../modules/notulen/views/notulen_view.dart';
 import '../modules/pomodoro/bindings/pomodoro_binding.dart';
 import '../modules/pomodoro/views/pomodoro_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/profile_view.dart';
 import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
 
@@ -49,9 +51,9 @@ class AppPages {
       binding: PomodoroBinding(),
     ),
     GetPage(
-      name: _Paths.NOTULEN,
-      page: () => const NotulenView(),
-      binding: NotulenBinding(),
+      name: _Paths.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
     ),
   ];
 }
