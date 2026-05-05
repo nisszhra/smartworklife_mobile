@@ -10,6 +10,8 @@ import '../modules/main/bindings/main_binding.dart';
 import '../modules/main/views/main_view.dart';
 import '../modules/pomodoro/bindings/pomodoro_binding.dart';
 import '../modules/pomodoro/views/pomodoro_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/profile_view.dart';
 import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
 
@@ -45,6 +47,11 @@ class AppPages {
       name: _Paths.POMODORO,
       page: () => const PomodoroView(),
       binding: PomodoroBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
     ),
   ];
 }
