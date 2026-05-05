@@ -6,6 +6,7 @@ import '../../home/views/home_view.dart';
 import '../../health/views/health_view.dart';
 import '../../pomodoro/views/pomodoro_view.dart';
 import '../../notulen/views/notulen_view.dart';
+import '../../stretching/views/stretching_view.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -18,7 +19,7 @@ class MainView extends GetView<MainController> {
         children: const [
           HomeView(),
           PomodoroView(),
-          Center(child: Text('Stretching')),
+          StretchingView(),
           HealthView(),
           NotulenView(),
         ],
