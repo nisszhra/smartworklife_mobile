@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -51,9 +52,18 @@ class HomeView extends GetView<HomeController> {
               ],
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Smart To-Do',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Smart To-Do',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: () => Get.toNamed(Routes.TODOLIST),
+                  child: const Text('Lihat Semua'),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             _buildTodoCard('Q3 Strategy Review Meeting', 'Review the department goals and roadmap.'),

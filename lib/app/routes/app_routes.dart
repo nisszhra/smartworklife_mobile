@@ -10,6 +10,9 @@ abstract class Routes {
   static const POMODORO = _Paths.POMODORO;
   static const PROFILE = _Paths.PROFILE;
   static const NOTULEN = _Paths.NOTULEN;
+  static const TODOLIST = _Paths.TODOLIST;
+  static const STRETCHING = _Paths.STRETCHING;
+  static const STRETCHING_DETAIL = _Paths.STRETCHING_DETAIL;
 }
 
 abstract class _Paths {
@@ -21,4 +24,7 @@ abstract class _Paths {
   static const POMODORO = '/pomodoro';
   static const PROFILE = '/profile';
   static const NOTULEN = '/notulen';
+  static const TODOLIST = '/todolist';
+  static const STRETCHING = '/stretching';
+  static const STRETCHING_DETAIL = '/stretching/detail';
 }

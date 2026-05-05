@@ -16,6 +16,11 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
+import '../modules/stretching/bindings/stretching_binding.dart';
+import '../modules/stretching/views/stretching_view.dart';
+import '../modules/stretching/views/stretching_detail_view.dart';
+import '../modules/todolist/bindings/todolist_binding.dart';
+import '../modules/todolist/views/todolist_view.dart';
 
 part 'app_routes.dart';
 
@@ -59,6 +64,21 @@ class AppPages {
       name: _Paths.NOTULEN,
       page: () => const NotulenView(),
       binding: NotulenBinding(),
+    ),
+    GetPage(
+      name: _Paths.TODOLIST,
+      page: () => const TodolistView(),
+      binding: TodolistBinding(),
+    ),
+    GetPage(
+      name: _Paths.STRETCHING,
+      page: () => const StretchingView(),
+      binding: StretchingBinding(),
+    ),
+    GetPage(
+      name: _Paths.STRETCHING_DETAIL,
+      page: () => const StretchingDetailView(),
+      binding: StretchingBinding(),
     ),
   ];
 }
