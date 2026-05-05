@@ -10,46 +10,25 @@ class PomodoroView extends GetView<PomodoroController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF0A73E0),
-                border: Border.all(
-                  color: Colors.white,
-                  width: 1.5,
-                ),
-              ),
-              child: const Icon(Icons.person, color: Colors.white, size: 18),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'Pomodoro',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.3,
-                color: Color(0xFF0F172A),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, color: Color(0xFF64748B)),
-            splashRadius: 20,
+        title: const Text(
+          'Smart-Health',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Color(0xFF005AB4),
+            letterSpacing: -0.5,
           ),
-        ],
+        ),
+        centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: const Color(0xFFE2E8F0), height: 1),
+          child: Container(
+            color: const Color(0xFFE2E8F0),
+            height: 1,
+          ),
         ),
       ),
       body: Obx(() {

@@ -8,6 +8,8 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/main/bindings/main_binding.dart';
 import '../modules/main/views/main_view.dart';
+import '../modules/notulen/bindings/notulen_binding.dart';
+import '../modules/notulen/views/notulen_view.dart';
 import '../modules/pomodoro/bindings/pomodoro_binding.dart';
 import '../modules/pomodoro/views/pomodoro_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
