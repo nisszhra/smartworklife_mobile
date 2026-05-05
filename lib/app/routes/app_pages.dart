@@ -55,5 +55,10 @@ class AppPages {
       page: () => const ProfileView(),
       binding: ProfileBinding(),
     ),
+    GetPage(
+      name: _Paths.NOTULEN,
+      page: () => const NotulenView(),
+      binding: NotulenBinding(),
+    ),
   ];
 }

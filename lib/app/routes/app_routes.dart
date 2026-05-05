@@ -9,6 +9,7 @@ abstract class Routes {
   static const MAIN = _Paths.MAIN;
   static const POMODORO = _Paths.POMODORO;
   static const PROFILE = _Paths.PROFILE;
+  static const NOTULEN = _Paths.NOTULEN;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const MAIN = '/main';
   static const POMODORO = '/pomodoro';
   static const PROFILE = '/profile';
+  static const NOTULEN = '/notulen';
 }
