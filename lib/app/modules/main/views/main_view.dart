@@ -5,6 +5,7 @@ import '../controllers/main_controller.dart';
 import '../../home/views/home_view.dart';
 import '../../health/views/health_view.dart';
 import '../../pomodoro/views/pomodoro_view.dart';
+import '../../notulen/views/notulen_view.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -19,7 +20,7 @@ class MainView extends GetView<MainController> {
           PomodoroView(),
           Center(child: Text('Stretching')),
           HealthView(),
-          Center(child: Text('Notes')),
+          NotulenView(),
         ],
       )),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
