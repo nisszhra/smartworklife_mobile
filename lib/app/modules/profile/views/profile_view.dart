@@ -11,7 +11,7 @@ class ProfileView extends GetView<ProfileController> {
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF181C22)),
+          icon: const Icon(Icons.chevron_left, color: Color(0xFF181C22)),
           onPressed: () => Get.back(),
         ),
         title: const Text(

@@ -9,17 +9,31 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.person_outline),
           onPressed: () => Get.toNamed('/profile'),
         ),
-        title: const Text('Smart-WorkLife', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Smart WorkLife',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Color(0xFF005AB4),
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        surfaceTintColor: Colors.transparent,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            color: const Color(0xFFE2E8F0),
+            height: 1,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
@@ -61,14 +75,22 @@ class HomeView extends GetView<HomeController> {
                 ),
                 TextButton(
                   onPressed: () => Get.toNamed(Routes.TODOLIST),
-                  child: const Text('Lihat Semua'),
+                  child: const Text(
+                    'Lihat Semua',
+                    style: TextStyle(
+                      color: Color(0xFF005AB4),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            _buildTodoCard('Q3 Strategy Review Meeting', 'Review the department goals and roadmap.'),
+            _buildFilterChips(),
+            const SizedBox(height: 16),
+            _buildTodoCard('Q3 Strategy Review Meeting', 'Review the department goals and roadmap.', '14:00', true),
             const SizedBox(height: 12),
-            _buildTodoCard('System Architecture Documentation', 'Update the diagrams for the new API endpoints.'),
+            _buildTodoCard('System Architecture Documentation', 'Update the diagrams for the new API endpoints.', '10:00', false),
             const SizedBox(height: 32),
             const Text(
               'Today\'s Balance',
@@ -134,50 +156,130 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildTodoCard(String title, String subtitle) {
+  Widget _buildFilterChips() {
+    final filters = ['Semua', 'Penting', 'Hari Ini', 'Besok'];
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: filters.map((filter) {
+          bool isActive = filter == 'Semua';
+          return Container(
+            margin: const EdgeInsets.only(right: 12),
+            child: FilterChip(
+              label: Text(filter),
+              labelStyle: TextStyle(
+                color: isActive ? Colors.white : const Color(0xFF5F6368),
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              ),
+              selected: isActive,
+              onSelected: (val) {},
+              backgroundColor: const Color(0xFFF1F3F4),
+              selectedColor: const Color(0xFF1A73E8),
+              checkmarkColor: Colors.white,
+              showCheckmark: false,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: isActive ? const Color(0xFF1A73E8) : Colors.transparent),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTodoCard(String title, String subtitle, String time, bool isPriority) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE0E0E0).withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Checkbox Kotak
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: const Color(0xFFE0E0E0), width: 2),
+                color: Colors.white,
+              ),
             ),
-            child: const Icon(Icons.assignment, color: Colors.blue),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                ),
-              ],
+            const SizedBox(width: 16),
+            
+            // Konten
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      // Badge Waktu
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isPriority ? const Color(0xFFFFEBEE) : const Color(0xFFF1F3F4),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isPriority ? Icons.calendar_today : Icons.access_time,
+                              size: 14,
+                              color: isPriority ? Colors.red[700] : const Color(0xFF5F6368),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              time,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isPriority ? Colors.red[700] : const Color(0xFF5F6368),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      if (subtitle.isNotEmpty)
+                        Expanded(
+                          child: Text(
+                            subtitle,
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF5F6368)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right, color: Colors.grey),
-        ],
+            const Icon(Icons.more_vert, color: Color(0xFF5F6368)),
+          ],
+        ),
       ),
     );
   }

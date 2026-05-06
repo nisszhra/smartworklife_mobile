@@ -29,6 +29,8 @@ class TodolistController extends GetxController {
     Task(id: '5', title: 'Kirim Email Invoices',      description: 'Invoices bulan April',         time: 'Kemarin', isCompleted: true),
   ].obs;
 
+  final isCompletedExpanded = true.obs;
+
   // ── Tambah tugas (named parameters agar konsisten dengan view) ─────────────
   void addTask({
     required String title,

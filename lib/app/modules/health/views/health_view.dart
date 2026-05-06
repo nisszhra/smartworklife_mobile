@@ -11,12 +11,11 @@ class HealthView extends GetView<HealthController> {
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
         title: const Text(
-          'Smart-Health',
+          'Smart Health',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Color(0xFF005AB4),
-            letterSpacing: -0.5,
           ),
         ),
         centerTitle: true,
