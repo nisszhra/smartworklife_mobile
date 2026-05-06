@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/signup_controller.dart';
-import 'dart:ui';
 
 class SignupView extends GetView<SignupController> {
   const SignupView({Key? key}) : super(key: key);
@@ -21,87 +20,6 @@ class SignupView extends GetView<SignupController> {
       backgroundColor: background,
       body: Stack(
         children: [
-          // Background Ornaments
-          Positioned(
-            top: -80,
-            right: -80,
-            child: Container(
-              width: 320,
-              height: 320,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.5 - 192,
-            left: -128,
-            child: Container(
-              width: 384,
-              height: 384,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.05),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -160,
-            right: MediaQuery.of(context).size.width * 0.25 - 250,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          // Blur effect for ornaments
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          // Sharp circular elements
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.05,
-            right: -20,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.15),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.45,
-            left: -45,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -35,
-            right: 35,
-            child: Container(
-              width: 350,
-              height: 350,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.15),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           // Main Content
           SafeArea(
             child: Center(

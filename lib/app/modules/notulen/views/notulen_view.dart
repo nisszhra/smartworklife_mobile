@@ -16,7 +16,6 @@ class NotulenView extends GetView<NotulenController> {
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Color(0xFF005AB4),
-            letterSpacing: -0.5,
           ),
         ),
         centerTitle: true,

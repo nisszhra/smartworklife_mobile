@@ -301,19 +301,19 @@ class TodolistView extends GetView<TodolistController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundGrey,
+      backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            decoration: BoxDecoration(
-              color: lightBlueBg,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF0F7FF),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: primaryBlue, size: 20),
+              icon: const Icon(Icons.chevron_left, color: Color(0xFF1A73E8), size: 24),
               onPressed: () => Get.back(),
             ),
           ),
@@ -321,21 +321,23 @@ class TodolistView extends GetView<TodolistController> {
         title: const Text(
           'Smart To-Do',
           style: TextStyle(
-            color: primaryBlue,
+            color: Color(0xFF005AB4),
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(color: borderGrey, height: 1.0),
+          child: Container(color: const Color(0xFFE2E8F0), height: 1.0),
         ),
       ),
       body: Column(
         children: [
           // --- Search Bar & Filters ---
           Container(
-            color: Colors.white,
+            color: const Color(0xFFF9F9FF),
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
@@ -369,9 +371,10 @@ class TodolistView extends GetView<TodolistController> {
                   const SizedBox(height: 32),
                   _buildCompletedHeader(),
                   const SizedBox(height: 16),
-                  ...controller.tasks
-                      .where((t) => t.isCompleted)
-                      .map((task) => _buildTaskCard(task)),
+                  if (controller.isCompletedExpanded.value)
+                    ...controller.tasks
+                        .where((t) => t.isCompleted)
+                        .map((task) => _buildTaskCard(task)),
                 ],
               );
             }),
@@ -387,13 +390,13 @@ class TodolistView extends GetView<TodolistController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderGrey),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: const TextField(
         decoration: InputDecoration(
           hintText: 'Cari tugas...',
-          hintStyle: TextStyle(color: textGrey, fontSize: 15),
-          prefixIcon: Icon(Icons.search, color: textGrey),
+          hintStyle: TextStyle(color: Color(0xFF5F6368), fontSize: 15),
+          prefixIcon: Icon(Icons.search, color: Color(0xFF5F6368)),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 12),
         ),
@@ -413,18 +416,18 @@ class TodolistView extends GetView<TodolistController> {
             child: FilterChip(
               label: Text(filter),
               labelStyle: TextStyle(
-                color: isActive ? Colors.white : textGrey,
+                color: isActive ? Colors.white : const Color(0xFF5F6368),
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
               selected: isActive,
               onSelected: (val) {},
               backgroundColor: const Color(0xFFF1F3F4),
-              selectedColor: primaryBlue,
+              selectedColor: const Color(0xFF1A73E8),
               checkmarkColor: Colors.white,
               showCheckmark: false,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: isActive ? primaryBlue : Colors.transparent),
+                side: BorderSide(color: isActive ? const Color(0xFF1A73E8) : Colors.transparent),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 8),
             ),
@@ -440,7 +443,7 @@ class TodolistView extends GetView<TodolistController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderGrey.withOpacity(0.5)),
+        border: Border.all(color: const Color(0xFFE0E0E0).withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
@@ -463,13 +466,13 @@ class TodolistView extends GetView<TodolistController> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: task.isCompleted ? primaryBlue : borderGrey,
+                    color: task.isCompleted ? const Color(0xFF1A73E8) : const Color(0xFFE0E0E0),
                     width: 2,
                   ),
-                  color: task.isCompleted ? primaryBlue.withOpacity(0.1) : Colors.white,
+                  color: task.isCompleted ? const Color(0xFF1A73E8).withOpacity(0.1) : Colors.white,
                 ),
                 child: task.isCompleted
-                    ? const Icon(Icons.check, size: 16, color: primaryBlue)
+                    ? const Icon(Icons.check, size: 16, color: Color(0xFF1A73E8))
                     : null,
               ),
             ),
@@ -503,14 +506,14 @@ class TodolistView extends GetView<TodolistController> {
                             Icon(
                               task.isPriority ? Icons.calendar_today : Icons.access_time,
                               size: 14,
-                              color: task.isPriority ? Colors.red[700] : textGrey,
+                              color: task.isPriority ? Colors.red[700] : const Color(0xFF5F6368),
                             ),
                             const SizedBox(width: 4),
                             Text(
                               task.time,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: task.isPriority ? Colors.red[700] : textGrey,
+                                color: task.isPriority ? Colors.red[700] : const Color(0xFF5F6368),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -523,7 +526,7 @@ class TodolistView extends GetView<TodolistController> {
                         Expanded(
                           child: Text(
                             task.description,
-                            style: const TextStyle(fontSize: 12, color: textGrey),
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF5F6368)),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -536,7 +539,7 @@ class TodolistView extends GetView<TodolistController> {
             
             // Menu
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: textGrey),
+              icon: const Icon(Icons.more_vert, color: Color(0xFF5F6368)),
               onSelected: (val) {
                 if (val == 'edit') _showEditTaskBottomSheet(task);
                 if (val == 'delete') controller.deleteTask(task.id);
@@ -554,19 +557,30 @@ class TodolistView extends GetView<TodolistController> {
 
   Widget _buildCompletedHeader() {
     int count = controller.tasks.where((t) => t.isCompleted).length;
-    return Row(
-      children: [
-        const Icon(Icons.keyboard_arrow_right, color: textGrey),
-        const SizedBox(width: 8),
-        Text(
-          'SELESAI ($count)',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: textGrey,
-          ),
+    return GestureDetector(
+      onTap: () => controller.isCompletedExpanded.toggle(),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Row(
+          children: [
+            Obx(() => AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: controller.isCompletedExpanded.value ? 0.25 : 0,
+                  child: const Icon(Icons.keyboard_arrow_right, color: Color(0xFF5F6368)),
+                )),
+            const SizedBox(width: 8),
+            Text(
+              'SELESAI ($count)',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF5F6368),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
