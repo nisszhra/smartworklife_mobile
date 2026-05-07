@@ -130,7 +130,7 @@ class StretchingView extends GetView<StretchingController> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'List Stretching\nRekomendasi',
+            'List Stretching\nRecommendations',
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -151,7 +151,7 @@ class StretchingView extends GetView<StretchingController> {
     required Color iconColor,
   }) {
     return GestureDetector(
-      onTap: () => Get.toNamed(Routes.STRETCHING_DETAIL, arguments: title),
+      onTap: () => Get.toNamed(Routes.STRETCHING_PREVIEW, arguments: title),
       child: Container(
         decoration: BoxDecoration(
           color: color,

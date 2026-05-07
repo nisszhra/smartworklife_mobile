@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ActionItem {
@@ -37,6 +38,14 @@ class NotulenController extends GetxController {
   final isRecording = false.obs;
   final recordingDuration = 0.obs;
   Timer? _timer;
+
+  // Transcription editing state
+  final isEditingTranscription = false.obs;
+  late TextEditingController transcriptionController;
+
+  // AI Summary visibility
+  final showAiSummary = false.obs;
+  final isAnalyzing = false.obs;
 
   // Transcription text
   final transcriptionText =
@@ -91,11 +100,13 @@ class NotulenController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    transcriptionController = TextEditingController(text: transcriptionText.value);
   }
 
   @override
   void onClose() {
     _timer?.cancel();
+    transcriptionController.dispose();
     super.onClose();
   }
 
@@ -120,9 +131,37 @@ class NotulenController extends GetxController {
     _timer?.cancel();
   }
 
+  void analyzeSummary() async {
+    isAnalyzing.value = true;
+    // Simulate API call delay
+    await Future.delayed(const Duration(seconds: 2));
+    showAiSummary.value = true;
+    isAnalyzing.value = false;
+  }
+
+  void toggleEditTranscription() {
+    if (isEditingTranscription.value) {
+      transcriptionText.value = transcriptionController.text;
+    } else {
+      transcriptionController.text = transcriptionText.value;
+    }
+    isEditingTranscription.toggle();
+  }
+
+  void saveNotulen(String title, String date) {
+    archivedMeetings.insert(0, ArchivedMeeting(
+      title: title,
+      preview: transcriptionText.value,
+      date: date,
+      duration: formattedDuration,
+    ));
+    Get.snackbar('Berhasil', 'Notulen berhasil disimpan ke arsip.');
+  }
+
   String get formattedDuration {
     final m = (recordingDuration.value ~/ 60).toString().padLeft(2, '0');
     final s = (recordingDuration.value % 60).toString().padLeft(2, '0');
     return '$m:$s';
   }
 }
+

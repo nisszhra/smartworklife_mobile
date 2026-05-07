@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/pomodoro_controller.dart';
+import 'pomodoro_timer_view.dart';
 
 class PomodoroView extends GetView<PomodoroController> {
   const PomodoroView({super.key});
@@ -30,14 +31,10 @@ class PomodoroView extends GetView<PomodoroController> {
           ),
         ),
       ),
-      body: Obx(() {
-        if (controller.pomodoroState.value != PomodoroState.idle) {
-          return _buildTimerView();
-        }
-        return _buildModeSelectionView();
-      }),
+      body: _buildModeSelectionView(),
     );
   }
+
 
   // ─── MODE SELECTION VIEW ─────────────────────────────────────────
   Widget _buildModeSelectionView() {
@@ -52,7 +49,7 @@ class PomodoroView extends GetView<PomodoroController> {
               const Icon(Icons.schedule, color: Color(0xFF005AB4), size: 20),
               const SizedBox(width: 8),
               const Text(
-                'Pilih Mode Fokus',
+                'Choose Focus Mode',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -63,7 +60,7 @@ class PomodoroView extends GetView<PomodoroController> {
           ),
           const SizedBox(height: 4),
           const Text(
-            'Sesuaikan ritme kerja dengan kebutuhanmu',
+            'Customize your work rhythm to meet your needs.',
             style: TextStyle(
               fontSize: 16,
               color: Color(0xFF414753),
@@ -78,10 +75,10 @@ class PomodoroView extends GetView<PomodoroController> {
             badgeIcon: Icons.coffee,
             badgeBgColor: const Color(0xFFD6E3FF),
             badgeTextColor: const Color(0xFF00458D),
-            title: '25 menit kerja • 5 menit istirahat',
+            title: '25 mins Work • 5 mins Rest',
             description:
                 'Ideal untuk mengelola tugas harian yang dinamis dengan jeda singkat untuk menjaga kesegaran pikiran.',
-            buttonLabel: 'Mulai Sesi Klasik',
+            buttonLabel: 'Start Session',
             buttonColor: const Color(0xFF005AB4),
             bgIcon: Icons.timer,
           ),
@@ -93,10 +90,10 @@ class PomodoroView extends GetView<PomodoroController> {
             badgeIcon: Icons.bolt,
             badgeBgColor: const Color(0xFFEADDFF),
             badgeTextColor: const Color(0xFF21005D),
-            title: '50 menit kerja • 10 menit istirahat',
+            title: '50 mins Work • 10 mins Rest',
             description:
                 'Dirancang untuk pekerjaan yang membutuhkan konsentrasi tinggi tanpa gangguan untuk hasil yang mendalam.',
-            buttonLabel: 'Mulai Sesi Deep Work',
+            buttonLabel: 'Start Session',
             buttonColor: const Color(0xFF6750A4),
             bgIcon: Icons.psychology,
           ),
@@ -108,10 +105,10 @@ class PomodoroView extends GetView<PomodoroController> {
             badgeIcon: Icons.trending_up,
             badgeBgColor: const Color(0xFFFFDBC9),
             badgeTextColor: const Color(0xFF321200),
-            title: '90 menit kerja • 30 menit istirahat',
+            title: '90 mins Work • 30 mins Rest',
             description:
                 'Sesi maraton untuk produktivitas maksimal pada proyek besar yang membutuhkan alur kerja yang panjang.',
-            buttonLabel: 'Mulai Sesi Extended',
+            buttonLabel: 'Start Session',
             buttonColor: const Color(0xFF964400),
             bgIcon: Icons.directions_run,
           ),
@@ -217,7 +214,10 @@ class PomodoroView extends GetView<PomodoroController> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => controller.startSession(mode),
+                    onPressed: () {
+                      controller.startSession(mode);
+                      Get.to(() => const PomodoroTimerView());
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
                       foregroundColor: Colors.white,
@@ -244,159 +244,5 @@ class PomodoroView extends GetView<PomodoroController> {
     );
   }
 
-  // ─── TIMER VIEW (Active Session) ─────────────────────────────────
-  Widget _buildTimerView() {
-    final mode = controller.selectedMode.value!;
-    final isWorking =
-        controller.pomodoroState.value == PomodoroState.working;
 
-    Color themeColor;
-    String modeLabel;
-    switch (mode) {
-      case PomodoroMode.klasik:
-        themeColor = const Color(0xFF005AB4);
-        modeLabel = 'Klasik';
-        break;
-      case PomodoroMode.deepWork:
-        themeColor = const Color(0xFF6750A4);
-        modeLabel = 'Deep Work';
-        break;
-      case PomodoroMode.extended:
-        themeColor = const Color(0xFF964400);
-        modeLabel = 'Extended';
-        break;
-    }
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Mode badge
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: themeColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                modeLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: themeColor,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // State label
-            Text(
-              isWorking ? 'Waktu Fokus' : 'Waktu Istirahat',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: isWorking
-                    ? const Color(0xFF181C22)
-                    : const Color(0xFF4CAF50),
-              ),
-            ),
-            const SizedBox(height: 40),
-            // Timer circle
-            Obx(() => SizedBox(
-                  width: 240,
-                  height: 240,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Background circle
-                      SizedBox(
-                        width: 240,
-                        height: 240,
-                        child: CircularProgressIndicator(
-                          value: 1,
-                          strokeWidth: 10,
-                          color: const Color(0xFFE6E8F1),
-                          strokeCap: StrokeCap.round,
-                        ),
-                      ),
-                      // Progress circle
-                      SizedBox(
-                        width: 240,
-                        height: 240,
-                        child: CircularProgressIndicator(
-                          value: controller.progress,
-                          strokeWidth: 10,
-                          color: isWorking ? themeColor : const Color(0xFF4CAF50),
-                          strokeCap: StrokeCap.round,
-                        ),
-                      ),
-                      // Timer text
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            controller.formattedTime,
-                            style: const TextStyle(
-                              fontSize: 48,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF181C22),
-                              letterSpacing: -2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Obx(() => Text(
-                                'Sesi ${controller.completedSessions.value + 1}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF717785),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
-                )),
-            const SizedBox(height: 48),
-            // Control buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Stop button
-                OutlinedButton(
-                  onPressed: () => controller.stopSession(),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFC1C6D5)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 28, vertical: 14),
-                  ),
-                  child: const Text(
-                    'Berhenti',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF181C22),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Session info
-            Obx(() => Text(
-                  '${controller.completedSessions.value} sesi selesai hari ini',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF717785),
-                  ),
-                )),
-          ],
-        ),
-      ),
-    );
-  }
 }
