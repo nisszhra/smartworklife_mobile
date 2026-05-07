@@ -38,9 +38,9 @@ class StretchingView extends GetView<StretchingController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Banner Utama ---
-            _buildMainBanner(),
-            const SizedBox(height: 30),
+            // --- Header ---
+            _buildHeader(),
+            const SizedBox(height: 24),
             
             GridView.count(
               shrinkWrap: true,
@@ -48,49 +48,37 @@ class StretchingView extends GetView<StretchingController> {
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.85,
+              childAspectRatio: 0.8,
               children: [
                 _buildExerciseCard(
                   title: 'Neck Tilt',
-                  duration: '5 MINS',
-                  icon: Icons.self_improvement,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.blue[700]!,
+                  subtitle: 'Miring Leher',
+                  imagePath: 'assets/images/Neck Tilt.png',
                 ),
                 _buildExerciseCard(
                   title: 'Shoulder Rolls',
-                  duration: '3 MINS',
-                  icon: Icons.sync,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.green[700]!,
+                  subtitle: 'Putar Bahu',
+                  imagePath: 'assets/images/Shoulder rolls.png',
                 ),
                 _buildExerciseCard(
                   title: 'Upper Back',
-                  duration: '4 MINS',
+                  subtitle: 'Punggung Atas',
                   icon: Icons.accessibility_new,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.purple[700]!,
                 ),
                 _buildExerciseCard(
                   title: 'Seated Twist',
-                  duration: '6 MINS',
+                  subtitle: 'Putar Duduk',
                   icon: Icons.event_seat,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.orange[700]!,
                 ),
                 _buildExerciseCard(
                   title: 'Wrist Circle',
-                  duration: '2 MINS',
+                  subtitle: 'Putar Pergelangan',
                   icon: Icons.pan_tool,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.teal[700]!,
                 ),
                 _buildExerciseCard(
                   title: 'Hamstring',
-                  duration: '5 MINS',
+                  subtitle: 'Otot Paha',
                   icon: Icons.directions_walk,
-                  color: const Color(0xFFE3F2FD),
-                  iconColor: Colors.red[700]!,
                 ),
               ],
             ),
@@ -100,84 +88,112 @@ class StretchingView extends GetView<StretchingController> {
     );
   }
 
-  Widget _buildMainBanner() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: primaryBlue,
-        borderRadius: BorderRadius.circular(28),
-        image: const DecorationImage(
-          image: NetworkImage('https://cdn-icons-png.flaticon.com/512/2833/2833615.png'),
-          alignment: Alignment.centerRight,
-          opacity: 0.1,
-          scale: 4,
+  Widget _buildHeader() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Stretching Recommendations',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF181C22),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F0FE),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Text(
-              '6 FOCUSED EXERCISES',
-              style: TextStyle(color: Colors.black87, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-            ),
+        SizedBox(height: 4),
+        Text(
+          'Tingkatkan produktivitas dengan peregangan singkat.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Color(0xFF717785),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'List Stretching\nRecommendations',
-            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Tingkatkan produktivitas dengan\nperegangan singkat.',
-            style: TextStyle(color: Colors.white, fontSize: 14, height: 1.4),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildExerciseCard({
     required String title,
-    required String duration,
-    required IconData icon,
-    required Color color,
-    required Color iconColor,
+    required String subtitle,
+    String? imagePath,
+    IconData? icon,
   }) {
+    // Uniform gradient like Wrist Circle
+    const List<Color> gradientColors = [Color(0xFFA1C4FD), Color(0xFFC2E9FB)];
+
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.STRETCHING_PREVIEW, arguments: title),
       child: Container(
         decoration: BoxDecoration(
-          color: color,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-              child: Icon(icon, size: 32, color: iconColor),
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: gradientColors,
+                  ),
+                ),
+                child: Center(
+                  child: imagePath != null
+                      ? ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                          child: Image.asset(
+                            imagePath, 
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        )
+                      : Icon(icon ?? Icons.self_improvement, size: 48, color: Colors.white.withOpacity(0.9)),
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              duration,
-              style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 12, fontWeight: FontWeight.w600),
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title.toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black, letterSpacing: 0.5),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(color: Color(0xFF717785), fontSize: 11, fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
+
 }
