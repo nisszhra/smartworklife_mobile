@@ -19,6 +19,7 @@ import '../modules/signup/views/signup_view.dart';
 import '../modules/stretching/bindings/stretching_binding.dart';
 import '../modules/stretching/views/stretching_view.dart';
 import '../modules/stretching/views/stretching_detail_view.dart';
+import '../modules/stretching/views/stretching_preview_view.dart';
 import '../modules/todolist/bindings/todolist_binding.dart';
 import '../modules/todolist/views/todolist_view.dart';
 
@@ -78,6 +79,11 @@ class AppPages {
     GetPage(
       name: _Paths.STRETCHING_DETAIL,
       page: () => const StretchingDetailView(),
+      binding: StretchingBinding(),
+    ),
+    GetPage(
+      name: _Paths.STRETCHING_PREVIEW,
+      page: () => const StretchingPreviewView(),
       binding: StretchingBinding(),
     ),
   ];

@@ -241,7 +241,7 @@ class StretchingDetailView extends GetView<StretchingController> {
                             // Logic untuk jeda atau selesai
                           },
                           label: const Text(
-                            'Jeda',
+                            'Selesai',
                             style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           style: ElevatedButton.styleFrom(

@@ -13,6 +13,7 @@ abstract class Routes {
   static const TODOLIST = _Paths.TODOLIST;
   static const STRETCHING = _Paths.STRETCHING;
   static const STRETCHING_DETAIL = _Paths.STRETCHING_DETAIL;
+  static const STRETCHING_PREVIEW = _Paths.STRETCHING_PREVIEW;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const TODOLIST = '/todolist';
   static const STRETCHING = '/stretching';
   static const STRETCHING_DETAIL = '/stretching/detail';
+  static const STRETCHING_PREVIEW = '/stretching/preview';
 }
