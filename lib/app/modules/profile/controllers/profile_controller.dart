@@ -124,4 +124,8 @@ class ProfileController extends GetxController {
       margin: const EdgeInsets.all(16),
     );
   }
+
+  void logout() {
+    Get.offAllNamed('/login');
+  }
 }

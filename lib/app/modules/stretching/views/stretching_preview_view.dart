@@ -18,7 +18,7 @@ class StretchingPreviewView extends GetView<StretchingController> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: primaryBlue),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4)),
           onPressed: () => Get.back(),
         ),
         title: const Text(
@@ -67,39 +67,11 @@ class StretchingPreviewView extends GetView<StretchingController> {
                         // Replace with actual GIF asset if available
                         Expanded(
                           child: Center(
-                            child: Image.network(
-                              'https://cdn-icons-png.flaticon.com/512/2833/2833615.png', // Temporary icon
+                            child: Image.asset(
+                              'assets/gif/peregangan.gif', 
                               fit: BoxFit.contain,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Smart',
-                              style: TextStyle(
-                                color: Color(0xFF1A2B4C),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Container(
-                              height: 24,
-                              width: 1,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Work-Life',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),

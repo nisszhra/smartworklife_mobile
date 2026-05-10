@@ -11,7 +11,7 @@ class ProfileView extends GetView<ProfileController> {
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF181C22)),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4)),
           onPressed: () => Get.back(),
         ),
         title: const Text(
@@ -47,8 +47,36 @@ class ProfileView extends GetView<ProfileController> {
             _buildSecuritySection(),
             const SizedBox(height: 32),
             _buildSaveButton(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            _buildLogoutButton(),
+            const SizedBox(height: 32),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton.icon(
+        onPressed: controller.logout,
+        icon: const Icon(Icons.logout_rounded, color: Color(0xFFDC2626), size: 20),
+        label: const Text(
+          'Logout',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFFDC2626),
+          ),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFFED7D7), width: 1),
+          ),
+          backgroundColor: const Color(0xFFFFF5F5),
         ),
       ),
     );

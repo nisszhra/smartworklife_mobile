@@ -307,16 +307,10 @@ class TodolistView extends GetView<TodolistController> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0F7FF),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_left, color: Color(0xFF1A73E8), size: 24),
+          child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4), size: 24),
               onPressed: () => Get.back(),
             ),
-          ),
         ),
         title: const Text(
           'Smart To-Do',
