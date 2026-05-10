@@ -230,7 +230,7 @@ class StretchingDetailView extends GetView<StretchingController> {
                             color: const Color(0xFFE8EAED),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Icon(Icons.chevron_left, color: Color(0xFF3C4043)),
+                          child: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4)),
                         ),
                       ),
                       const SizedBox(width: 16),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
+import 'notulen_archive_view.dart';
 
 class NotulenView extends GetView<NotulenController> {
   const NotulenView({super.key});
@@ -580,10 +581,12 @@ class NotulenView extends GetView<NotulenController> {
               ],
             ),
             TextButton(
-              onPressed: () {
-                // Navigate to archived meetings list page
-              },
-              child: const Text('Lihat Semua'),
+              onPressed: () => Get.to(() => const NotulenArchiveView()),
+              child: const Text('Lihat Semua', 
+              style: TextStyle(
+                color: Color(0xFF005AB4),
+                fontWeight: FontWeight.w600,
+              ),),
             ),
           ],
         ),

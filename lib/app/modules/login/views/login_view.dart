@@ -32,20 +32,7 @@ class LoginView extends GetView<LoginController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Application Logo
-                      Image.asset(
-                        'assets/images/logo smart-worklife trans.png',
-                        height: 150,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.work_outline,
-                            size: 80,
-                            color: primary,
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
+
                       // Welcome text
                       const Text(
                         'Welcome Back',
