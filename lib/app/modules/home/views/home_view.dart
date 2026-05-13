@@ -13,37 +13,6 @@ class HomeView extends GetView<HomeController> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.person_outline),
-          onPressed: () => Get.toNamed('/profile'),
-        ),
-        title: const Text(
-          'Smart WorkLife',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color(0xFF005AB4),
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: const Color(0xFFE2E8F0),
-            height: 1,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          )
-        ],
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

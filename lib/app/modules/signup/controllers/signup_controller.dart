@@ -9,6 +9,8 @@ class SignupController extends GetxController {
 
   void signup() {
     print('Signing up ${fullNameController.text}');
+    // Navigate to verification page
+    Get.toNamed('/verifikasi');
   }
 
   void goToLogin() {
