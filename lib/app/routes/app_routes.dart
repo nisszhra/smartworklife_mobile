@@ -14,6 +14,9 @@ abstract class Routes {
   static const STRETCHING = _Paths.STRETCHING;
   static const STRETCHING_DETAIL = _Paths.STRETCHING_DETAIL;
   static const STRETCHING_PREVIEW = _Paths.STRETCHING_PREVIEW;
+  static const VERIFIKASI = _Paths.VERIFIKASI;
+  static const ONBOARDING = _Paths.ONBOARDING;
+  static const NOTIFIKASI = _Paths.NOTIFIKASI;
 }
 
 abstract class _Paths {
@@ -29,4 +32,7 @@ abstract class _Paths {
   static const STRETCHING = '/stretching';
   static const STRETCHING_DETAIL = '/stretching/detail';
   static const STRETCHING_PREVIEW = '/stretching/preview';
+  static const VERIFIKASI = '/verifikasi';
+  static const ONBOARDING = '/onboarding';
+  static const NOTIFIKASI = '/notifikasi';
 }
