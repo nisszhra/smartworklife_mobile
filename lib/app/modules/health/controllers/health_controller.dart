@@ -1,10 +1,18 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:worklife_mobile/app/data/models/user_model.dart';
+import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
+import 'package:worklife_mobile/app/data/services/auth_service.dart';
 
 class HealthController extends GetxController {
+  final AuthRepository _repository;
+  final _authService = Get.find<AuthService>();
+
+  HealthController(this._repository);
+
   // BMI Calculator
-  final height = 178.0.obs;
-  final weight = 71.0.obs;
+  final height = 0.0.obs;
+  final weight = 0.0.obs;
   final bmiResult = 0.0.obs;
   final bmiCategory = ''.obs;
 
@@ -16,6 +24,9 @@ class HealthController extends GetxController {
   // Hydration schedule
   final scheduleItems = <Map<String, dynamic>>[].obs;
 
+  // Loading state
+  final isUpdating = false.obs;
+
   // Text editing controllers for BMI modal
   late TextEditingController heightTextController;
   late TextEditingController weightTextController;
@@ -23,17 +34,49 @@ class HealthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    heightTextController = TextEditingController(text: height.value.toStringAsFixed(0));
-    weightTextController = TextEditingController(text: weight.value.toStringAsFixed(0));
-    calculateBMI();
+    
+    // 1. Inisialisasi controller paling awal (Mencegah LateInitializationError)
+    heightTextController = TextEditingController();
+    weightTextController = TextEditingController();
+
+    // 2. Initial load data
+    _updateLocalData(_authService.currentUser.value);
+
+    // 3. Pantau perubahan user secara reaktif (Worker)
+    ever(_authService.currentUser, (user) {
+      _updateLocalData(user);
+    });
+    
     _initSchedule();
   }
 
   @override
   void onClose() {
+    // Pastikan fokus dilepas sebelum dispose untuk mencegah error "used after disposed"
     heightTextController.dispose();
     weightTextController.dispose();
     super.onClose();
+  }
+
+  void _updateLocalData(UserModel? user) {
+    // Jangan lakukan update jika controller sudah ditutup
+    if (isClosed) return;
+
+    if (user != null) {
+      height.value = user.heightCm ?? 170.0;
+      weight.value = user.weightKg ?? 65.0;
+      
+      // Update text controller dengan nilai terbaru hanya jika tidak sedang fokus/diedit
+      // agar tidak mengganggu pengetikan user
+      if (heightTextController.text != height.value.toStringAsFixed(0)) {
+        heightTextController.text = height.value.toStringAsFixed(0);
+      }
+      if (weightTextController.text != weight.value.toStringAsFixed(0)) {
+        weightTextController.text = weight.value.toStringAsFixed(0);
+      }
+      
+      calculateBMI();
+    }
   }
 
   void _initSchedule() {
@@ -66,12 +109,45 @@ class HealthController extends GetxController {
     }
   }
 
-  void updateMeasurements() {
-    final h = double.tryParse(heightTextController.text);
-    final w = double.tryParse(weightTextController.text);
-    if (h != null && h > 0) height.value = h;
-    if (w != null && w > 0) weight.value = w;
-    calculateBMI();
+  Future<void> updateMeasurements() async {
+    if (isUpdating.value) return;
+
+    // Gunakan nilai saat ini jika input kosong atau tidak valid
+    final h = double.tryParse(heightTextController.text) ?? height.value;
+    final w = double.tryParse(weightTextController.text) ?? weight.value;
+    
+    if (h <= 0 || w <= 0) {
+      Get.snackbar('Input Tidak Valid', 'Tinggi dan berat badan harus lebih dari 0.');
+      return;
+    }
+
+    isUpdating.value = true;
+
+    try {
+      // 1. Update ke Backend
+      final updatedUser = await _repository.updateProfile(
+        height: h,
+        weight: w,
+      );
+
+      if (isClosed) return;
+
+      // 2. Update Lokal
+      height.value = h;
+      weight.value = w;
+      await _authService.saveUser(updatedUser);
+      
+      calculateBMI();
+      Get.snackbar('Berhasil', 'Data kesehatan Anda telah diperbarui.');
+    } catch (e) {
+      if (!isClosed) {
+        Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+      }
+    } finally {
+      if (!isClosed) {
+        isUpdating.value = false;
+      }
+    }
   }
 
   void logWater(double ml) {

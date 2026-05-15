@@ -111,38 +111,65 @@ class VerifikasiView extends GetView<VerifikasiController> {
                       const SizedBox(height: 24),
 
                       // Resend Code
-                      Row(
+                      Obx(() => Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Tidak menerima kode? ",
-                            style: TextStyle(
+                          Text(
+                            controller.canResend.value 
+                              ? "Tidak menerima kode? " 
+                              : "Kirim ulang tersedia dalam ",
+                            style: const TextStyle(
                               color: onSurfaceVariant,
                               fontSize: 14,
                               fontFamily: 'Inter',
                             ),
                           ),
-                          GestureDetector(
-                            onTap: controller.kirimUlang,
-                            child: const Text(
-                              'Kirim Ulang',
-                              style: TextStyle(
-                                color: primary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Inter',
+                          controller.canResend.value
+                            ? GestureDetector(
+                                onTap: controller.kirimUlang,
+                                child: const Text(
+                                  'Kirim Ulang',
+                                  style: TextStyle(
+                                    color: primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                '${controller.timerSeconds.value} detik',
+                                style: const TextStyle(
+                                  color: primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Inter',
+                                ),
                               ),
-                            ),
-                          ),
                         ],
-                      ),
-                      const SizedBox(height: 32),
+                      )),
+                      const SizedBox(height: 16),
+                      // Error message display
+                      Obx(() => controller.errorMessage.value.isNotEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Text(
+                                controller.errorMessage.value,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()),
 
                       // Verify Button
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: controller.verifikasi,
+                        child: Obx(() => ElevatedButton(
+                          onPressed: controller.isLoading.value ? null : controller.verifikasi,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primary,
                             foregroundColor: onPrimary,
@@ -152,15 +179,24 @@ class VerifikasiView extends GetView<VerifikasiController> {
                             ),
                             elevation: 2,
                           ),
-                          child: const Text(
-                            'Verifikasi',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ),
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Verifikasi',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                        )),
                       ),
                       const SizedBox(height: 24),
 

@@ -17,6 +17,7 @@ abstract class Routes {
   static const VERIFIKASI = _Paths.VERIFIKASI;
   static const ONBOARDING = _Paths.ONBOARDING;
   static const NOTIFIKASI = _Paths.NOTIFIKASI;
+  static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
 }
 
 abstract class _Paths {
@@ -35,4 +36,5 @@ abstract class _Paths {
   static const VERIFIKASI = '/verifikasi';
   static const ONBOARDING = '/onboarding';
   static const NOTIFIKASI = '/notifikasi';
+  static const FORGOT_PASSWORD = '/forgot-password';
 }
