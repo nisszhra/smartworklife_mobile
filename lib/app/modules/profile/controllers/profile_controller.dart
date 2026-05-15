@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:worklife_mobile/app/data/models/user_model.dart';
+import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
+import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/data/services/user_service.dart';
 
 class ProfileController extends GetxController {
-  // Form controllers
+  final AuthRepository _repository;
+  final _authService = Get.find<AuthService>();
+
+  ProfileController(this._repository);
   late TextEditingController fullNameController;
   late TextEditingController usernameController;
   late TextEditingController emailController;
@@ -19,9 +25,9 @@ class ProfileController extends GetxController {
 
   // Profile data
   final profileImageUrl = ''.obs;
-  final fullName = 'Sarah Koenig'.obs;
-  final username = 'sarahkoenig'.obs;
-  final email = 'sarah.koenig@company.com'.obs;
+  final fullName = ''.obs;
+  final username = ''.obs;
+  final email = ''.obs;
   final phone = '+62 812 3456 7890'.obs;
   final bio = 'Product Manager at Smart-WorkLife. Passionate about productivity and team collaboration.'.obs;
   
@@ -50,26 +56,55 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fullNameController = TextEditingController(text: fullName.value);
-    usernameController = TextEditingController(text: username.value);
-    emailController = TextEditingController(text: email.value);
-    phoneController = TextEditingController(text: phone.value);
-    bioController = TextEditingController(text: bio.value);
+
+    fullNameController = TextEditingController();
+    usernameController = TextEditingController();
+    emailController = TextEditingController();
+    phoneController = TextEditingController();
+    bioController = TextEditingController();
     currentPasswordController = TextEditingController();
     newPasswordController = TextEditingController();
     confirmPasswordController = TextEditingController();
+    ageController = TextEditingController();
+    weightController = TextEditingController();
+    heightController = TextEditingController();
+    industryController = TextEditingController();
 
-    // Initialize health/work controllers
-    ageController = TextEditingController(text: age.value);
-    weightController = TextEditingController(text: weight.value);
-    heightController = TextEditingController(text: height.value);
-    industryController = TextEditingController(text: industry.value);
+    // 1. Initial Load
+    _updateLocalData(_authService.currentUser.value);
 
-    // Sync from OnboardingController if it exists
-    _syncFromOnboarding();
+    // 2. Pantau perubahan user secara reaktif
+    ever(_authService.currentUser, (user) {
+      _updateLocalData(user);
+    });
 
     // Setup listeners for changes
     _setupChangeListeners();
+  }
+
+  void _updateLocalData(UserModel? user) {
+    if (user != null) {
+      fullName.value = user.fullName ?? '';
+      email.value = user.email;
+      gender.value = user.gender ?? 'Laki-laki';
+      age.value = user.age?.toString() ?? '';
+      weight.value = user.weightKg?.toString() ?? '';
+      height.value = user.heightCm?.toString() ?? '';
+      industry.value = user.industry ?? 'Teknologi';
+      startTime.value = user.workStartTime ?? '08:00';
+      endTime.value = user.workEndTime ?? '17:00';
+
+      // Update controllers
+      fullNameController.text = fullName.value;
+      emailController.text = email.value;
+      ageController.text = age.value;
+      weightController.text = weight.value;
+      heightController.text = height.value;
+      industryController.text = industry.value;
+      
+      // Reset hasChanges after sync from DB
+      hasChanges.value = false;
+    }
   }
 
   void _setupChangeListeners() {
@@ -89,37 +124,7 @@ class ProfileController extends GetxController {
   }
 
   void _updateHasChanges() {
-    // Basic logic: if any field is not empty or different from initial
-    // For simplicity, we'll just set it to true if any listener triggers
-    // or we could do a deep comparison if needed.
     hasChanges.value = true;
-  }
-
-  void _syncFromOnboarding() {
-    try {
-      final userService = Get.find<UserService>();
-      final savedGender = userService.selectedGender.value;
-      if (savedGender == 'Laki-laki' || savedGender == 'Perempuan') {
-        gender.value = savedGender;
-      } else {
-        gender.value = 'Laki-laki'; // Default fallback
-      }
-
-      age.value = userService.age.value;
-      weight.value = userService.weight.value;
-      height.value = userService.height.value;
-      startTime.value = userService.startTime.value;
-      endTime.value = userService.endTime.value;
-      industry.value = userService.selectedIndustry.value;
-
-      // Update controllers
-      ageController.text = age.value;
-      weightController.text = weight.value;
-      heightController.text = height.value;
-      industryController.text = industry.value;
-    } catch (e) {
-      // UserService not found or not initialized yet
-    }
   }
 
   @override
@@ -147,7 +152,7 @@ class ProfileController extends GetxController {
       showConfirmPassword.value = !showConfirmPassword.value;
   
   void logout() {
-    Get.offAllNamed('/login');
+    _authService.logout();
   }
 
   Future<void> selectStartTime(BuildContext context) async {
@@ -176,6 +181,11 @@ class ProfileController extends GetxController {
     }
   }
 
+  void setGender(String val) {
+    gender.value = val;
+    _updateHasChanges();
+  }
+
   void changeProfilePhoto() {
     // TODO: Implement image picker
     Get.snackbar(
@@ -190,44 +200,59 @@ class ProfileController extends GetxController {
 
   void saveProfile() async {
     isSaving.value = true;
-    // Simulate save
-    await Future.delayed(const Duration(seconds: 1));
-
-    fullName.value = fullNameController.text;
-    username.value = usernameController.text;
-    phone.value = phoneController.text;
-    bio.value = bioController.text;
     
-    // Save health/work data
-    age.value = ageController.text;
-    weight.value = weightController.text;
-    height.value = heightController.text;
-    industry.value = industryController.text;
-
-    // Sync back to UserService
     try {
-      final userService = Get.find<UserService>();
-      userService.age.value = age.value;
-      userService.weight.value = weight.value;
-      userService.height.value = height.value;
-      userService.selectedGender.value = gender.value;
-      userService.startTime.value = startTime.value;
-      userService.endTime.value = endTime.value;
-      userService.selectedIndustry.value = industry.value;
-    } catch (e) {
-      // UserService not found
-    }
+      // 1. Update ke Backend Database
+      final updatedUser = await _repository.updateProfile(
+        gender: gender.value,
+        age: int.tryParse(ageController.text),
+        industry: industryController.text,
+        startTime: startTime.value,
+        endTime: endTime.value,
+        weight: double.tryParse(weightController.text),
+        height: double.tryParse(heightController.text),
+      );
 
-    isSaving.value = false;
-    hasChanges.value = false;
-    Get.snackbar(
-      'Berhasil',
-      'Profil berhasil diperbarui',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF4CAF50),
-      colorText: const Color(0xFFFFFFFF),
-      margin: const EdgeInsets.all(16),
-    );
+      // 2. Sinkronkan ke AuthService (Global State)
+      await _authService.saveUser(updatedUser);
+
+      // Update Local Obs
+      fullName.value = fullNameController.text;
+      username.value = usernameController.text;
+      phone.value = phoneController.text;
+      bio.value = bioController.text;
+      
+      age.value = ageController.text;
+      weight.value = weightController.text;
+      height.value = heightController.text;
+      industry.value = industryController.text;
+
+      // 3. Sinkronkan ke UserService (Internal Sync)
+      try {
+        final userService = Get.find<UserService>();
+        userService.age.value = age.value;
+        userService.weight.value = weight.value;
+        userService.height.value = height.value;
+        userService.selectedGender.value = gender.value;
+        userService.startTime.value = startTime.value;
+        userService.endTime.value = endTime.value;
+        userService.selectedIndustry.value = industry.value;
+      } catch (e) {}
+
+      isSaving.value = false;
+      hasChanges.value = false;
+      Get.snackbar(
+        'Berhasil',
+        'Profil berhasil diperbarui',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF4CAF50),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+    } catch (e) {
+      isSaving.value = false;
+      Get.snackbar('Error', 'Gagal menyimpan profil: ${e.toString()}');
+    }
   }
 
   void changePassword() async {

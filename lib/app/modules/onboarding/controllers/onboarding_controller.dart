@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
+import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/data/services/user_service.dart';
 
 class OnboardingController extends GetxController {
+  final AuthRepository _repository;
+  final _authService = Get.find<AuthService>();
+
+  OnboardingController(this._repository);
+
   var currentPage = 0.obs;
   final PageController pageController = PageController();
 
@@ -28,11 +35,29 @@ class OnboardingController extends GetxController {
 
   void next() {
     if (currentPage.value == 0) {
+      // Validasi Step 1: Profil Kesehatan
+      if (selectedGender.value.isEmpty) {
+        Get.snackbar('Data Belum Lengkap', 'Silakan pilih Jenis Kelamin Anda.',
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
+        return;
+      }
+      if (ageController.text.isEmpty || weightController.text.isEmpty || heightController.text.isEmpty) {
+        Get.snackbar('Data Belum Lengkap', 'Silakan isi Umur, Berat Badan, dan Tinggi Badan Anda.',
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
+        return;
+      }
+
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     } else {
+      // Validasi Step 2: Profil Pekerjaan
+      if (selectedIndustry.value.isEmpty) {
+        Get.snackbar('Data Belum Lengkap', 'Silakan pilih Bidang Industri Anda.',
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
+        return;
+      }
       finish();
     }
   }
@@ -66,20 +91,38 @@ class OnboardingController extends GetxController {
     }
   }
 
-  void finish() {
-    print('Finishing onboarding...');
+  void finish() async {
+    print('Finishing onboarding and saving to DB...');
     
-    // Save to UserService
-    final userService = Get.put(UserService());
-    userService.selectedGender.value = selectedGender.value;
-    userService.age.value = ageController.text;
-    userService.weight.value = weightController.text;
-    userService.height.value = heightController.text;
-    userService.startTime.value = startTime.value;
-    userService.endTime.value = endTime.value;
-    userService.selectedIndustry.value = selectedIndustry.value;
+    try {
+      // 1. Save to Backend Database
+      final updatedUser = await _repository.updateProfile(
+        gender: selectedGender.value,
+        age: int.tryParse(ageController.text),
+        industry: selectedIndustry.value,
+        startTime: startTime.value,
+        endTime: endTime.value,
+        weight: double.tryParse(weightController.text),
+        height: double.tryParse(heightController.text),
+      );
 
-    Get.offAllNamed('/main');
+      // 2. Sync to AuthService (Global State)
+      await _authService.saveUser(updatedUser);
+
+      // 3. Save to Local UserService (Internal Sync)
+      final userService = Get.put(UserService());
+      userService.selectedGender.value = selectedGender.value;
+      userService.age.value = ageController.text;
+      userService.weight.value = weightController.text;
+      userService.height.value = heightController.text;
+      userService.startTime.value = startTime.value;
+      userService.endTime.value = endTime.value;
+      userService.selectedIndustry.value = selectedIndustry.value;
+
+      Get.offAllNamed('/main');
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal menyimpan profil: ${e.toString()}');
+    }
   }
 
   @override
