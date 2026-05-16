@@ -22,6 +22,13 @@ class LoginController extends GetxController {
 
   void togglePasswordVisibility() => isPasswordVisible.toggle();
 
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
+
   Future<void> login() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -36,27 +43,35 @@ class LoginController extends GetxController {
 
     try {
       final response = await _repository.login(email, password);
+      
       await _authService.saveToken(response.accessToken);
       if (response.user != null) {
-        print("DEBUG: User data received: ${response.user!.fullName}");
         await _authService.saveUser(response.user!);
-      } else {
-        print("DEBUG: No user data in login response!");
       }
-      Get.offAllNamed(Routes.MAIN);
+
+      // Beri sedikit delay sebelum pindah agar snackbar/proses async lain tenang
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (!isClosed) {
+          Get.offAllNamed(Routes.MAIN);
+        }
+      });
     } catch (e) {
+      if (isClosed) return;
+
       final err = e.toString().replaceFirst('Exception: ', '');
       if (err.contains('Email belum diverifikasi')) {
-        // Jika belum verifikasi, kirim ke halaman OTP
         Get.toNamed(Routes.VERIFIKASI, arguments: {'email': email});
-        Get.snackbar('Verifikasi Diperlukan', 'Email Anda belum diverifikasi. Silakan masukkan kode OTP yang telah dikirim.');
+        Get.snackbar(
+          'Verifikasi Diperlukan', 
+          'Email Anda belum diverifikasi.',
+          backgroundColor: Colors.orange.withOpacity(0.8),
+          colorText: Colors.white,
+        );
         
-        // Opsional: Langsung panggil resend agar user dapat kode baru
         try { _repository.resendOtp(email); } catch (_) {}
       } else {
         errorMessage.value = err;
       }
-    } finally {
       isLoading.value = false;
     }
   }

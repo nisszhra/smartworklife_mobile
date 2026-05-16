@@ -24,6 +24,15 @@ class SignupController extends GetxController {
   void togglePasswordVisibility() => isPasswordVisible.toggle();
   void toggleConfirmPasswordVisibility() => isConfirmPasswordVisible.toggle();
 
+  @override
+  void onClose() {
+    fullNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
+  }
+
   Future<void> signup() async {
     final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
@@ -45,12 +54,26 @@ class SignupController extends GetxController {
         password: password,
         confirmPassword: confirmPassword,
       );
-      // Kirim email ke verifikasi agar bisa resend OTP jika perlu
+
+      if (isClosed) return;
+
+      // Pindah ke verifikasi dan beri snackbar
+      Get.snackbar(
+        'Berhasil', 
+        'Pendaftaran berhasil. Silakan cek email untuk kode verifikasi.',
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      
       Get.toNamed(Routes.VERIFIKASI, arguments: {'email': email});
     } catch (e) {
-      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
+      if (!isClosed) {
+        errorMessage.value = e.toString().replaceFirst('Exception: ', '');
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) {
+        isLoading.value = false;
+      }
     }
   }
 

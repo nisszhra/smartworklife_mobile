@@ -7,7 +7,8 @@ import 'package:worklife_mobile/app/routes/app_pages.dart';
 class DioService extends GetxService {
   // TODO: Ganti dengan base URL production saat deploy
   // static const String _baseUrl = 'http://192.168.1.10:8000/api/v1';
-  static const String _baseUrl = 'http://192.168.1.4:8000/api/v1';
+  static const String _baseUrl = 'http://192.168.68.181:8000/api/v1';
+
 
   late final Dio client;
 
