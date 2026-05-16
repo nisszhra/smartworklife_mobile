@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
+import '../../../data/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../todolist/controllers/todolist_controller.dart';
 
@@ -18,10 +19,10 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Good Morning, Rafi 👋',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            Obx(() => Text(
+              'Good Morning, ${Get.find<AuthService>().currentUser.value?.fullName ?? 'User'} 👋',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            )),
             const SizedBox(height: 8),
             Text(
               'Here is your productivity overview for today.',

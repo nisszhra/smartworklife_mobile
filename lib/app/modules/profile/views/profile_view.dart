@@ -299,7 +299,7 @@ class ProfileView extends GetView<ProfileController> {
                               );
                             }).toList(),
                             onChanged: (val) {
-                              if (val != null) controller.gender.value = val;
+                              if (val != null) controller.setGender(val);
                             },
                           ),
                         ),

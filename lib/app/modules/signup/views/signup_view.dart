@@ -71,7 +71,7 @@ class SignupView extends GetView<SignupController> {
                       TextFormField(
                         controller: controller.fullNameController,
                         decoration: InputDecoration(
-                          hintText: 'John Doe',
+                          hintText: 'full name',
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -109,7 +109,7 @@ class SignupView extends GetView<SignupController> {
                         controller: controller.emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'name@company.com',
+                          hintText: 'email address',
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -143,15 +143,24 @@ class SignupView extends GetView<SignupController> {
                           ),
                         ),
                       ),
-                      TextFormField(
+                      Obx(() => TextFormField(
                         controller: controller.passwordController,
-                        obscureText: true,
+                        obscureText: !controller.isPasswordVisible.value,
                         decoration: InputDecoration(
-                          hintText: '••••••••',
+                          hintText: 'password',
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
                           contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordVisible.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: outlineVariant,
+                            ),
+                            onPressed: controller.togglePasswordVisibility,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(color: outlineVariant),
@@ -165,7 +174,7 @@ class SignupView extends GetView<SignupController> {
                             borderSide: const BorderSide(color: primary, width: 2),
                           ),
                         ),
-                      ),
+                      )),
                       const SizedBox(height: 16),
                       
                       // Confirm Password Field
@@ -181,15 +190,24 @@ class SignupView extends GetView<SignupController> {
                           ),
                         ),
                       ),
-                      TextFormField(
+                      Obx(() => TextFormField(
                         controller: controller.confirmPasswordController,
-                        obscureText: true,
+                        obscureText: !controller.isConfirmPasswordVisible.value,
                         decoration: InputDecoration(
-                          hintText: '••••••••',
+                          hintText: 'confirm password',
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
                           contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isConfirmPasswordVisible.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: outlineVariant,
+                            ),
+                            onPressed: controller.toggleConfirmPasswordVisibility,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(color: outlineVariant),
@@ -203,12 +221,26 @@ class SignupView extends GetView<SignupController> {
                             borderSide: const BorderSide(color: primary, width: 2),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-
+                      )),
+                      const SizedBox(height: 16),
+                      // Error message
+                      Obx(() => controller.errorMessage.value.isNotEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                controller.errorMessage.value,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()),
                       // Sign Up Button
-                      ElevatedButton(
-                        onPressed: controller.signup,
+                      Obx(() => ElevatedButton(
+                        onPressed: controller.isLoading.value ? null : controller.signup,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
                           foregroundColor: onPrimary,
@@ -218,15 +250,24 @@ class SignupView extends GetView<SignupController> {
                           ),
                           elevation: 2,
                         ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                      )),
                       const SizedBox(height: 16),
                       
                       // Google Sign Up Button

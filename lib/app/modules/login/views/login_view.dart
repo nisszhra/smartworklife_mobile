@@ -106,16 +106,21 @@ class LoginView extends GetView<LoginController> {
                           ),
                         ),
                       ),
-                      TextFormField(
+                      Obx(() => TextFormField(
                         controller: controller.passwordController,
-                        obscureText: true,
+                        obscureText: !controller.isPasswordVisible.value,
                         decoration: InputDecoration(
                           hintText: '••••••••',
                           hintStyle: const TextStyle(color: outlineVariant),
                           prefixIcon: const Icon(Icons.lock_outline, color: outline),
                           suffixIcon: IconButton(
-                            icon: const Icon(Icons.visibility_outlined, color: outline),
-                            onPressed: () {},
+                            icon: Icon(
+                              controller.isPasswordVisible.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: outline,
+                            ),
+                            onPressed: controller.togglePasswordVisibility,
                           ),
                           filled: true,
                           fillColor: surfaceContainerLow.withOpacity(0.8),
@@ -133,13 +138,13 @@ class LoginView extends GetView<LoginController> {
                             borderSide: const BorderSide(color: primary, width: 2),
                           ),
                         ),
-                      ),
+                      )),
                       const SizedBox(height: 8),
                       // Forgot Password Link
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: controller.goToForgotPassword,
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(50, 30),
@@ -157,9 +162,24 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      // Error message
+                      Obx(() => controller.errorMessage.value.isNotEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                controller.errorMessage.value,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()),
                       // Sign In Button
-                      ElevatedButton(
-                        onPressed: controller.login,
+                      Obx(() => ElevatedButton(
+                        onPressed: controller.isLoading.value ? null : controller.login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
                           foregroundColor: onPrimary,
@@ -169,15 +189,24 @@ class LoginView extends GetView<LoginController> {
                           ),
                           elevation: 2,
                         ),
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                      )),
                       const SizedBox(height: 16),
                       // Google Sign In Button
                       OutlinedButton.icon(
@@ -215,7 +244,7 @@ class LoginView extends GetView<LoginController> {
                             ),
                           ),
                           TextButton(
-                            onPressed: controller.signup,
+                            onPressed: controller.goToSignup,
                             child: const Text(
                               'Sign up',
                               style: TextStyle(
