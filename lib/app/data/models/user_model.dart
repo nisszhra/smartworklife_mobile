@@ -11,6 +11,9 @@ class UserModel {
   final double? weightKg;
   final double? heightCm;
 
+  /// Mengecek apakah user sudah melengkapi data onboarding.
+  bool get isOnboarded => gender != null && age != null && industry != null;
+
   const UserModel({
     required this.id,
     required this.email,

@@ -14,14 +14,27 @@ Future<void> main() async {
   await Get.putAsync<DioService>(() async => DioService());
 
   // 2. Init AuthService (restore token dari secure storage)
-  final authService = await Get.putAsync<AuthService>(() async => AuthService());
+  // 2. Init AuthService dan tunggu sampai sesi pulih
+  final authService = await Get.putAsync<AuthService>(() => AuthService().init());
 
   // 3. Init UserService (state form onboarding — tidak berubah)
   Get.put(UserService());
 
-  // 4. Tentukan halaman awal berdasarkan sesi yang ada
-  final initialRoute = authService.isLoggedIn ? Routes.MAIN : AppPages.INITIAL;
+  // 4. Tentukan halaman awal berdasarkan sesi dan status onboarding
+  String initialRoute = AppPages.INITIAL; // Default: Login
+  
+  if (authService.isLoggedIn) {
+    if (authService.isOnboarded) {
+      initialRoute = Routes.MAIN; // Dahsboard jika sudah lengkap
+    } else {
+      initialRoute = Routes.ONBOARDING; // Onboarding jika data masih kosong
+    }
+  }
 
+  print("DEBUG: Status Login: ${authService.isLoggedIn}");
+  print("DEBUG: Status Onboarded: ${authService.isOnboarded}");
+  print("DEBUG: Navigasi Awal ke: $initialRoute");
+  
   runApp(
     GetMaterialApp(
       title: "Smart-WorkLife",

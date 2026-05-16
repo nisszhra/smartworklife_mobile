@@ -24,15 +24,6 @@ class SignupController extends GetxController {
   void togglePasswordVisibility() => isPasswordVisible.toggle();
   void toggleConfirmPasswordVisibility() => isConfirmPasswordVisible.toggle();
 
-  @override
-  void onClose() {
-    fullNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.onClose();
-  }
-
   Future<void> signup() async {
     final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();

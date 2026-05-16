@@ -11,8 +11,8 @@ class VerifikasiController extends GetxController {
 
   VerifikasiController(this._repository);
 
-  late List<TextEditingController> otpControllers;
-  late List<FocusNode> focusNodes;
+  final List<TextEditingController> otpControllers = List.generate(4, (_) => TextEditingController());
+  final List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
 
   final isLoading = false.obs;
   final errorMessage = ''.obs;
@@ -27,8 +27,6 @@ class VerifikasiController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    otpControllers = List.generate(4, (_) => TextEditingController());
-    focusNodes = List.generate(4, (_) => FocusNode());
     startTimer();
   }
 
@@ -36,18 +34,6 @@ class VerifikasiController extends GetxController {
   void onClose() {
     _timer?.cancel();
     _timer = null;
-    
-    // Dispose focus nodes first to remove focus from fields
-    for (var node in focusNodes) {
-      node.unfocus();
-      node.dispose();
-    }
-    
-    // Then dispose controllers
-    for (var controller in otpControllers) {
-      controller.dispose();
-    }
-    
     super.onClose();
   }
 

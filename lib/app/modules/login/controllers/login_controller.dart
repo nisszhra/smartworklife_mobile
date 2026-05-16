@@ -22,13 +22,6 @@ class LoginController extends GetxController {
 
   void togglePasswordVisibility() => isPasswordVisible.toggle();
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
-
   Future<void> login() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
