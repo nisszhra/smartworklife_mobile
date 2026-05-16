@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
@@ -10,8 +11,7 @@ class StretchingDetailView extends GetView<StretchingController> {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan Get.arguments utility
-    final String title = Get.arguments ?? 'Neck Roll';
+    final String title = Get.arguments ?? 'Neck Tilt';
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -19,10 +19,18 @@ class StretchingDetailView extends GetView<StretchingController> {
         children: [
           // --- Kamera Preview ---
           Positioned.fill(
-            child: Image.network(
-              'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1000&auto=format&fit=crop',
-              fit: BoxFit.cover,
-            ),
+            child: Obx(() {
+              if (controller.isCameraInitialized.value) {
+                return AspectRatio(
+                  aspectRatio: controller.cameraController!.value.aspectRatio,
+                  child: CameraPreview(controller.cameraController!),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                );
+              }
+            }),
           ),
 
           // --- Overlay Pose Terdeteksi ---
@@ -31,10 +39,12 @@ class StretchingDetailView extends GetView<StretchingController> {
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
+              child: Obx(() => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: controller.isPoseDetected.value 
+                      ? Colors.green.withOpacity(0.9) 
+                      : Colors.white.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
@@ -47,19 +57,23 @@ class StretchingDetailView extends GetView<StretchingController> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle, color: Colors.blue[700], size: 20),
+                    Icon(
+                      controller.isPoseDetected.value ? Icons.check_circle : Icons.error_outline, 
+                      color: controller.isPoseDetected.value ? Colors.white : Colors.orange, 
+                      size: 20
+                    ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Pose Terdeteksi',
+                    Text(
+                      controller.isPoseDetected.value ? 'Pose Terdeteksi' : 'Pose Belum Terdeteksi',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: controller.isPoseDetected.value ? Colors.white : Colors.black87,
                         fontSize: 14,
                       ),
                     ),
                   ],
                 ),
-              ),
+              )),
             ),
           ),
 
@@ -72,13 +86,12 @@ class StretchingDetailView extends GetView<StretchingController> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Garis Putus-putus Luar (Lengkungan)
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.white.withOpacity(0.5),
                         width: 2,
-                        style: BorderStyle.none, // Custom dashed border normally needed, but using opacity for effect
+                        style: BorderStyle.none,
                       ),
                     ),
                     child: CustomPaint(
@@ -86,7 +99,6 @@ class StretchingDetailView extends GetView<StretchingController> {
                       child: Container(),
                     ),
                   ),
-                  // Frame Kepala
                   Positioned(
                     top: 50,
                     child: Container(
@@ -96,16 +108,8 @@ class StretchingDetailView extends GetView<StretchingController> {
                         border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
                         shape: BoxShape.circle,
                       ),
-                      child: Center(
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-                        ),
-                      ),
                     ),
                   ),
-                  // Frame Bahu/Tubuh
                   Positioned(
                     top: 150,
                     child: Container(
@@ -122,7 +126,7 @@ class StretchingDetailView extends GetView<StretchingController> {
             ),
           ),
 
-          // --- Bottom Panel (Static) ---
+          // --- Bottom Panel ---
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -130,31 +134,38 @@ class StretchingDetailView extends GetView<StretchingController> {
               padding: EdgeInsets.fromLTRB(24, 24, 24, Get.mediaQuery.padding.bottom + 24),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(0)), // Static flat top or slight curve
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Instruksi Box
-                  Container(
+                  // Instruksi / Peringatan Box
+                  Obx(() => Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8EDF7),
+                      color: controller.percentage.value > 0.1 
+                          ? const Color(0xFFE8F5E9) 
+                          : const Color(0xFFFFF3E0),
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: controller.percentage.value > 0.1 ? Colors.green : Colors.orange,
+                        width: 1,
+                      ),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'Instruksi: Putar leher perlahan',
+                        controller.warningMessage.value,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color(0xFF5F6368),
+                          color: controller.percentage.value > 0.1 ? Colors.green[800] : Colors.orange[900],
                           fontSize: 15,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 24),
 
                   // Judul
@@ -175,16 +186,16 @@ class StretchingDetailView extends GetView<StretchingController> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Durasi Sesi Row
+                  // Progress & Percentage
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.timer_outlined, size: 18, color: Colors.blue[700]),
+                          Icon(Icons.auto_graph, size: 18, color: Colors.blue[700]),
                           const SizedBox(width: 8),
                           Text(
-                            'DURASI SESI',
+                            'PRESENTASE GERAKAN',
                             style: TextStyle(
                               color: Colors.blue[900],
                               fontSize: 11,
@@ -194,34 +205,35 @@ class StretchingDetailView extends GetView<StretchingController> {
                           ),
                         ],
                       ),
-                      const Text(
-                        '04:20 s',
-                        style: TextStyle(
+                      Obx(() => Text(
+                        '${(controller.percentage.value * 100).toInt()}%',
+                        style: const TextStyle(
                           color: Color(0xFF0056B3),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      )),
                     ],
                   ),
                   const SizedBox(height: 12),
 
                   // Progress Bar
-                  ClipRRect(
+                  Obx(() => ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: 0.6,
+                      value: controller.percentage.value,
                       minHeight: 12,
                       backgroundColor: const Color(0xFFE8EDF7),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        controller.percentage.value > 0.8 ? Colors.green : Colors.blue[700]!
+                      ),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 40),
 
                   // Buttons Row
                   Row(
                     children: [
-                      // Tombol Back
                       InkWell(
                         onTap: () => Get.back(),
                         child: Container(
@@ -234,21 +246,18 @@ class StretchingDetailView extends GetView<StretchingController> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // Tombol Jeda (Utama)
                       Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            // Logic untuk jeda atau selesai
-                          },
-                          label: const Text(
-                            'Selesai',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
+                        child: ElevatedButton(
+                          onPressed: () => Get.back(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF0056B3),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             elevation: 0,
+                          ),
+                          child: const Text(
+                            'Selesai',
+                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
