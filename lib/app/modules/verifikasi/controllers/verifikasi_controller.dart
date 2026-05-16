@@ -97,21 +97,32 @@ class VerifikasiController extends GetxController {
 
     try {
       final response = await _repository.verifyOtp(_email, otp);
-      if (isClosed) return;
       
       await _authService.saveToken(response.accessToken);
       if (response.user != null) {
         await _authService.saveUser(response.user!);
       }
 
-      Get.offAllNamed(Routes.ONBOARDING);
-      Get.snackbar('Berhasil', 'Email terverifikasi. Mari lengkapi profil Anda.');
+      // Beri snackbar dulu baru pindah agar transisi lebih aman
+      Get.snackbar(
+        'Berhasil', 
+        'Email terverifikasi. Mari lengkapi profil Anda.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+
+      // Beri sedikit delay agar snackbar sempat muncul dan UI tidak kaget saat dispose
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (!isClosed) {
+          Get.offAllNamed(Routes.ONBOARDING);
+        }
+      });
     } catch (e) {
       if (!isClosed) {
-        errorMessage.value = e.toString().replaceFirst('Exception: ', '');
-      }
-    } finally {
-      if (!isClosed) {
+        // Jika error karena masalah koneksi/dio, tampilkan pesan yang user-friendly
+        final err = e.toString().replaceFirst('Exception: ', '');
+        errorMessage.value = err;
         isLoading.value = false;
       }
     }
