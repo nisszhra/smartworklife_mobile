@@ -18,22 +18,26 @@ class AuthService extends GetxService {
   final Rxn<UserModel> currentUser = Rxn<UserModel>();
 
   bool get isLoggedIn => currentUser.value != null;
+  bool get isOnboarded => currentUser.value?.isOnboarded ?? false;
 
-  @override
-  Future<void> onInit() async {
-    super.onInit();
+  /// Fungsi inisialisasi yang bisa ditunggu (await) di main.dart
+  Future<AuthService> init() async {
     await _restoreSession();
+    return this;
   }
 
   /// Restore sesi dari storage saat app dibuka ulang.
   Future<void> _restoreSession() async {
     final userJson = await _storage.read(key: _userKey);
+    print("DEBUG: Memulihkan sesi user. Data ditemukan: ${userJson != null}");
+    
     if (userJson != null) {
       try {
-        currentUser.value = UserModel.fromJson(
-          jsonDecode(userJson) as Map<String, dynamic>,
-        );
-      } catch (_) {
+        final userData = jsonDecode(userJson) as Map<String, dynamic>;
+        currentUser.value = UserModel.fromJson(userData);
+        print("DEBUG: Sesi berhasil dipulihkan untuk: ${currentUser.value?.email}");
+      } catch (e) {
+        print("DEBUG: Gagal decode user data: $e");
         await clearSession();
       }
     }
@@ -41,13 +45,16 @@ class AuthService extends GetxService {
 
   /// Simpan token JWT ke secure storage.
   Future<void> saveToken(String token) async {
+    print("DEBUG: Menyimpan token baru.");
     await _storage.write(key: _tokenKey, value: token);
   }
 
   /// Simpan data user ke secure storage dan update observable.
   Future<void> saveUser(UserModel user) async {
+    print("DEBUG: Menyimpan data user: ${user.email}");
     await _storage.write(key: _userKey, value: jsonEncode(user.toJson()));
     currentUser.value = user;
+    print("DEBUG: Data user tersimpan di memory.");
   }
 
   /// Ambil token dari secure storage.
