@@ -17,16 +17,31 @@ class StretchingController extends GetxController {
   var percentage = 0.0.obs;
   var warningMessage = "Posisikan tubuh Anda di depan kamera".obs;
   var currentExercise = "".obs;
+  var reps = 0.obs;
+  final int targetReps = 8;
 
   // Exercise State
   int _counter = 0;
   bool _isMovingUp = false;
+  bool _hasTilted = false;
   double _lastNeckAngle = 0.0;
+
+  String get exerciseInstruction {
+    if (currentExercise.value == "Neck Tilt") {
+      return "Miringkan kepala Anda secara perlahan ke kiri dan ke kanan secara bergantian. Tahan di setiap sisi beberapa detik untuk merilekskan otot leher.";
+    } else if (currentExercise.value == "Shoulder Rolls") {
+      return "Angkat kedua bahu Anda mendekati telinga, lalu putar perlahan ke arah belakang dan turunkan kembali. Ulangi gerakan secara berirama.";
+    }
+    return "Lakukan gerakan peregangan secara perlahan dan teratur sesuai instruksi di layar.";
+  }
 
   @override
   void onInit() {
     super.onInit();
     currentExercise.value = Get.arguments ?? "Neck Tilt";
+    reps.value = 0;
+    _isMovingUp = false;
+    _hasTilted = false;
     _initializeCamera();
     _initializePoseDetector();
   }
@@ -111,17 +126,29 @@ class StretchingController extends GetxController {
       double angle = atan2(dy, dx) * 180 / pi;
 
       // Normalize angle: 0 is horizontal
-      // In front camera, coordinates might be mirrored or rotated
       double absAngle = angle.abs();
       
-      if (absAngle > 5) {
-        warningMessage.value = "Bagus! Tahan posisinya";
-        // Map angle 5-30 to 0-100%
-        double p = ((absAngle - 5) / 25).clamp(0.0, 1.0);
+      if (absAngle > 12) {
+        _hasTilted = true;
+        warningMessage.value = "Bagus! Sekarang tegakkan kepala Anda";
+        // Map angle 12-30 to 0.5-1.0
+        double p = 0.5 + (((absAngle - 12) / 18) * 0.5).clamp(0.0, 0.5);
         percentage.value = p;
-      } else {
+      } else if (absAngle < 4 && _hasTilted) {
+        _hasTilted = false;
+        if (reps.value < targetReps) {
+          reps.value++;
+        }
         warningMessage.value = "Miringkan leher Anda ke samping";
         percentage.value = 0.0;
+      } else {
+        if (!_hasTilted) {
+          warningMessage.value = "Miringkan leher Anda ke samping";
+          percentage.value = 0.0;
+        } else {
+          warningMessage.value = "Tahan dan perlahan kembali tegak";
+          percentage.value = 0.3;
+        }
       }
     } else {
       warningMessage.value = "Pastikan kepala dan bahu terlihat";
@@ -137,20 +164,18 @@ class StretchingController extends GetxController {
       // Use ear as reference to detect shoulder shrug (up/down)
       double dist = (leftShoulder.y - leftEar.y).abs();
       
-      // Typical distance when relaxed vs shrugged
-      // This is heuristic and depends on distance from camera
-      // Let's use a relative measure if possible
-      
       if (dist < 150) { // Shoulders are up (close to ears)
         _isMovingUp = true;
-        warningMessage.value = "Putar bahu ke belakang";
+        warningMessage.value = "Bagus! Sekarang turunkan dan putar bahu";
         percentage.value = 0.8;
       } else if (dist > 250) { // Shoulders are down
         if (_isMovingUp) {
-          // Completed one movement
           _isMovingUp = false;
+          if (reps.value < targetReps) {
+            reps.value++;
+          }
         }
-        warningMessage.value = "Angkat bahu Anda";
+        warningMessage.value = "Angkat bahu Anda ke atas";
         percentage.value = 0.2;
       }
     } else {
