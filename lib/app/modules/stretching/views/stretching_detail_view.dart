@@ -130,79 +130,27 @@ class StretchingDetailView extends GetView<StretchingController> {
                       )),
                       const SizedBox(height: 20),
 
-                      // Nama Gerakan
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          color: Color(0xFF0056B3),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        'Peregangan Leher & Bahu',
-                        style: TextStyle(
-                          color: Color(0xFF4A5568),
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Informasi Gerakan (Static instructions)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.45),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.white.withOpacity(0.3)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Row(
-                              children: [
-                                Icon(Icons.info_outline, size: 18, color: Color(0xFF0056B3)),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Informasi Gerakan',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0056B3),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              controller.exerciseInstruction,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.4,
-                                color: Color(0xFF2D3748),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Repetisi / Pengulangan Gerakan
+                      // Title & Repetisi Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.refresh_rounded, size: 20, color: Color(0xFF0056B3)),
-                              SizedBox(width: 8),
                               Text(
-                                'Repetisi Gerakan',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                title,
+                                style: const TextStyle(
                                   color: Color(0xFF0056B3),
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Text(
+                                'Peregangan Leher & Bahu',
+                                style: TextStyle(
+                                  color: Color(0xFF4A5568),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],

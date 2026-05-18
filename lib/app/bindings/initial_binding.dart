@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:worklife_mobile/app/data/providers/auth_provider.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
+import 'package:worklife_mobile/app/modules/main/controllers/main_controller.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -10,5 +11,6 @@ class InitialBinding extends Bindings {
       AuthRepositoryImpl(Get.find<AuthProvider>()),
       permanent: true,
     );
+    Get.put<MainController>(MainController(), permanent: true);
   }
 }

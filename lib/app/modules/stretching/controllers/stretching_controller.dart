@@ -25,6 +25,7 @@ class StretchingController extends GetxController {
   bool _isMovingUp = false;
   bool _hasTilted = false;
   double _lastNeckAngle = 0.0;
+  final List<double> _shoulderRatioHistory = [];
 
   String get exerciseInstruction {
     if (currentExercise.value == "Neck Tilt") {
@@ -42,6 +43,7 @@ class StretchingController extends GetxController {
     reps.value = 0;
     _isMovingUp = false;
     _hasTilted = false;
+    _shoulderRatioHistory.clear();
     _initializeCamera();
     _initializePoseDetector();
   }
@@ -159,24 +161,98 @@ class StretchingController extends GetxController {
     final leftShoulder = pose.landmarks[PoseLandmarkType.leftShoulder];
     final rightShoulder = pose.landmarks[PoseLandmarkType.rightShoulder];
     final leftEar = pose.landmarks[PoseLandmarkType.leftEar];
+    final rightEar = pose.landmarks[PoseLandmarkType.rightEar];
 
-    if (leftShoulder != null && rightShoulder != null && leftEar != null) {
-      // Use ear as reference to detect shoulder shrug (up/down)
-      double dist = (leftShoulder.y - leftEar.y).abs();
-      
-      if (dist < 150) { // Shoulders are up (close to ears)
-        _isMovingUp = true;
-        warningMessage.value = "Bagus! Sekarang turunkan dan putar bahu";
-        percentage.value = 0.8;
-      } else if (dist > 250) { // Shoulders are down
+    if (leftShoulder != null && rightShoulder != null) {
+      // Calculate shoulder width in pixels as baseline reference to make it size-invariant
+      double dx = leftShoulder.x - rightShoulder.x;
+      double dy = leftShoulder.y - rightShoulder.y;
+      double shoulderWidth = sqrt(dx * dx + dy * dy);
+      if (shoulderWidth < 1.0) shoulderWidth = 1.0;
+
+      double? leftDist;
+      if (leftEar != null) {
+        leftDist = leftShoulder.y - leftEar.y;
+      }
+
+      double? rightDist;
+      if (rightEar != null) {
+        rightDist = rightShoulder.y - rightEar.y;
+      }
+
+      double avgDist;
+      if (leftDist != null && rightDist != null) {
+        avgDist = (leftDist + rightDist) / 2.0;
+      } else if (leftDist != null) {
+        avgDist = leftDist;
+      } else if (rightDist != null) {
+        avgDist = rightDist;
+      } else {
+        warningMessage.value = "Pastikan kepala terlihat jelas";
+        percentage.value = 0.0;
+        return;
+      }
+
+      // Normalize ear-to-shoulder vertical distance by shoulder width
+      double ratio = avgDist / shoulderWidth;
+
+      // Keep a rolling history of the ratio to dynamically adapt to the user's posture, neck size, and camera distance.
+      _shoulderRatioHistory.add(ratio);
+      if (_shoulderRatioHistory.length > 90) { // Keep last 90 frames (~3-6 seconds)
+        _shoulderRatioHistory.removeAt(0);
+      }
+
+      // Find min and max in the window to establish dynamic range
+      double winMin = _shoulderRatioHistory.reduce(min);
+      double winMax = _shoulderRatioHistory.reduce(max);
+      double range = winMax - winMin;
+
+      // Noise threshold: if range is too small, user is static or it's just pixel noise
+      const double minMovementRange = 0.07;
+
+      if (range < minMovementRange) {
+        // Not enough active movement detected yet, prompt the user
         if (_isMovingUp) {
-          _isMovingUp = false;
-          if (reps.value < targetReps) {
-            reps.value++;
+          warningMessage.value = "Turunkan bahu Anda sepenuhnya";
+        } else {
+          warningMessage.value = "Angkat bahu Anda ke atas mendekati telinga";
+        }
+        percentage.value = 0.0;
+      } else {
+        // Calculate where the current ratio sits in the observed min-max range
+        double relativePos = (ratio - winMin) / range; // 0.0 = shoulders up (min dist), 1.0 = shoulders down (max dist)
+
+        // Thresholds:
+        // relativePos < 0.35 means shoulders are up (near the observed minimum distance)
+        // relativePos > 0.65 means shoulders are down (near the observed maximum distance)
+        if (relativePos < 0.35) {
+          _isMovingUp = true;
+          warningMessage.value = "Bagus! Sekarang turunkan dan putar bahu";
+          
+          // Map progress from UP (0.0 to 0.35) to percentage (0.5 to 1.0)
+          double p = 0.5 + ((0.35 - relativePos) / 0.35 * 0.5).clamp(0.0, 0.5);
+          percentage.value = p;
+        } else if (relativePos > 0.65) {
+          if (_isMovingUp) {
+            _isMovingUp = false;
+            if (reps.value < targetReps) {
+              reps.value++;
+            }
+          }
+          warningMessage.value = "Angkat bahu Anda ke atas mendekati telinga";
+          percentage.value = 0.1;
+        } else {
+          // Transition / intermediate state
+          if (_isMovingUp) {
+            warningMessage.value = "Putar leher/bahu Anda ke belakang dan turunkan";
+            percentage.value = 0.4;
+          } else {
+            warningMessage.value = "Angkat bahu Anda lebih tinggi";
+            // Map progress from DOWN (0.65 to 1.0) to percentage (0.1 to 0.5)
+            double p = 0.1 + ((1.0 - relativePos) / 0.35 * 0.4).clamp(0.0, 0.4);
+            percentage.value = p;
           }
         }
-        warningMessage.value = "Angkat bahu Anda ke atas";
-        percentage.value = 0.2;
       }
     } else {
       warningMessage.value = "Pastikan bahu terlihat jelas";
