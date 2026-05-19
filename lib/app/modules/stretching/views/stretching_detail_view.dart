@@ -21,9 +21,15 @@ class StretchingDetailView extends GetView<StretchingController> {
           Positioned.fill(
             child: Obx(() {
               if (controller.isCameraInitialized.value) {
-                return AspectRatio(
-                  aspectRatio: controller.cameraController!.value.aspectRatio,
-                  child: CameraPreview(controller.cameraController!),
+                return ClipRect(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: Get.width,
+                      height: Get.width * controller.cameraController!.value.aspectRatio,
+                      child: CameraPreview(controller.cameraController!),
+                    ),
+                  ),
                 );
               } else {
                 return const Center(
@@ -77,193 +83,150 @@ class StretchingDetailView extends GetView<StretchingController> {
             ),
           ),
 
-          // --- Skeleton Overlay (Frame Putih) ---
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 100),
-              width: Get.width * 0.7,
-              height: Get.height * 0.5,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                        width: 2,
-                        style: BorderStyle.none,
-                      ),
-                    ),
-                    child: CustomPaint(
-                      painter: DashedFramePainter(),
-                      child: Container(),
-                    ),
-                  ),
-                  Positioned(
-                    top: 50,
-                    child: Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 150,
-                    child: Container(
-                      width: 160,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
           // --- Bottom Panel ---
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              width: Get.width,
-              padding: EdgeInsets.fromLTRB(24, 24, 24, Get.mediaQuery.padding.bottom + 24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Instruksi / Peringatan Box
-                  Obx(() => Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: controller.percentage.value > 0.1 
-                          ? const Color(0xFFE8F5E9) 
-                          : const Color(0xFFFFF3E0),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: controller.percentage.value > 0.1 ? Colors.green : Colors.orange,
-                        width: 1,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        controller.warningMessage.value,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: controller.percentage.value > 0.1 ? Colors.green[800] : Colors.orange[900],
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )),
-                  const SizedBox(height: 24),
-
-                  // Judul
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Color(0xFF0056B3),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  width: Get.width,
+                  padding: EdgeInsets.fromLTRB(24, 24, 24, Get.mediaQuery.padding.bottom + 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.55), // Transparan saja
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                    border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
                   ),
-                  const Text(
-                    'Peregangan Leher & Bahu',
-                    style: TextStyle(
-                      color: Color(0xFF70757A),
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Progress & Percentage
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Instruksi / Peringatan Box (Real-time feedback)
+                      Obx(() => Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: controller.isPoseDetected.value 
+                              ? const Color(0xFFE8F5E9).withOpacity(0.85) 
+                              : const Color(0xFFFFF3E0).withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: controller.isPoseDetected.value ? Colors.green : Colors.orange,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            controller.warningMessage.value,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: controller.isPoseDetected.value ? Colors.green[800] : Colors.orange[900],
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )),
+                      const SizedBox(height: 20),
+
+                      // Title & Repetisi Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: const TextStyle(
+                                  color: Color(0xFF0056B3),
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Text(
+                                'Peregangan Leher & Bahu',
+                                style: TextStyle(
+                                  color: Color(0xFF4A5568),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Obx(() {
+                            final completed = controller.reps.value >= controller.targetReps;
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: completed 
+                                    ? Colors.green.withOpacity(0.15) 
+                                    : const Color(0xFF0056B3).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: completed ? Colors.green : const Color(0xFF0056B3),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Text(
+                                '${controller.reps.value} / ${controller.targetReps}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: completed ? Colors.green[800] : const Color(0xFF0056B3),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+
+                      // Buttons Row
                       Row(
                         children: [
-                          Icon(Icons.auto_graph, size: 18, color: Colors.blue[700]),
-                          const SizedBox(width: 8),
-                          Text(
-                            'PRESENTASE GERAKAN',
-                            style: TextStyle(
-                              color: Colors.blue[900],
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
+                          InkWell(
+                            onTap: () => Get.back(),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.black.withOpacity(0.08)),
+                              ),
+                              child: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4)),
                             ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Obx(() {
+                              final isCompleted = controller.reps.value >= controller.targetReps;
+                              return ElevatedButton(
+                                onPressed: isCompleted ? () => Get.back() : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0056B3),
+                                  disabledBackgroundColor: const Color(0xFF0056B3).withOpacity(0.3),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  elevation: isCompleted ? 2 : 0,
+                                ),
+                                child: Text(
+                                  'Selesai',
+                                  style: TextStyle(
+                                    color: isCompleted ? Colors.white : Colors.white.withOpacity(0.6),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            }),
                           ),
                         ],
                       ),
-                      Obx(() => Text(
-                        '${(controller.percentage.value * 100).toInt()}%',
-                        style: const TextStyle(
-                          color: Color(0xFF0056B3),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
                     ],
                   ),
-                  const SizedBox(height: 12),
-
-                  // Progress Bar
-                  Obx(() => ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: controller.percentage.value,
-                      minHeight: 12,
-                      backgroundColor: const Color(0xFFE8EDF7),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        controller.percentage.value > 0.8 ? Colors.green : Colors.blue[700]!
-                      ),
-                    ),
-                  )),
-                  const SizedBox(height: 40),
-
-                  // Buttons Row
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8EAED),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(Icons.arrow_back_ios, color: Color(0xFF005AB4)),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => Get.back(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0056B3),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            elevation: 0,
-                          ),
-                          child: const Text(
-                            'Selesai',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -271,37 +234,4 @@ class StretchingDetailView extends GetView<StretchingController> {
       ),
     );
   }
-}
-
-// Painter untuk membuat garis putus-putus di area preview
-class DashedFramePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.5)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    const dashWidth = 8;
-    const dashSpace = 6;
-    
-    final path = Path();
-    // Membuat lengkungan atas (U-shape terbalik)
-    path.moveTo(0, size.height);
-    path.quadraticBezierTo(size.width / 2, -size.height * 0.2, size.width, size.height);
-
-    for (PathMetric pathMetric in path.computeMetrics()) {
-      double distance = 0;
-      while (distance < pathMetric.length) {
-        canvas.drawPath(
-          pathMetric.extractPath(distance, distance + dashWidth),
-          paint,
-        );
-        distance += dashWidth + dashSpace;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
