@@ -88,8 +88,8 @@ class ProfileController extends GetxController {
       email.value = user.email;
       gender.value = user.gender ?? 'Laki-laki';
       age.value = user.age?.toString() ?? '';
-      weight.value = user.weightKg?.toString() ?? '';
-      height.value = user.heightCm?.toString() ?? '';
+      weight.value = user.weightKg == null ? '' : (user.weightKg! % 1 == 0 ? user.weightKg!.toInt().toString() : user.weightKg!.toString());
+      height.value = user.heightCm == null ? '' : (user.heightCm! % 1 == 0 ? user.heightCm!.toInt().toString() : user.heightCm!.toString());
       industry.value = user.industry ?? 'Teknologi';
       startTime.value = user.workStartTime ?? '08:00';
       endTime.value = user.workEndTime ?? '17:00';

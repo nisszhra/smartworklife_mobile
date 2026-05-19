@@ -138,9 +138,15 @@ class AuthRepositoryImpl implements AuthRepository {
         weight: weight,
         height: height,
       );
+      print("DEBUG: updateProfile response data: ${res.data}");
       return UserModel.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
+      print("DEBUG: updateProfile DioException: ${e.message}, response: ${e.response?.data}");
       throw _handleError(e);
+    } catch (e, stackTrace) {
+      print("DEBUG: updateProfile Unexpected Error: $e");
+      print("DEBUG: StackTrace: $stackTrace");
+      throw Exception('Format data response tidak valid: $e');
     }
   }
 
