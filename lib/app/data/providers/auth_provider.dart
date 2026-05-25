@@ -77,4 +77,24 @@ class AuthProvider {
       if (height != null) 'height_cm': height,
     });
   }
+
+  Future<dio.Response> onboarding({
+    String? gender,
+    int? age,
+    String? industry,
+    String? startTime,
+    String? endTime,
+    double? weight,
+    double? height,
+  }) {
+    return _dio.put('/auth/onboarding', data: {
+      if (gender != null) 'gender': gender,
+      if (age != null) 'age': age,
+      if (industry != null) 'industry': industry,
+      if (startTime != null) 'work_start_time': startTime,
+      if (endTime != null) 'work_end_time': endTime,
+      if (weight != null) 'weight_kg': weight,
+      if (height != null) 'height_cm': height,
+    });
+  }
 }

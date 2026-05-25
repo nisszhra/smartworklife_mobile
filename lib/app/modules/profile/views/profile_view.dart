@@ -224,7 +224,7 @@ class ProfileView extends GetView<ProfileController> {
               controller: controller.emailController,
               icon: Icons.email_outlined,
               enabled: false,
-              helperText: 'Email cannot be changed manually.',
+              //helperText: 'Email cannot be changed manually.',//
             ),
           ],
         ),

@@ -35,6 +35,16 @@ abstract class AuthRepository {
     double? weight,
     double? height,
   });
+
+  Future<UserModel> onboarding({
+    String? gender,
+    int? age,
+    String? industry,
+    String? startTime,
+    String? endTime,
+    double? weight,
+    double? height,
+  });
 }
 
 /// Implementasi konkret AuthRepository menggunakan AuthProvider (Dio).
@@ -150,8 +160,52 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<UserModel> onboarding({
+    String? gender,
+    int? age,
+    String? industry,
+    String? startTime,
+    String? endTime,
+    double? weight,
+    double? height,
+  }) async {
+    try {
+      final res = await _provider.onboarding(
+        gender: gender,
+        age: age,
+        industry: industry,
+        startTime: startTime,
+        endTime: endTime,
+        weight: weight,
+        height: height,
+      );
+      print("DEBUG: onboarding response data: ${res.data}");
+      return UserModel.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      print("DEBUG: onboarding DioException: ${e.message}, response: ${e.response?.data}");
+      throw _handleError(e);
+    } catch (e, stackTrace) {
+      print("DEBUG: onboarding Unexpected Error: $e");
+      print("DEBUG: StackTrace: $stackTrace");
+      throw Exception('Format data response tidak valid: $e');
+    }
+  }
+
   /// Ekstrak pesan error dari response backend (field 'detail').
   Exception _handleError(DioException e) {
+    print('[AuthRepository] DioException type: ${e.type}');
+    print('[AuthRepository] Message: ${e.message}');
+    print('[AuthRepository] Response: ${e.response?.statusCode} - ${e.response?.data}');
+
+    // Koneksi gagal (IP salah, server mati, atau firewall)
+    if (e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout) {
+      return Exception('Tidak dapat terhubung ke server. Pastikan HP terhubung ke WiFi yang sama.');
+    }
+
     final data = e.response?.data;
     String message = 'Terjadi kesalahan. Silakan coba lagi.';
     if (data is Map<String, dynamic> && data.containsKey('detail')) {

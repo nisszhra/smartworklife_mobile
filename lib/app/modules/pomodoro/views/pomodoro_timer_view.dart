@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/pomodoro_controller.dart';
-import '../../stretching/views/stretching_detail_view.dart';
+import '../../../routes/app_pages.dart';
 
 class PomodoroTimerView extends GetView<PomodoroController> {
   const PomodoroTimerView({super.key});
@@ -348,7 +348,7 @@ class PomodoroTimerView extends GetView<PomodoroController> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => Get.to(() => const StretchingDetailView(), arguments: 'Neck Roll'),
+          onTap: () => Get.toNamed(Routes.STRETCHING_DETAIL, arguments: 'Neck Tilt'),
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.all(20),

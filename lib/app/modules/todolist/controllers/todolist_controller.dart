@@ -1,85 +1,150 @@
 import 'package:get/get.dart';
 
-// ─── Model ──────────────────────────────────────────────────────────────────
-class Task {
-  String id;
-  String title;
-  String description;
-  String time;
-  bool isCompleted;
-  bool isPriority; // ← field baru
+import 'package:worklife_mobile/app/data/models/todo_model.dart';
+import 'package:worklife_mobile/app/data/repositories/todo_repository.dart';
 
-  Task({
-    required this.id,
-    required this.title,
-    this.description = '',
-    this.time = '',
-    this.isCompleted = false,
-    this.isPriority = false, // ← default false agar data lama tetap valid
-  });
-}
+// Re-export TodoModel agar view bisa import dari sini (backward compat)
+export 'package:worklife_mobile/app/data/models/todo_model.dart';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
 class TodolistController extends GetxController {
-  final tasks = <Task>[
-    Task(id: '1', title: 'Laporan Strategi Q4',       description: 'Menyusun laporan target Q4',   time: '14:00'),
-    Task(id: '2', title: 'Review Desain Nexus UI',    description: 'Feedback untuk tim desain',    time: '16:30'),
-    Task(id: '3', title: 'Update Dokumentasi Produk', description: 'Revisi docs versi 2.1',        time: '10:00'),
-    Task(id: '4', title: 'Meeting Mingguan',          description: 'Progress sync mingguan',       time: '09:00', isCompleted: true),
-    Task(id: '5', title: 'Kirim Email Invoices',      description: 'Invoices bulan April',         time: 'Kemarin', isCompleted: true),
-  ].obs;
+  final TodoRepository _repository;
 
+  TodolistController(this._repository);
+
+  final tasks = <TodoModel>[].obs;
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
   final isCompletedExpanded = true.obs;
 
-  // ── Tambah tugas (named parameters agar konsisten dengan view) ─────────────
-  void addTask({
-    required String title,
-    String description = '',
-    String time = '',
-    bool isPriority = false,
-  }) {
-    tasks.add(Task(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
-      description: description,
-      time: time,
-      isPriority: isPriority,
-    ));
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTodos();
   }
 
-  // ── Update tugas (named parameters + isPriority) ───────────────────────────
-  void updateTask({
+  // ── Ambil semua tugas dari backend ─────────────────────────────────────────
+  Future<void> fetchTodos() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final result = await _repository.getTodos();
+      tasks.assignAll(result);
+    } catch (e) {
+      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ── Tambah tugas ───────────────────────────────────────────────────────────
+  Future<void> addTask({
+    required String title,
+    String description = '',
+    bool isPriority = false,
+    DateTime? deadline,
+    String? taskDate,
+  }) async {
+    try {
+      final newTask = await _repository.createTodo(
+        title: title,
+        description: description.isNotEmpty ? description : null,
+        priority: isPriority ? 'important' : 'normal',
+        deadline: deadline,
+        taskDate: taskDate,
+      );
+      tasks.insert(0, newTask);
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        e.toString().replaceFirst('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  // ── Update tugas ───────────────────────────────────────────────────────────
+  Future<void> updateTask({
     required String id,
     required String title,
     String description = '',
-    String time = '',
     bool? isPriority,
-  }) {
-    final index = tasks.indexWhere((t) => t.id == id);
-    if (index != -1) {
-      tasks[index] = Task(
-        id: id,
+    DateTime? deadline,
+    String? taskDate,
+  }) async {
+    try {
+      final updated = await _repository.updateTodo(
+        id,
         title: title,
-        description: description,
-        time: time,
-        isCompleted: tasks[index].isCompleted,
-        // Jika isPriority tidak dikirim, pertahankan nilai lama
-        isPriority: isPriority ?? tasks[index].isPriority,
+        description: description.isNotEmpty ? description : null,
+        priority: isPriority != null
+            ? (isPriority ? 'important' : 'normal')
+            : null,
+        deadline: deadline,
+        taskDate: taskDate,
+      );
+      final index = tasks.indexWhere((t) => t.id == id);
+      if (index != -1) {
+        tasks[index] = updated;
+        tasks.refresh();
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        e.toString().replaceFirst('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
   // ── Hapus tugas ────────────────────────────────────────────────────────────
-  void deleteTask(String id) {
-    tasks.removeWhere((t) => t.id == id);
+  Future<void> deleteTask(String id) async {
+    // Optimistic: hapus dulu dari UI
+    final index = tasks.indexWhere((t) => t.id == id);
+    TodoModel? removed;
+    if (index != -1) {
+      removed = tasks[index];
+      tasks.removeAt(index);
+    }
+
+    try {
+      await _repository.deleteTodo(id);
+    } catch (e) {
+      // Rollback jika gagal
+      if (removed != null) tasks.insert(index, removed);
+      Get.snackbar(
+        'Gagal menghapus',
+        e.toString().replaceFirst('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   // ── Toggle selesai / belum ─────────────────────────────────────────────────
-  void toggleTaskStatus(String id) {
+  Future<void> toggleTaskStatus(String id) async {
     final index = tasks.indexWhere((t) => t.id == id);
-    if (index != -1) {
-      tasks[index].isCompleted = !tasks[index].isCompleted;
+    if (index == -1) return;
+
+    final currentTask = tasks[index];
+    final newStatus = currentTask.isCompleted ? 'pending' : 'done';
+
+    // Optimistic update
+    tasks[index] = currentTask.copyWith(status: newStatus);
+    tasks.refresh();
+
+    try {
+      final updated = await _repository.updateTodo(id, status: newStatus);
+      tasks[index] = updated;
       tasks.refresh();
+    } catch (e) {
+      // Rollback
+      tasks[index] = currentTask;
+      tasks.refresh();
+      Get.snackbar(
+        'Gagal',
+        e.toString().replaceFirst('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }

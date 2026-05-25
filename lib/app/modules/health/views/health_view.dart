@@ -526,6 +526,8 @@ class HealthView extends GetView<HealthController> {
     );
   }
 
+
+
   // ─── EDIT BMI MODAL ────────────────────────────────────────────────
   void _showEditModal(BuildContext context) {
     controller.heightTextController.text =

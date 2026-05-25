@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../data/models/todo_model.dart';
 import '../../../routes/app_pages.dart';
 import '../../todolist/controllers/todolist_controller.dart';
 
@@ -86,7 +87,7 @@ class HomeView extends GetView<HomeController> {
                       return Column(
                         children: activeTasks.asMap().entries.map((entry) {
                           int idx = entry.key;
-                          Task task = entry.value;
+                          TodoModel task = entry.value;
                           return Column(
                             children: [
                               _buildTodoCard(task, todolistController),
@@ -204,7 +205,7 @@ class HomeView extends GetView<HomeController> {
     ));
   }
 
-  Widget _buildTodoCard(Task task, TodolistController todolistController) {
+  Widget _buildTodoCard(TodoModel task, TodolistController todolistController) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Row(
@@ -263,7 +264,7 @@ class HomeView extends GetView<HomeController> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            task.time,
+                            task.timeLabel,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF5F6368),
@@ -307,11 +308,12 @@ class HomeView extends GetView<HomeController> {
   }
 
   // --- Bottom Sheet Logic (Copied from TodolistView for consistency) ---
-  void _showEditTaskBottomSheet(Task task, TodolistController controller) {
+  void _showEditTaskBottomSheet(TodoModel task, TodolistController controller) {
     final titleController = TextEditingController(text: task.title);
     final descController = TextEditingController(text: task.description);
-    final selectedDate = DateTime.now().obs;
-    final selectedTime = TimeOfDay.now().obs;
+    final initDate = task.deadline?.toLocal() ?? DateTime.now();
+    final selectedDate = initDate.obs;
+    final selectedTime = TimeOfDay(hour: initDate.hour, minute: initDate.minute).obs;
     final isPriority = task.isPriority.obs;
 
     Get.bottomSheet(
@@ -324,13 +326,15 @@ class HomeView extends GetView<HomeController> {
         isPriority: isPriority,
         onSave: () {
           if (titleController.text.trim().isEmpty) return;
-          final timeLabel = '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year} ${selectedTime.value.format(Get.context!)}';
+          final d = selectedDate.value;
+          final t = selectedTime.value;
+          final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
           controller.updateTask(
             id: task.id,
             title: titleController.text.trim(),
             description: descController.text.trim(),
-            time: timeLabel,
             isPriority: isPriority.value,
+            deadline: deadline,
           );
           Get.back();
         },
@@ -349,164 +353,172 @@ class HomeView extends GetView<HomeController> {
     required RxBool isPriority,
     required VoidCallback onSave,
   }) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: Get.mediaQuery.viewInsets.bottom),
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
+    return Builder(
+      builder: (context) {
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        return Padding(
+          padding: EdgeInsets.only(bottom: keyboardHeight),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Get.back(),
-                  icon: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.close, size: 18, color: Colors.black54),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildLabel('Judul Tugas'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: titleController,
-              decoration: _getInputDecoration('Apa yang ingin Anda kerjakan?'),
-            ),
-            const SizedBox(height: 20),
-            _buildLabel('Deskripsi'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: descController,
-              maxLines: 2,
-              decoration: _getInputDecoration('Tambahkan catatan detail...'),
-            ),
-            const SizedBox(height: 20),
-            _buildLabel('Tenggat Waktu'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: Obx(() => GestureDetector(
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: Get.context!,
-                        initialDate: selectedDate.value,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime(2100),
-                      );
-                      if (picked != null) selectedDate.value = picked;
-                    },
-                    child: _buildDateTimePickerBox(
-                      Icons.calendar_today,
-                      '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
-                    ),
-                  )),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Obx(() => GestureDetector(
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: Get.context!,
-                        initialTime: selectedTime.value,
-                      );
-                      if (picked != null) selectedTime.value = picked;
-                    },
-                    child: _buildDateTimePickerBox(
-                      Icons.access_time,
-                      selectedTime.value.format(Get.context!),
-                    ),
-                  )),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildLabel('Prioritas'),
-            const SizedBox(height: 8),
-            Obx(() => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.priority_high,
-                      size: 20,
-                      color: isPriority.value ? Colors.red : Colors.grey),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Tandai sebagai Penting',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isPriority.value ? Colors.black87 : Colors.grey[600],
-                        fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
-                  Switch(
-                    value: isPriority.value,
-                    onChanged: (val) => isPriority.value = val,
-                    activeColor: Colors.blue,
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Get.back(),
+                        icon: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 18, color: Colors.black54),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildLabel('Judul Tugas'),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: titleController,
+                    decoration: _getInputDecoration('Apa yang ingin Anda kerjakan?'),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildLabel('Deskripsi'),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: descController,
+                    maxLines: 2,
+                    decoration: _getInputDecoration('Tambahkan catatan detail...'),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildLabel('Tenggat Waktu'),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Obx(() => GestureDetector(
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: Get.context!,
+                              initialDate: selectedDate.value,
+                              firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) selectedDate.value = picked;
+                          },
+                          child: _buildDateTimePickerBox(
+                            Icons.calendar_today,
+                            '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
+                          ),
+                        )),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Obx(() => GestureDetector(
+                          onTap: () async {
+                            final picked = await showTimePicker(
+                              context: Get.context!,
+                              initialTime: selectedTime.value,
+                            );
+                            if (picked != null) selectedTime.value = picked;
+                          },
+                          child: _buildDateTimePickerBox(
+                            Icons.access_time,
+                            selectedTime.value.format(Get.context!),
+                          ),
+                        )),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  _buildLabel('Prioritas'),
+                  const SizedBox(height: 8),
+                  Obx(() => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.priority_high,
+                            size: 20,
+                            color: isPriority.value ? Colors.red : Colors.grey),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Tandai sebagai Penting',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isPriority.value ? Colors.black87 : Colors.grey[600],
+                              fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Switch(
+                          value: isPriority.value,
+                          onChanged: (val) => isPriority.value = val,
+                          activeColor: Colors.blue,
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: onSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Simpan Tugas',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            )),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: onSave,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Simpan Tugas',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

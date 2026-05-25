@@ -96,7 +96,7 @@ class OnboardingController extends GetxController {
     
     try {
       // 1. Save to Backend Database
-      final updatedUser = await _repository.updateProfile(
+      final updatedUser = await _repository.onboarding(
         gender: selectedGender.value,
         age: int.tryParse(ageController.text),
         industry: selectedIndustry.value,
