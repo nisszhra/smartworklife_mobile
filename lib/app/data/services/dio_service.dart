@@ -54,6 +54,11 @@ class DioService extends GetxService {
 
   /// Handle 401 → logout dan redirect ke login.
   void _onError(DioException err, ErrorInterceptorHandler handler) {
+    // Debug log agar error terlihat di console
+    print('[DioService] ERROR: ${err.type} | ${err.message}');
+    print('[DioService] URL: ${err.requestOptions.uri}');
+    print('[DioService] Response: ${err.response?.statusCode} - ${err.response?.data}');
+
     if (err.response?.statusCode == 401) {
       try {
         final authService = Get.find<AuthService>();
