@@ -201,9 +201,26 @@ class ProfileController extends GetxController {
   void saveProfile() async {
     isSaving.value = true;
     
+    // Validasi Full Name (harus minimal 2 kata)
+    final fullNameText = fullNameController.text.trim();
+    final nameParts = fullNameText.split(RegExp(r'\s+'));
+    if (fullNameText.isEmpty || nameParts.length < 2) {
+      isSaving.value = false;
+      Get.snackbar(
+        'Validasi',
+        'Nama Lengkap harus terdiri dari minimal 2 kata',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
     try {
       // 1. Update ke Backend Database
       final updatedUser = await _repository.updateProfile(
+        fullName: fullNameText,
         gender: gender.value,
         age: int.tryParse(ageController.text),
         industry: industryController.text,

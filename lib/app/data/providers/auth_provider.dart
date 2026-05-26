@@ -59,6 +59,7 @@ class AuthProvider {
   }
 
   Future<dio.Response> updateProfile({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -68,6 +69,7 @@ class AuthProvider {
     double? height,
   }) {
     return _dio.put('/auth/profile', data: {
+      if (fullName != null) 'full_name': fullName,
       if (gender != null) 'gender': gender,
       if (age != null) 'age': age,
       if (industry != null) 'industry': industry,
@@ -95,6 +97,12 @@ class AuthProvider {
       if (endTime != null) 'work_end_time': endTime,
       if (weight != null) 'weight_kg': weight,
       if (height != null) 'height_cm': height,
+    });
+  }
+
+  Future<dio.Response> googleAuth(String idToken) {
+    return _dio.post('/auth/google', data: {
+      'id_token': idToken,
     });
   }
 }

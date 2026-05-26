@@ -8,6 +8,12 @@ abstract class HydrationRepository {
   Future<HydrationLogModel> addLog(double amountMl);
   Future<void> deleteLog(String logId);
   Future<HydrationSettingModel> getSettings();
+  Future<HydrationSettingModel> updateSettings({
+    int? reminderIntervalMinutes,
+    bool? reminderEnabled,
+    String? reminderStartTime,
+    String? reminderEndTime,
+  });
 }
 
 class HydrationRepositoryImpl implements HydrationRepository {
@@ -53,6 +59,27 @@ class HydrationRepositoryImpl implements HydrationRepository {
       throw _handleError(e);
     }
   }
+
+  @override
+  Future<HydrationSettingModel> updateSettings({
+    int? reminderIntervalMinutes,
+    bool? reminderEnabled,
+    String? reminderStartTime,
+    String? reminderEndTime,
+  }) async {
+    try {
+      final res = await _provider.updateSettings(
+        reminderIntervalMinutes: reminderIntervalMinutes,
+        reminderEnabled: reminderEnabled,
+        reminderStartTime: reminderStartTime,
+        reminderEndTime: reminderEndTime,
+      );
+      return HydrationSettingModel.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
 
   Exception _handleError(DioException e) {
     print('[HydrationRepo] Error: ${e.type} | ${e.message}');
