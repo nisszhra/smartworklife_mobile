@@ -5,6 +5,7 @@ import 'package:worklife_mobile/app/data/models/user_model.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/repositories/hydration_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
+import 'package:worklife_mobile/app/data/services/notification_service.dart';
 
 class HealthController extends GetxController {
   final AuthRepository _repository;
@@ -26,6 +27,8 @@ class HealthController extends GetxController {
   final hydrationLogs = <HydrationLogModel>[].obs;
   final isHydrationLoading = false.obs;
   final isLoggingWater = false.obs;
+  final hydrationSettings = Rxn<HydrationSettingModel>();
+  final isUpdatingSettings = false.obs;
 
   // Hydration schedule (UI lama)
   final scheduleItems = <Map<String, dynamic>>[].obs;
@@ -109,6 +112,7 @@ class HealthController extends GetxController {
       hydrationPercentage.value = data.progressPercent.round().clamp(0, 100);
       hydrationLogs.assignAll(data.logs);
       
+      hydrationSettings.value = settings;
       _generateSchedule(settings, data.logs.length);
     } catch (e) {
       // Jika backend belum ada data BMI (404), gunakan default
@@ -120,11 +124,6 @@ class HealthController extends GetxController {
   }
 
   void _generateSchedule(HydrationSettingModel settings, int completedCount) {
-    if (!settings.reminderEnabled) {
-      scheduleItems.clear();
-      return;
-    }
-
     final startParts = settings.reminderStartTime.split(':');
     final endParts = settings.reminderEndTime.split(':');
 
@@ -161,6 +160,17 @@ class HealthController extends GetxController {
     }
 
     scheduleItems.value = items;
+
+    // --- Schedule Notifications ---
+    final notificationService = Get.find<NotificationService>();
+    notificationService.cancelAllHydrationNotifications().then((_) {
+      if (settings.reminderEnabled) {
+        for (int i = 0; i < items.length; i++) {
+          final timeStr = items[i]['time'];
+          notificationService.scheduleHydrationNotification(i, timeStr);
+        }
+      }
+    });
   }
 
   // ── Log minum air ke backend ──────────────────────────────────────────
@@ -298,5 +308,36 @@ class HealthController extends GetxController {
     if (bmiResult.value < 25.0) return const Color(0xFF4CAF50);
     if (bmiResult.value < 30.0) return const Color(0xFFFFA726);
     return const Color(0xFFEF5350);
+  }
+
+  Future<void> updateHydrationSettings({
+    int? reminderIntervalMinutes,
+    bool? reminderEnabled,
+    String? reminderStartTime,
+    String? reminderEndTime,
+  }) async {
+    if (isUpdatingSettings.value) return;
+    isUpdatingSettings.value = true;
+    try {
+      final updated = await _hydrationRepository.updateSettings(
+        reminderIntervalMinutes: reminderIntervalMinutes,
+        reminderEnabled: reminderEnabled,
+        reminderStartTime: reminderStartTime,
+        reminderEndTime: reminderEndTime,
+      );
+      if (isClosed) return;
+      hydrationSettings.value = updated;
+      
+      // Reload & regenerate schedule
+      await fetchTodayHydration();
+      
+      Get.snackbar('Berhasil', 'Pengaturan pengingat hidrasi telah diperbarui.');
+    } catch (e) {
+      if (!isClosed) {
+        Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+      }
+    } finally {
+      if (!isClosed) isUpdatingSettings.value = false;
+    }
   }
 }

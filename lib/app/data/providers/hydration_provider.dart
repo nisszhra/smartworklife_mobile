@@ -29,8 +29,32 @@ class HydrationProvider {
     return _dio.get('/health/hydration/settings');
   }
 
+  /// PUT /health/hydration/settings
+  Future<dio.Response> updateSettings({
+    int? reminderIntervalMinutes,
+    bool? reminderEnabled,
+    String? reminderStartTime,
+    String? reminderEndTime,
+  }) {
+    final data = <String, dynamic>{};
+    if (reminderIntervalMinutes != null) {
+      data['reminder_interval_minutes'] = reminderIntervalMinutes;
+    }
+    if (reminderEnabled != null) {
+      data['reminder_enabled'] = reminderEnabled;
+    }
+    if (reminderStartTime != null) {
+      data['reminder_start_time'] = reminderStartTime;
+    }
+    if (reminderEndTime != null) {
+      data['reminder_end_time'] = reminderEndTime;
+    }
+    return _dio.put('/health/hydration/settings', data: data);
+  }
+
   /// GET /health/bmi
   Future<dio.Response> getBmi() {
     return _dio.get('/health/bmi');
   }
 }
+

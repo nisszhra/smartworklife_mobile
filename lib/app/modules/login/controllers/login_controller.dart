@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
@@ -45,7 +46,11 @@ class LoginController extends GetxController {
       // Beri sedikit delay sebelum pindah agar snackbar/proses async lain tenang
       Future.delayed(const Duration(milliseconds: 100), () {
         if (!isClosed) {
-          Get.offAllNamed(Routes.MAIN);
+          if (_authService.isOnboarded) {
+            Get.offAllNamed(Routes.MAIN);
+          } else {
+            Get.offAllNamed(Routes.ONBOARDING);
+          }
         }
       });
     } catch (e) {
@@ -65,6 +70,55 @@ class LoginController extends GetxController {
       } else {
         errorMessage.value = err;
       }
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+
+      // Prompt the user to sign in
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // User cancelled the sign-in flow
+        isLoading.value = false;
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        errorMessage.value = 'Gagal mendapatkan Token dari Google.';
+        isLoading.value = false;
+        return;
+      }
+
+      final response = await _repository.googleAuth(idToken);
+      
+      await _authService.saveToken(response.accessToken);
+      if (response.user != null) {
+        await _authService.saveUser(response.user!);
+      }
+
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (!isClosed) {
+          if (_authService.isOnboarded) {
+            Get.offAllNamed(Routes.MAIN);
+          } else {
+            Get.offAllNamed(Routes.ONBOARDING);
+          }
+        }
+      });
+    } catch (e) {
+      if (isClosed) return;
+      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
       isLoading.value = false;
     }
   }

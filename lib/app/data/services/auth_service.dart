@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -68,6 +69,9 @@ class AuthService extends GetxService {
 
   /// Logout — hapus sesi dan redirect ke login.
   Future<void> logout() async {
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {}
     await clearSession();
     Get.offAllNamed(Routes.LOGIN);
   }

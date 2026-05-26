@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1076153756387",
+    "project_id": "smart-worklife-15f63",
+    "storage_bucket": "smart-worklife-15f63.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076153756387:android:bc990c59cd9287aa46f3d6",
+        "android_client_info": {
+          "package_name": "com.example.worklife_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076153756387-klvifk6u78bcu7jqrklt6k74oqpntdi2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.worklife_mobile",
+            "certificate_hash": "65911c715dd3a614f94a0d2a8b4f25a1ff652447"
+          }
+        },
+        {
+          "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7IIOUk199j7R248kJhpcAhf2zxJADKBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1076153756387-cfrk1gn4c09hoismh34ait3dj1htbc8l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.worklifeMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

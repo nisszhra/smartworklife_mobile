@@ -271,8 +271,8 @@ class SignupView extends GetView<SignupController> {
                       const SizedBox(height: 16),
                       
                       // Google Sign Up Button
-                      OutlinedButton.icon(
-                        onPressed: () {},
+                      Obx(() => OutlinedButton.icon(
+                        onPressed: controller.isLoading.value ? null : controller.signInWithGoogle,
                         icon: const Icon(Icons.g_mobiledata, size: 24, color: onSurface),
                         label: const Text(
                           'Sign up with Google',
@@ -291,7 +291,7 @@ class SignupView extends GetView<SignupController> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                      ),
+                      )),
                       const SizedBox(height: 32),
 
                       // Login Link

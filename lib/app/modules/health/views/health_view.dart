@@ -302,18 +302,27 @@ class HealthView extends GetView<HealthController> {
                   color: Color(0xFF181C22),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6E8F1),
+              Obx(() {
+                final isEnabled = controller.hydrationSettings.value?.reminderEnabled ?? false;
+                return InkWell(
+                  onTap: () => _showNotificationSettingsModal(Get.context!),
                   borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.notifications_active,
-                  size: 20,
-                  color: Color(0xFF414753),
-                ),
-              ),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isEnabled
+                          ? const Color(0xFFE6F0FA)
+                          : const Color(0xFFE6E8F1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      isEnabled ? Icons.notifications_active : Icons.notifications_off,
+                      size: 20,
+                      color: isEnabled ? const Color(0xFF005AB4) : const Color(0xFF717785),
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 24),
@@ -527,6 +536,145 @@ class HealthView extends GetView<HealthController> {
   }
 
 
+
+  // ─── EDIT NOTIFICATION SETTINGS MODAL ──────────────────────────────
+  void _showNotificationSettingsModal(BuildContext context) {
+    final settings = controller.hydrationSettings.value;
+    bool enabled = settings?.reminderEnabled ?? false;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Pengatur Hidrasi',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF181C22),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          child: const Icon(
+                            Icons.close,
+                            color: Color(0xFF717785),
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Enable reminder switch
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Aktifkan Pengingat',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF181C22),
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Kirim notifikasi sesuai jadwal',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF717785),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: enabled,
+                        activeColor: const Color(0xFF005AB4),
+                        onChanged: (val) {
+                          setState(() {
+                            enabled = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  // Action buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFC1C6D5)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            'Batal',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF181C22),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            controller.updateHydrationSettings(
+                              reminderEnabled: enabled,
+                            );
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF005AB4),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            'Simpan',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   // ─── EDIT BMI MODAL ────────────────────────────────────────────────
   void _showEditModal(BuildContext context) {

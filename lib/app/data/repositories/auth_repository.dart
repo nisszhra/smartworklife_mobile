@@ -27,6 +27,7 @@ abstract class AuthRepository {
   });
 
   Future<UserModel> updateProfile({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -45,6 +46,8 @@ abstract class AuthRepository {
     double? weight,
     double? height,
   });
+
+  Future<AuthResponseModel> googleAuth(String idToken);
 }
 
 /// Implementasi konkret AuthRepository menggunakan AuthProvider (Dio).
@@ -57,6 +60,16 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResponseModel> login(String email, String password) async {
     try {
       final res = await _provider.login(email, password);
+      return AuthResponseModel.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<AuthResponseModel> googleAuth(String idToken) async {
+    try {
+      final res = await _provider.googleAuth(idToken);
       return AuthResponseModel.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw _handleError(e);
@@ -130,6 +143,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel> updateProfile({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -140,6 +154,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final res = await _provider.updateProfile(
+        fullName: fullName,
         gender: gender,
         age: age,
         industry: industry,
