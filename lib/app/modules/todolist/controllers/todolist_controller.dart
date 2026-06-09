@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import 'package:worklife_mobile/app/data/models/todo_model.dart';
 import 'package:worklife_mobile/app/data/repositories/todo_repository.dart';
+import 'package:worklife_mobile/app/modules/home/controllers/home_controller.dart';
 
 // Re-export TodoModel agar view bisa import dari sini (backward compat)
 export 'package:worklife_mobile/app/data/models/todo_model.dart';
@@ -54,6 +55,12 @@ class TodolistController extends GetxController {
         taskDate: taskDate,
       );
       tasks.insert(0, newTask);
+      tasks.refresh();
+      
+      // Auto-refresh dashboard if HomeController is active
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().fetchDashboardSummary();
+      }
     } catch (e) {
       Get.snackbar(
         'Gagal',
@@ -136,6 +143,11 @@ class TodolistController extends GetxController {
       final updated = await _repository.updateTodo(id, status: newStatus);
       tasks[index] = updated;
       tasks.refresh();
+      
+      // Auto-refresh dashboard if HomeController is active
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().fetchDashboardSummary();
+      }
     } catch (e) {
       // Rollback
       tasks[index] = currentTask;

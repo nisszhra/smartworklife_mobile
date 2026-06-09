@@ -80,6 +80,9 @@ class SignupController extends GetxController {
         scopes: ['email', 'profile'],
       );
 
+      // Pastikan sign out dulu agar muncul pilihan akun Google (account picker)
+      await googleSignIn.signOut();
+
       // Prompt the user to sign in
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {

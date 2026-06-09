@@ -34,11 +34,13 @@ class TodolistView extends GetView<TodolistController> {
           final d = selectedDate.value;
           final t = selectedTime.value;
           final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
+          final taskDateStr = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
           controller.addTask(
             title: titleController.text.trim(),
             description: descController.text.trim(),
             isPriority: isPriority.value,
             deadline: deadline,
+            taskDate: taskDateStr,
           );
           Get.back();
         },
@@ -71,12 +73,14 @@ class TodolistView extends GetView<TodolistController> {
           final d = selectedDate.value;
           final t = selectedTime.value;
           final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
+          final taskDateStr = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
           controller.updateTask(
             id: task.id,
             title: titleController.text.trim(),
             description: descController.text.trim(),
             isPriority: isPriority.value,
             deadline: deadline,
+            taskDate: taskDateStr,
           );
           Get.back();
         },
