@@ -105,4 +105,11 @@ class AuthProvider {
       'id_token': idToken,
     });
   }
+
+  Future<dio.Response> uploadAvatar(String filePath) async {
+    final formData = dio.FormData.fromMap({
+      'file': await dio.MultipartFile.fromFile(filePath),
+    });
+    return _dio.post('/auth/avatar', data: formData);
+  }
 }

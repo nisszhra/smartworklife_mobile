@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:worklife_mobile/app/data/models/user_model.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
@@ -25,6 +26,13 @@ class ProfileController extends GetxController {
 
   // Profile data
   final profileImageUrl = ''.obs;
+
+  String get fullAvatarUrl {
+    final path = profileImageUrl.value;
+    if (path.isEmpty) return '';
+    if (path.startsWith('http')) return path;
+    return 'http://192.168.110.222:8000$path';
+  }
   final fullName = ''.obs;
   final username = ''.obs;
   final email = ''.obs;
@@ -84,6 +92,7 @@ class ProfileController extends GetxController {
 
   void _updateLocalData(UserModel? user) {
     if (user != null) {
+      profileImageUrl.value = user.avatarUrl ?? '';
       fullName.value = user.fullName ?? '';
       email.value = user.email;
       gender.value = user.gender ?? 'Laki-laki';
@@ -186,16 +195,44 @@ class ProfileController extends GetxController {
     _updateHasChanges();
   }
 
-  void changeProfilePhoto() {
-    // TODO: Implement image picker
-    Get.snackbar(
-      'Coming Soon',
-      'Fitur ganti foto profil akan segera hadir',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF005AB4),
-      colorText: const Color(0xFFFFFFFF),
-      margin: const EdgeInsets.all(16),
-    );
+  Future<void> changeProfilePhoto() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      
+      if (image != null) {
+        isSaving.value = true;
+        
+        // 1. Upload to backend
+        final updatedUser = await _repository.uploadAvatar(image.path);
+        
+        // 2. Sync to AuthService
+        await _authService.saveUser(updatedUser);
+        
+        // 3. Update local obs
+        profileImageUrl.value = updatedUser.avatarUrl ?? '';
+        
+        isSaving.value = false;
+        Get.snackbar(
+          'Berhasil',
+          'Foto profil berhasil diperbarui',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFF4CAF50),
+          colorText: const Color(0xFFFFFFFF),
+          margin: const EdgeInsets.all(16),
+        );
+      }
+    } catch (e) {
+      isSaving.value = false;
+      Get.snackbar(
+        'Gagal',
+        'Gagal mengunggah foto profil: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+    }
   }
 
   void saveProfile() async {

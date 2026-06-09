@@ -112,13 +112,20 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                   ],
                 ),
-                child: Obx(() => controller.profileImageUrl.value.isEmpty
+                child: Obx(() {
+                  if (controller.isSaving.value) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  }
+                  
+                  return controller.profileImageUrl.value.isEmpty
                     ? Center(
                         child: Text(
                           controller.fullName.value.isNotEmpty
                               ? controller.fullName.value
                                   .split(' ')
-                                  .map((w) => w[0])
+                                  .map((w) => w.isNotEmpty ? w[0] : '')
                                   .take(2)
                                   .join()
                                   .toUpperCase()
@@ -132,12 +139,16 @@ class ProfileView extends GetView<ProfileController> {
                       )
                     : ClipOval(
                         child: Image.network(
-                          controller.profileImageUrl.value,
+                          controller.fullAvatarUrl,
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.person, size: 50, color: Colors.white);
+                          },
                         ),
-                      )),
+                      );
+                }),
               ),
               Positioned(
                 bottom: 0,

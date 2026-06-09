@@ -48,6 +48,8 @@ abstract class AuthRepository {
   });
 
   Future<AuthResponseModel> googleAuth(String idToken);
+
+  Future<UserModel> uploadAvatar(String filePath);
 }
 
 /// Implementasi konkret AuthRepository menggunakan AuthProvider (Dio).
@@ -204,6 +206,16 @@ class AuthRepositoryImpl implements AuthRepository {
       print("DEBUG: onboarding Unexpected Error: $e");
       print("DEBUG: StackTrace: $stackTrace");
       throw Exception('Format data response tidak valid: $e');
+    }
+  }
+
+  @override
+  Future<UserModel> uploadAvatar(String filePath) async {
+    try {
+      final res = await _provider.uploadAvatar(filePath);
+      return UserModel.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _handleError(e);
     }
   }
 
