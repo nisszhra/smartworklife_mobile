@@ -2,7 +2,9 @@ import 'package:get/get.dart';
 
 import 'package:worklife_mobile/app/data/providers/hydration_provider.dart';
 import 'package:worklife_mobile/app/data/providers/todo_provider.dart';
+import 'package:worklife_mobile/app/data/providers/dashboard_provider.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
+import 'package:worklife_mobile/app/data/repositories/dashboard_repository.dart';
 import 'package:worklife_mobile/app/data/repositories/hydration_repository.dart';
 import 'package:worklife_mobile/app/data/repositories/todo_repository.dart';
 import '../controllers/main_controller.dart';
@@ -16,7 +18,9 @@ class MainBinding extends Bindings {
   @override
   void dependencies() {
     Get.put<MainController>(MainController(), permanent: true);
-    Get.put<HomeController>(HomeController());
+    Get.put<DashboardProvider>(DashboardProvider());
+    Get.put<DashboardRepository>(DashboardRepository(Get.find<DashboardProvider>()));
+    Get.put<HomeController>(HomeController(Get.find<DashboardRepository>()));
     Get.put<HydrationRepository>(HydrationRepositoryImpl(HydrationProvider()));
     Get.put<HealthController>(HealthController(
       Get.find<AuthRepository>(),

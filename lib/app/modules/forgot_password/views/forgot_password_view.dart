@@ -1,133 +1,252 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/forgot_password_controller.dart';
 
-/// Scaffold minimal — implementasi UI penuh menyusul sesuai design.
 class ForgotPasswordView extends GetView<ForgotPasswordController> {
   const ForgotPasswordView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Colors for consistency with signup and verifikasi
+    const Color background = Color(0xFFF9F9FF);
+    const Color primary = Color(0xFF005AB4);
+    const Color onSurface = Color(0xFF181C22);
+    const Color outlineVariant = Color(0xFFC1C6D5);
+    const Color surfaceContainerLowest = Color(0xFFFFFFFF);
+    const Color onPrimary = Color(0xFFFFFFFF);
+    const Color onSurfaceVariant = Color(0xFF414753);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lupa Password'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: controller.kembali,
+      backgroundColor: background,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Card(
+                color: surfaceContainerLowest,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+                  child: Obx(() {
+                    final isEmailStep = controller.currentStep.value == ForgotPasswordStep.inputEmail;
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Logo
+                        Image.asset(
+                          'assets/images/logo smart-worklife trans.png',
+                          height: 80,
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Title
+                        Text(
+                          isEmailStep ? 'Lupa Password' : 'Reset Password',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: onSurface,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Subtitle
+                        Text(
+                          isEmailStep
+                              ? 'Masukkan email Anda.\nKami akan mengirimkan kode OTP.'
+                              : 'Masukkan kode OTP dan password baru Anda.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: onSurfaceVariant,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Inputs
+                        if (isEmailStep) ...[
+                          _buildTextField(
+                            controller: controller.emailController,
+                            hintText: 'Masukkan email',
+                            prefixIcon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                        ] else ...[
+                          _buildTextField(
+                            controller: controller.otpController,
+                            hintText: 'Kode OTP',
+                            prefixIcon: Icons.pin_outlined,
+                            keyboardType: TextInputType.number,
+                            maxLength: 6,
+                          ),
+                          const SizedBox(height: 16),
+                          Obx(() => _buildTextField(
+                            controller: controller.newPasswordController,
+                            hintText: 'Password Baru',
+                            prefixIcon: Icons.lock_outline,
+                            obscureText: !controller.isPasswordVisible.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isPasswordVisible.value
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: onSurfaceVariant,
+                              ),
+                              onPressed: controller.togglePasswordVisibility,
+                            ),
+                          )),
+                          const SizedBox(height: 16),
+                          Obx(() => _buildTextField(
+                            controller: controller.confirmNewPasswordController,
+                            hintText: 'Konfirmasi Password Baru',
+                            prefixIcon: Icons.lock_outline,
+                            obscureText: !controller.isConfirmPasswordVisible.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isConfirmPasswordVisible.value
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: onSurfaceVariant,
+                              ),
+                              onPressed: controller.toggleConfirmPasswordVisibility,
+                            ),
+                          )),
+                        ],
+
+                        const SizedBox(height: 24),
+
+                        // Error message
+                        if (controller.errorMessage.value.isNotEmpty) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: Text(
+                              controller.errorMessage.value,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 13,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ),
+                        ],
+
+                        // Submit Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : (isEmailStep ? controller.sendOtp : controller.resetPassword),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primary,
+                              foregroundColor: onPrimary,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    isEmailStep ? 'Kirim OTP' : 'Reset Password',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Back Button
+                        GestureDetector(
+                          onTap: controller.kembali,
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.arrow_back, size: 16, color: onSurfaceVariant),
+                              SizedBox(width: 8),
+                              Text(
+                                'Kembali ke halaman Login',
+                                style: TextStyle(
+                                  color: onSurfaceVariant,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
-      body: Obx(() {
-        if (controller.currentStep.value == ForgotPasswordStep.inputEmail) {
-          return _buildEmailStep();
-        }
-        return _buildResetStep();
-      }),
     );
   }
 
-  Widget _buildEmailStep() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'Masukkan email Anda.\nKami akan mengirimkan kode OTP.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 24),
-          TextField(
-            controller: controller.emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Obx(() => controller.errorMessage.value.isNotEmpty
-              ? Text(
-                  controller.errorMessage.value,
-                  style: const TextStyle(color: Colors.red),
-                )
-              : const SizedBox.shrink()),
-          const SizedBox(height: 16),
-          Obx(() => ElevatedButton(
-                onPressed:
-                    controller.isLoading.value ? null : controller.sendOtp,
-                child: controller.isLoading.value
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Kirim OTP'),
-              )),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResetStep() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'Masukkan kode OTP dan password baru Anda.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 24),
-          TextField(
-            controller: controller.otpController,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            decoration: const InputDecoration(
-              labelText: 'Kode OTP',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: controller.newPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Password Baru',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: controller.confirmNewPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Konfirmasi Password Baru',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Obx(() => controller.errorMessage.value.isNotEmpty
-              ? Text(
-                  controller.errorMessage.value,
-                  style: const TextStyle(color: Colors.red),
-                )
-              : const SizedBox.shrink()),
-          const SizedBox(height: 16),
-          Obx(() => ElevatedButton(
-                onPressed: controller.isLoading.value
-                    ? null
-                    : controller.resetPassword,
-                child: controller.isLoading.value
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Reset Password'),
-              )),
-        ],
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData prefixIcon,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    int? maxLength,
+  }) {
+    const Color primary = Color(0xFF005AB4);
+    const Color outlineVariant = Color(0xFFC1C6D5);
+    
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      maxLength: maxLength,
+      style: const TextStyle(fontFamily: 'Inter'),
+      decoration: InputDecoration(
+        counterText: "",
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Color(0xFF8B92A5), fontFamily: 'Inter'),
+        prefixIcon: Icon(prefixIcon, color: const Color(0xFF8B92A5)),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: const Color(0xFFF0F4F8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primary, width: 2),
+        ),
       ),
     );
   }

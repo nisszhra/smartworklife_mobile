@@ -21,6 +21,13 @@ class ForgotPasswordController extends GetxController {
   final errorMessage = ''.obs;
   final currentStep = ForgotPasswordStep.inputEmail.obs;
 
+  // Visibility state untuk password
+  final isPasswordVisible = false.obs;
+  final isConfirmPasswordVisible = false.obs;
+
+  void togglePasswordVisibility() => isPasswordVisible.toggle();
+  void toggleConfirmPasswordVisibility() => isConfirmPasswordVisible.toggle();
+
   /// Step 1 — kirim OTP ke email
   Future<void> sendOtp() async {
     final email = emailController.text.trim();
