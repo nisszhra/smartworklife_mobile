@@ -3,6 +3,7 @@ class UserModel {
   final String email;
   final String? fullName;
   final bool isVerified;
+  final String? avatarUrl;
   final String? gender;
   final int? age;
   final String? industry;
@@ -19,6 +20,7 @@ class UserModel {
     required this.email,
     this.fullName,
     required this.isVerified,
+    this.avatarUrl,
     this.gender,
     this.age,
     this.industry,
@@ -34,6 +36,7 @@ class UserModel {
       email: json['email'] as String,
       fullName: json['full_name'] as String?,
       isVerified: json['is_verified'] as bool,
+      avatarUrl: json['avatar_url'] as String?,
       gender: json['gender'] as String?,
       age: json['age'] as int?,
       industry: json['industry'] as String?,
@@ -49,6 +52,7 @@ class UserModel {
         'email': email,
         'full_name': fullName,
         'is_verified': isVerified,
+        'avatar_url': avatarUrl,
         'gender': gender,
         'age': age,
         'industry': industry,
@@ -63,6 +67,7 @@ class UserModel {
     String? email,
     String? fullName,
     bool? isVerified,
+    String? avatarUrl,
     String? gender,
     int? age,
     String? industry,
@@ -76,6 +81,7 @@ class UserModel {
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       isVerified: isVerified ?? this.isVerified,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       gender: gender ?? this.gender,
       age: age ?? this.age,
       industry: industry ?? this.industry,

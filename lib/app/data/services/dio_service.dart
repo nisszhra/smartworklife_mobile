@@ -8,6 +8,7 @@ class DioService extends GetxService {
   // TODO: Ganti dengan base URL production saat deploy
   // static const String _baseUrl = 'http://192.168.1.10:8000/api/v1';
   static const String _baseUrl = 'http://192.168.110.222:8000/api/v1';
+  static const String baseStorageUrl = 'http://192.168.110.222:8000';
 
 
   late final Dio client;
