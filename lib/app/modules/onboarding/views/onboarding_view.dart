@@ -7,6 +7,8 @@ class OnboardingView extends GetView<OnboardingController> {
 
   @override
   Widget build(BuildContext context) {
+    final ctrl = controller;
+
     const Color primary = Color(0xFF005AB4);
     const Color background = Color(0xFFF9F9FF);
     const Color surface = Colors.white;
@@ -29,9 +31,9 @@ class OnboardingView extends GetView<OnboardingController> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       // Left: Back Button (Only on Step 2)
-                      Obx(() => controller.currentPage.value > 0
+                      Obx(() => ctrl.currentPage.value > 0
                           ? IconButton(
-                              onPressed: controller.previous,
+                              onPressed: ctrl.previous,
                               icon: const Icon(Icons.arrow_back, color: onSurfaceVariant),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -43,7 +45,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Obx(() => Text(
-                            'Step ${controller.currentPage.value + 1} of 2',
+                            'Step ${ctrl.currentPage.value + 1} of 2',
                             style: TextStyle(color: onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w600),
                           )),
                           const SizedBox(height: 8),
@@ -55,7 +57,7 @@ class OnboardingView extends GetView<OnboardingController> {
                                 width: 32,
                                 height: 4,
                                 decoration: BoxDecoration(
-                                  color: controller.currentPage.value >= 0 ? primary : outline.withOpacity(0.3),
+                                  color: ctrl.currentPage.value >= 0 ? primary : outline.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
@@ -65,7 +67,7 @@ class OnboardingView extends GetView<OnboardingController> {
                                 width: 32,
                                 height: 4,
                                 decoration: BoxDecoration(
-                                  color: controller.currentPage.value >= 1 ? primary : outline.withOpacity(0.3),
+                                  color: ctrl.currentPage.value >= 1 ? primary : outline.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
@@ -80,12 +82,12 @@ class OnboardingView extends GetView<OnboardingController> {
             ),
             Expanded(
               child: PageView(
-                controller: controller.pageController,
-                onPageChanged: (index) => controller.currentPage.value = index,
+                controller: ctrl.pageController,
+                onPageChanged: (index) => ctrl.currentPage.value = index,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _buildHealthProfile(context, primary, onSurface, onSurfaceVariant, outline),
-                  _buildWorkProfile(context, primary, onSurface, onSurfaceVariant, outline),
+                  _buildHealthProfile(context, primary, onSurface, onSurfaceVariant, outline, ctrl),
+                  _buildWorkProfile(context, primary, onSurface, onSurfaceVariant, outline, ctrl),
                 ],
               ),
             ),
@@ -95,7 +97,7 @@ class OnboardingView extends GetView<OnboardingController> {
     );
   }
 
-  Widget _buildHealthProfile(BuildContext context, Color primary, Color onSurface, Color onSurfaceVariant, Color outline) {
+  Widget _buildHealthProfile(BuildContext context, Color primary, Color onSurface, Color onSurfaceVariant, Color outline, OnboardingController ctrl) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -124,8 +126,8 @@ class OnboardingView extends GetView<OnboardingController> {
                   child: Obx(() => _GenderCard(
                     label: 'Laki-laki',
                     icon: Icons.male,
-                    isSelected: controller.selectedGender.value == 'Laki-laki',
-                    onTap: () => controller.selectedGender.value = 'Laki-laki',
+                    isSelected: ctrl.selectedGender.value == 'Laki-laki',
+                    onTap: () => ctrl.selectedGender.value = 'Laki-laki',
                     primary: primary,
                     outline: outline,
                   )),
@@ -135,8 +137,8 @@ class OnboardingView extends GetView<OnboardingController> {
                   child: Obx(() => _GenderCard(
                     label: 'Perempuan',
                     icon: Icons.female,
-                    isSelected: controller.selectedGender.value == 'Perempuan',
-                    onTap: () => controller.selectedGender.value = 'Perempuan',
+                    isSelected: ctrl.selectedGender.value == 'Perempuan',
+                    onTap: () => ctrl.selectedGender.value = 'Perempuan',
                     primary: primary,
                     outline: outline,
                   )),
@@ -149,7 +151,7 @@ class OnboardingView extends GetView<OnboardingController> {
             Text('Usia', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
             const SizedBox(height: 8),
             TextFormField(
-              controller: controller.ageController,
+              controller: ctrl.ageController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: 'Masukkan usia',
@@ -172,7 +174,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       Text('Berat Badan', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: controller.weightController,
+                        controller: ctrl.weightController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: '00',
@@ -191,7 +193,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       Text('Tinggi Badan', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: controller.heightController,
+                        controller: ctrl.heightController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: '000',
@@ -232,7 +234,7 @@ class OnboardingView extends GetView<OnboardingController> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: controller.next,
+                onPressed: ctrl.next,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primary,
                   foregroundColor: Colors.white,
@@ -252,7 +254,7 @@ class OnboardingView extends GetView<OnboardingController> {
     );
   }
 
-  Widget _buildWorkProfile(BuildContext context, Color primary, Color onSurface, Color onSurfaceVariant, Color outline) {
+  Widget _buildWorkProfile(BuildContext context, Color primary, Color onSurface, Color onSurfaceVariant, Color outline, OnboardingController ctrl) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -286,14 +288,14 @@ class OnboardingView extends GetView<OnboardingController> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => controller.selectStartTime(context),
+                      onTap: () => ctrl.selectStartTime(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Mulai', style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
                           const SizedBox(height: 8),
                           Obx(() => Text(
-                            controller.startTime.value,
+                            ctrl.startTime.value,
                             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary),
                           )),
                         ],
@@ -304,14 +306,14 @@ class OnboardingView extends GetView<OnboardingController> {
                   const SizedBox(width: 24),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => controller.selectEndTime(context),
+                      onTap: () => ctrl.selectEndTime(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Selesai', style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
                           const SizedBox(height: 8),
                           Obx(() => Text(
-                            controller.endTime.value,
+                            ctrl.endTime.value,
                             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary),
                           )),
                         ],
@@ -328,15 +330,15 @@ class OnboardingView extends GetView<OnboardingController> {
             Text('DI BIDANG APA KAMU BEKERJA?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
             const SizedBox(height: 16),
             Obx(() => DropdownButtonFormField<String>(
-              value: controller.selectedIndustry.value.isEmpty ? null : controller.selectedIndustry.value,
+              value: ctrl.selectedIndustry.value.isEmpty ? null : ctrl.selectedIndustry.value,
               decoration: InputDecoration(
                 hintText: 'Pilih Bidang Pekerjaan',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: outline.withOpacity(0.5))),
               ),
-              items: controller.industries.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-              onChanged: (value) => controller.selectedIndustry.value = value ?? '',
+              items: ctrl.industries.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (value) => ctrl.selectedIndustry.value = value ?? '',
             )),
             const SizedBox(height: 32),
 
@@ -367,7 +369,7 @@ class OnboardingView extends GetView<OnboardingController> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: controller.finish,
+                onPressed: ctrl.finish,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primary,
                   foregroundColor: Colors.white,
@@ -415,6 +417,7 @@ class _GenderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: onTap,
       child: Container(

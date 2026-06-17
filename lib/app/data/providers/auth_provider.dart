@@ -107,8 +107,12 @@ class AuthProvider {
   }
 
   Future<dio.Response> uploadAvatar(String filePath) async {
+    final filename = filePath.split('/').last;
     final formData = dio.FormData.fromMap({
-      'file': await dio.MultipartFile.fromFile(filePath),
+      'file': await dio.MultipartFile.fromFile(
+        filePath,
+        filename: filename,
+      ),
     });
     return _dio.post('/auth/avatar', data: formData);
   }
