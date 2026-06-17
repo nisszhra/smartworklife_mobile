@@ -5,6 +5,7 @@ import 'package:worklife_mobile/app/data/models/user_model.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/data/services/user_service.dart';
+import 'package:worklife_mobile/app/data/services/dio_service.dart';
 
 class ProfileController extends GetxController {
   final AuthRepository _repository;
@@ -23,6 +24,7 @@ class ProfileController extends GetxController {
   late TextEditingController ageController;
   late TextEditingController weightController;
   late TextEditingController heightController;
+  Worker? _userWorker;
 
   // Profile data
   final profileImageUrl = ''.obs;
@@ -31,7 +33,13 @@ class ProfileController extends GetxController {
     final path = profileImageUrl.value;
     if (path.isEmpty) return '';
     if (path.startsWith('http')) return path;
-    return 'http://192.168.110.222:8000$path';
+    try {
+      final dioService = Get.find<DioService>();
+      final uri = Uri.parse(dioService.client.options.baseUrl);
+      return '${uri.scheme}://${uri.host}:${uri.port}$path';
+    } catch (_) {
+      return 'http://192.168.1.8:8000$path';
+    }
   }
   final fullName = ''.obs;
   final username = ''.obs;
@@ -82,7 +90,7 @@ class ProfileController extends GetxController {
     _updateLocalData(_authService.currentUser.value);
 
     // 2. Pantau perubahan user secara reaktif
-    ever(_authService.currentUser, (user) {
+    _userWorker = ever(_authService.currentUser, (user) {
       _updateLocalData(user);
     });
 
@@ -91,6 +99,7 @@ class ProfileController extends GetxController {
   }
 
   void _updateLocalData(UserModel? user) {
+    if (isClosed) return;
     if (user != null) {
       profileImageUrl.value = user.avatarUrl ?? '';
       fullName.value = user.fullName ?? '';
@@ -138,6 +147,7 @@ class ProfileController extends GetxController {
 
   @override
   void onClose() {
+    _userWorker?.dispose();
     fullNameController.dispose();
     usernameController.dispose();
     emailController.dispose();
@@ -281,6 +291,8 @@ class ProfileController extends GetxController {
       height.value = heightController.text;
       industry.value = industryController.text;
 
+
+
       // 3. Sinkronkan ke UserService (Internal Sync)
       try {
         final userService = Get.find<UserService>();
@@ -307,6 +319,33 @@ class ProfileController extends GetxController {
       isSaving.value = false;
       Get.snackbar('Error', 'Gagal menyimpan profil: ${e.toString()}');
     }
+  }
+
+  void deleteAccount() {
+    Get.defaultDialog(
+      title: 'Hapus Akun',
+      middleText: 'Apakah Anda yakin ingin menghapus akun Anda secara permanen? Tindakan ini tidak dapat dibatalkan.',
+      textConfirm: 'Hapus',
+      textCancel: 'Batal',
+      confirmTextColor: Colors.white,
+      buttonColor: const Color(0xFFDC2626),
+      onConfirm: () async {
+        Get.back(); // Close dialog
+        isSaving.value = true;
+        await Future.delayed(const Duration(seconds: 1)); // Simulate api call
+        isSaving.value = false;
+        
+        Get.snackbar(
+          'Akun Dihapus',
+          'Akun Anda telah berhasil dihapus.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFDC2626),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(16),
+        );
+        logout();
+      },
+    );
   }
 
   void changePassword() async {

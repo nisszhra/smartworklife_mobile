@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
+import 'security_view.dart';
+import 'faq_view.dart';
+import 'privacy_policy_view.dart';
+import 'preferensi_user_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -45,11 +49,9 @@ class ProfileView extends GetView<ProfileController> {
             const SizedBox(height: 28),
             _buildPersonalInfoSection(),
             const SizedBox(height: 28),
-            _buildHealthSection(),
+            _buildSettingsSection(context),
             const SizedBox(height: 28),
-            _buildWorkSection(context),
-            const SizedBox(height: 28),
-            _buildSecuritySection(),
+            _buildAboutSupportSection(context),
             const SizedBox(height: 32),
             _buildSaveButton(),
             const SizedBox(height: 16),
@@ -243,208 +245,10 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  // ─── HEALTH INFO ───────────────────────────────────────────
-  Widget _buildHealthSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFC1C6D5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Obx(() => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.health_and_safety_outlined, size: 20, color: Color(0xFF005AB4)),
-                SizedBox(width: 8),
-                Text(
-                  'Health Profile',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF181C22)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(
-                    label: 'Age',
-                    controller: controller.ageController,
-                    icon: Icons.calendar_today_outlined,
-                    keyboardType: TextInputType.number,
-                    enabled: true,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Gender', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF717785))),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF9F9FF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: controller.gender.value,
-                            isExpanded: true,
-                            items: ['Laki-laki', 'Perempuan'].map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value, style: const TextStyle(fontSize: 15)),
-                              );
-                            }).toList(),
-                            onChanged: (val) {
-                              if (val != null) controller.setGender(val);
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(
-                    label: 'Weight (kg)',
-                    controller: controller.weightController,
-                    icon: Icons.monitor_weight_outlined,
-                    keyboardType: TextInputType.number,
-                    enabled: true,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildTextField(
-                    label: 'Height (cm)',
-                    controller: controller.heightController,
-                    icon: Icons.height_outlined,
-                    keyboardType: TextInputType.number,
-                    enabled: true,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      )),
-    );
-  }
 
-  // ─── WORK INFO ─────────────────────────────────────────────
-  Widget _buildWorkSection(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFC1C6D5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Obx(() => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.work_outline, size: 20, color: Color(0xFF005AB4)),
-                SizedBox(width: 8),
-                Text(
-                  'Work Profile',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF181C22)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildTextField(
-              label: 'Industry',
-              controller: controller.industryController,
-              icon: Icons.business_outlined,
-              enabled: true,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Start Time', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF717785))),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF9F9FF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: GestureDetector(
-                          onTap: () => controller.selectStartTime(context),
-                          child: Text(controller.startTime.value, style: const TextStyle(fontSize: 15)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('End Time', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF717785))),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF9F9FF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: GestureDetector(
-                          onTap: () => controller.selectEndTime(context),
-                          child: Text(controller.endTime.value, style: const TextStyle(fontSize: 15)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      )),
-    );
-  }
 
-  // ─── SECURITY ──────────────────────────────────────────────
-  Widget _buildSecuritySection() {
+  // ─── SETTINGS (PENGATURAN) ──────────────────────────────────
+  Widget _buildSettingsSection(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -463,63 +267,108 @@ class ProfileView extends GetView<ProfileController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.shield_outlined,
-                    size: 20, color: Color(0xFF005AB4)),
-                const SizedBox(width: 8),
-                const Text(
-                  'Security',
+                Icon(Icons.settings, size: 20, color: Color(0xFF005AB4)),
+                SizedBox(width: 8),
+                Text(
+                  'Pengaturan',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF181C22),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Obx(() => _buildPasswordField(
-                  label: 'Current Password',
-                  controller: controller.currentPasswordController,
-                  isVisible: controller.showCurrentPassword.value,
-                  onToggle: controller.toggleCurrentPassword,
-                )),
-            const SizedBox(height: 16),
-            Obx(() => _buildPasswordField(
-                  label: 'New Password',
-                  controller: controller.newPasswordController,
-                  isVisible: controller.showNewPassword.value,
-                  onToggle: controller.toggleNewPassword,
-                )),
-            const SizedBox(height: 16),
-            Obx(() => _buildPasswordField(
-                  label: 'Confirm New Password',
-                  controller: controller.confirmPasswordController,
-                  isVisible: controller.showConfirmPassword.value,
-                  onToggle: controller.toggleConfirmPassword,
-                )),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: controller.changePassword,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF005AB4)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text(
-                  'Change Password',
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.tune_outlined, color: Color(0xFF64748B)),
+              title: const Text('Preferensi User', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              subtitle: const Text('Atur data kesehatan dan jadwal kerja Anda', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.to(() => const PreferensiUserView());
+              },
+            ),
+            const Divider(color: Color(0xFFF1F5F9)),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.lock_person_outlined, color: Color(0xFF64748B)),
+              title: const Text('Akun & Keamanan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              subtitle: const Text('Ubah password atau hapus akun Anda', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.to(() => const SecurityView());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  // ─── ABOUT & SUPPORT (INFORMASI & BANTUAN) ──────────────────
+  Widget _buildAboutSupportSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFC1C6D5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.info_outline, size: 20, color: Color(0xFF005AB4)),
+                SizedBox(width: 8),
+                Text(
+                  'Informasi & Bantuan',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF005AB4),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF181C22),
                   ),
                 ),
-              ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.help_center_outlined, color: Color(0xFF64748B)),
+              title: const Text('Panduan Penggunaan & FAQ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.to(() => const FaqView());
+              },
+            ),
+            const Divider(color: Color(0xFFF1F5F9)),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.privacy_tip_outlined, color: Color(0xFF64748B)),
+              title: const Text('Kebijakan Privasi & Ketentuan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.to(() => const PrivacyPolicyView());
+              },
+            ),
+            const Divider(color: Color(0xFFF1F5F9)),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.phone_android_outlined, color: Color(0xFF64748B)),
+              title: const Text('Versi Aplikasi', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600, fontSize: 14)),
+              onTap: null,
             ),
           ],
         ),

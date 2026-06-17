@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
 import 'notulen_archive_view.dart';
+import 'notulen_detail_view.dart';
 
 class NotulenView extends GetView<NotulenController> {
   const NotulenView({super.key});
@@ -73,35 +74,108 @@ class NotulenView extends GetView<NotulenController> {
             ),
           ),
           const SizedBox(height: 24),
-          // Mic Button
-          Obx(() => GestureDetector(
-                onTap: controller.toggleRecording,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: controller.isRecording.value
-                        ? const Color(0xFFDC2626)
-                        : const Color(0xFF005AB4),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: (controller.isRecording.value
-                                ? const Color(0xFFDC2626)
-                                : const Color(0xFF005AB4))
-                            .withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
+          // Mic / Record Control Buttons
+          Obx(() {
+            final isRec = controller.isRecording.value;
+            final isPaused = controller.hasStopped.value;
+            final isProc = controller.isProcessing.value;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Pause/Resume Button (shown when recording or paused)
+                if (isRec || isPaused) ...[
+                  GestureDetector(
+                    onTap: isProc
+                        ? null
+                        : () {
+                            if (isRec) {
+                              controller.pauseRecording();
+                            } else {
+                              controller.resumeRecording();
+                            }
+                          },
+                    child: Opacity(
+                      opacity: isProc ? 0.6 : 1.0,
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: isRec
+                              ? Colors.orange.shade600
+                              : Colors.green.shade600,
+                          shape: BoxShape.circle,
+                          boxShadow: isProc
+                              ? null
+                              : [
+                                  BoxShadow(
+                                    color: (isRec
+                                            ? Colors.orange.shade600
+                                            : Colors.green.shade600)
+                                        .withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                        ),
+                        child: Icon(
+                          isRec ? Icons.pause : Icons.play_arrow,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                  child: Icon(
-                    controller.isRecording.value ? Icons.stop : Icons.mic,
-                    color: Colors.white,
-                    size: 32,
+                  const SizedBox(width: 24),
+                ],
+                
+                // Main Button: Mic (to start) or Stop (to stop and upload)
+                GestureDetector(
+                  onTap: isProc
+                      ? null
+                      : () {
+                          if (isRec || isPaused) {
+                            controller.stopRecording();
+                          } else {
+                            controller.startRecording();
+                          }
+                        },
+                  child: Opacity(
+                    opacity: isProc ? 0.6 : 1.0,
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: isProc
+                            ? const Color(0xFF94A3B8)
+                            : ((isRec || isPaused)
+                                ? const Color(0xFFDC2626) // merah saat merekam/pause untuk stop
+                                : const Color(0xFF005AB4)), // biru saat ready untuk start
+                        shape: BoxShape.circle,
+                        boxShadow: isProc
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: ((isRec || isPaused)
+                                          ? const Color(0xFFDC2626)
+                                          : const Color(0xFF005AB4))
+                                      .withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                      ),
+                      child: Icon(
+                        (isRec || isPaused) ? Icons.stop : Icons.mic,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
                   ),
                 ),
-              )),
+              ],
+            );
+          }),
           const SizedBox(height: 20),
           Obx(() => Text(
                 controller.meetingTitle.value,
@@ -112,18 +186,38 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               )),
           const SizedBox(height: 4),
-          Obx(() => Text(
-                controller.isRecording.value
-                    ? 'Recording • ${controller.formattedDuration}'
-                    : 'Ready to Record',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: controller.isRecording.value
-                      ? const Color(0xFFDC2626)
-                      : const Color(0xFF717785),
-                  fontWeight: FontWeight.w500,
-                ),
-              )),
+          Obx(() {
+            final isRec = controller.isRecording.value;
+            final isPaused = controller.hasStopped.value;
+            final isProc = controller.isProcessing.value;
+            final hasText = controller.transcriptionText.value.isNotEmpty;
+
+            String status = 'Siap Merekam';
+            Color color = const Color(0xFF717785);
+
+            if (isRec) {
+              status = 'Merekam • ${controller.formattedDuration.value}';
+              color = const Color(0xFFDC2626);
+            } else if (isPaused) {
+              status = 'Merekam Ditangguhkan • ${controller.formattedDuration.value}';
+              color = Colors.orange.shade700;
+            } else if (isProc) {
+              status = 'Memproses dengan AI...';
+              color = const Color(0xFF005AB4);
+            } else if (hasText) {
+              status = 'Siap Melanjutkan Rekaman';
+              color = const Color(0xFF16A34A);
+            }
+
+            return Text(
+              status,
+              style: TextStyle(
+                fontSize: 14,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -144,11 +238,11 @@ class NotulenView extends GetView<NotulenController> {
             padding: const EdgeInsets.fromLTRB(20, 20, 12, 12),
             child: Row(
               children: [
-                const Icon(Icons.record_voice_over,
+                const Icon(Icons.auto_awesome,
                     size: 18, color: Color(0xFF005AB4)),
                 const SizedBox(width: 8),
                 const Text(
-                  'Live Transcription',
+                  'Hasil Transkripsi (Groq AI)',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -188,6 +282,80 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                 );
               }
+              // Sedang merekam — tampilkan live STT
+              if (controller.isRecording.value || controller.hasStopped.value) {
+                final live = controller.liveText.value;
+                if (live.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 10, height: 10,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFDC2626),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Sedang merekam... mulai bicara',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFDC2626),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Text(
+                  live,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF414753),
+                    height: 1.6,
+                  ),
+                );
+              }
+              // Sedang memproses AI
+              if (controller.isProcessing.value) {
+                return Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    const AiTypingIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      controller.processingStatusText.value,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF717785),
+                        fontStyle: FontStyle.italic,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }
+              // Belum ada transkrip
+              if (controller.transcriptionText.value.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    'Tekan tombol mikrofon untuk mulai merekam. Transkripsi AI akan muncul di sini setelah rekaman selesai.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF94A3B8),
+                      fontStyle: FontStyle.italic,
+                      height: 1.5,
+                    ),
+                  ),
+                );
+              }
               return Text(
                 controller.transcriptionText.value,
                 style: const TextStyle(
@@ -208,7 +376,7 @@ class NotulenView extends GetView<NotulenController> {
       width: double.infinity,
       child: Obx(() => ElevatedButton(
             onPressed:
-                controller.isAnalyzing.value ? null : controller.analyzeSummary,
+                controller.isAnalyzing.value ? null : controller.analyzeTranscription,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF005AB4),
               foregroundColor: Colors.white,
@@ -424,7 +592,7 @@ class NotulenView extends GetView<NotulenController> {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Judul Rapat',
+                'Judul',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -435,7 +603,7 @@ class NotulenView extends GetView<NotulenController> {
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan judul rapat',
+                  hintText: 'Masukkan judul',
                   filled: true,
                   fillColor: const Color(0xFFF1F5F9),
                   border: OutlineInputBorder(
@@ -509,8 +677,11 @@ class NotulenView extends GetView<NotulenController> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        controller.saveNotulen(
-                            titleController.text, dateController.text);
+                        // Simpan judul ke controller dulu jika ada
+                        if (titleController.text.isNotEmpty) {
+                          controller.meetingTitle.value = titleController.text;
+                        }
+                        controller.saveNotulen();
                         Get.back();
                       },
                       style: ElevatedButton.styleFrom(
@@ -577,72 +748,78 @@ class NotulenView extends GetView<NotulenController> {
                 itemCount: controller.archivedMeetings.length,
                 itemBuilder: (context, index) {
                   final archive = controller.archivedMeetings[index];
-                  return Container(
-                    width: 280,
-                    margin: const EdgeInsets.only(right: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                archive.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF181C22),
+                  return GestureDetector(
+                    onTap: () async {
+                      await controller.loadArchive(archive.id);
+                      Get.to(() => const NotulenDetailView());
+                    },
+                    child: Container(
+                      width: 280,
+                      margin: const EdgeInsets.only(right: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  archive.title,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF181C22),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              archive.date,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF717785),
+                              const SizedBox(width: 8),
+                              Text(
+                                archive.date,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF717785),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: Text(
-                            archive.preview,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF414753),
-                              height: 1.4,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.timer_outlined,
-                                size: 14, color: Color(0xFF94A3B8)),
-                            const SizedBox(width: 4),
-                            Text(
-                              archive.duration,
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: Text(
+                              archive.preview,
                               style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF717785),
+                                fontSize: 13,
+                                color: Color(0xFF414753),
+                                height: 1.4,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.timer_outlined,
+                                  size: 14, color: Color(0xFF94A3B8)),
+                              const SizedBox(width: 4),
+                              Text(
+                                archive.duration,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF717785),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -652,4 +829,79 @@ class NotulenView extends GetView<NotulenController> {
     );
   }
 
+}
+
+class AiTypingIndicator extends StatefulWidget {
+  const AiTypingIndicator({super.key});
+
+  @override
+  State<AiTypingIndicator> createState() => _AiTypingIndicatorState();
+}
+
+class _AiTypingIndicatorState extends State<AiTypingIndicator>
+    with TickerProviderStateMixin {
+  late List<AnimationController> _controllers;
+  late List<Animation<double>> _animations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(
+      3,
+      (index) => AnimationController(
+        duration: const Duration(milliseconds: 600),
+        vsync: this,
+      ),
+    );
+
+    _animations = _controllers.map((controller) {
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+      );
+    }).toList();
+
+    for (int i = 0; i < 3; i++) {
+      Future.delayed(Duration(milliseconds: i * 200), () {
+        if (mounted) {
+          _controllers[i].repeat(reverse: true);
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (index) {
+        return AnimatedBuilder(
+          animation: _animations[index],
+          builder: (context, child) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: 8,
+              height: 8,
+              transform: Matrix4.translationValues(
+                0.0,
+                -6.0 * _animations[index].value,
+                0.0,
+              ),
+              decoration: const BoxDecoration(
+                color: Color(0xFF005AB4),
+                shape: BoxShape.circle,
+              ),
+            );
+          },
+        );
+      }),
+    );
+  }
 }
