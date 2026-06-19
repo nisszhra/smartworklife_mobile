@@ -88,12 +88,14 @@ class SecurityView extends GetView<ProfileController> {
                           onToggle: controller.toggleConfirmPassword,
                         )),
                     const SizedBox(height: 24),
-                    SizedBox(
+                    Obx(() => SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          controller.changePassword();
-                        },
+                        onPressed: controller.isSaving.value
+                            ? null
+                            : () {
+                                controller.changePassword();
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
                           foregroundColor: Colors.white,
@@ -103,15 +105,24 @@ class SecurityView extends GetView<ProfileController> {
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          'Ubah Password',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: controller.isSaving.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Ubah Password',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
-                    ),
+                    )),
                     const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.center,

@@ -50,6 +50,15 @@ abstract class AuthRepository {
   Future<AuthResponseModel> googleAuth(String idToken);
 
   Future<UserModel> uploadAvatar(String filePath);
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
+
+  Future<void> requestDeleteAccount({String? password});
+
+  Future<void> confirmDeleteAccount(String otpCode);
 }
 
 /// Implementasi konkret AuthRepository menggunakan AuthProvider (Dio).
@@ -214,6 +223,39 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final res = await _provider.uploadAvatar(filePath);
       return UserModel.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _provider.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> requestDeleteAccount({String? password}) async {
+    try {
+      await _provider.requestDeleteAccount(password: password);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> confirmDeleteAccount(String otpCode) async {
+    try {
+      await _provider.confirmDeleteAccount(otpCode);
     } on DioException catch (e) {
       throw _handleError(e);
     }

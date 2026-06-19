@@ -43,6 +43,17 @@ class LoginController extends GetxController {
         await _authService.saveUser(response.user!);
       }
 
+      if (response.message != null && response.message!.isNotEmpty) {
+        Get.snackbar(
+          'Pemulihan Akun',
+          response.message!,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF4CAF50),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
+      }
+
       // Beri sedikit delay sebelum pindah agar snackbar/proses async lain tenang
       Future.delayed(const Duration(milliseconds: 100), () {
         if (!isClosed) {
@@ -108,6 +119,17 @@ class LoginController extends GetxController {
       await _authService.saveToken(response.accessToken);
       if (response.user != null) {
         await _authService.saveUser(response.user!);
+      }
+
+      if (response.message != null && response.message!.isNotEmpty) {
+        Get.snackbar(
+          'Pemulihan Akun',
+          response.message!,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF4CAF50),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
       }
 
       Future.delayed(const Duration(milliseconds: 100), () {

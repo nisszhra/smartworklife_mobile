@@ -24,6 +24,8 @@ class ProfileController extends GetxController {
   late TextEditingController ageController;
   late TextEditingController weightController;
   late TextEditingController heightController;
+  late TextEditingController deletePasswordController;
+  late TextEditingController deleteOtpController;
   Worker? _userWorker;
 
   // Profile data
@@ -33,13 +35,7 @@ class ProfileController extends GetxController {
     final path = profileImageUrl.value;
     if (path.isEmpty) return '';
     if (path.startsWith('http')) return path;
-    try {
-      final dioService = Get.find<DioService>();
-      final uri = Uri.parse(dioService.client.options.baseUrl);
-      return '${uri.scheme}://${uri.host}:${uri.port}$path';
-    } catch (_) {
-      return 'http://192.168.1.8:8000$path';
-    }
+    return '${DioService.baseStorageUrl}$path';
   }
   final fullName = ''.obs;
   final username = ''.obs;
@@ -65,6 +61,7 @@ class ProfileController extends GetxController {
   final showCurrentPassword = false.obs;
   final showNewPassword = false.obs;
   final showConfirmPassword = false.obs;
+  final showDeletePassword = false.obs;
 
   // Loading state
   final isSaving = false.obs;
@@ -85,6 +82,8 @@ class ProfileController extends GetxController {
     weightController = TextEditingController();
     heightController = TextEditingController();
     industryController = TextEditingController();
+    deletePasswordController = TextEditingController();
+    deleteOtpController = TextEditingController();
 
     // 1. Initial Load
     _updateLocalData(_authService.currentUser.value);
@@ -160,6 +159,8 @@ class ProfileController extends GetxController {
     weightController.dispose();
     heightController.dispose();
     industryController.dispose();
+    deletePasswordController.dispose();
+    deleteOtpController.dispose();
     super.onClose();
   }
 
@@ -321,38 +322,368 @@ class ProfileController extends GetxController {
     }
   }
 
-  void deleteAccount() {
-    Get.defaultDialog(
-      title: 'Hapus Akun',
-      middleText: 'Apakah Anda yakin ingin menghapus akun Anda secara permanen? Tindakan ini tidak dapat dibatalkan.',
-      textConfirm: 'Hapus',
-      textCancel: 'Batal',
-      confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFDC2626),
-      onConfirm: () async {
-        Get.back(); // Close dialog
-        isSaving.value = true;
-        await Future.delayed(const Duration(seconds: 1)); // Simulate api call
-        isSaving.value = false;
-        
-        Get.snackbar(
-          'Akun Dihapus',
-          'Akun Anda telah berhasil dihapus.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFDC2626),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(16),
-        );
-        logout();
-      },
+  void deleteAccount() async {
+    deletePasswordController.clear();
+    showDeletePassword.value = false;
+    
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFEE2E2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Color(0xFFDC2626),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Hapus Akun',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Apakah Anda yakin ingin menghapus akun Anda secara permanen?\n\n'
+                  'Akun Anda akan dinonaktifkan (Pending Deletion) selama 14 hari. '
+                  'Selama masa tenggang ini, Anda dapat membatalkan penghapusan dengan login kembali.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF475569),
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Obx(() => TextField(
+                  controller: deletePasswordController,
+                  obscureText: !showDeletePassword.value,
+                  decoration: InputDecoration(
+                    labelText: 'Password Konfirmasi',
+                    hintText: 'Masukkan password Anda',
+                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        showDeletePassword.value
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: const Color(0xFF64748B),
+                      ),
+                      onPressed: () => showDeletePassword.toggle(),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFDC2626), width: 2),
+                    ),
+                    helperText: '*Kosongkan jika Anda login menggunakan Google',
+                    helperStyle: const TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFF64748B),
+                      fontSize: 11,
+                    ),
+                  ),
+                )),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Batal',
+                        style: TextStyle(
+                          color: Color(0xFF64748B),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Obx(() => ElevatedButton(
+                      onPressed: isSaving.value
+                          ? null
+                          : () async {
+                              final password = deletePasswordController.text.trim();
+                              
+                              try {
+                                isSaving.value = true;
+                                await _repository.requestDeleteAccount(
+                                  password: password.isEmpty ? null : password,
+                                );
+                                isSaving.value = false;
+                                Get.back(); // Tutup dialog password
+                                _showOtpDeleteDialog(); // Tampilkan dialog OTP
+                              } catch (e) {
+                                isSaving.value = false;
+                                Get.snackbar(
+                                  'Gagal',
+                                  e.toString().replaceAll('Exception: ', ''),
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: const Color(0xFFDC2626),
+                                  colorText: Colors.white,
+                                  margin: const EdgeInsets.all(16),
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFDC2626),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: isSaving.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Kirim OTP',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _showOtpDeleteDialog() {
+    deleteOtpController.clear();
+    
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEEF2FF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.mail_outline_rounded,
+                        color: Color(0xFF4F46E5),
+                        size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Masukkan Kode OTP',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Silakan masukkan 4 digit kode OTP yang telah dikirimkan ke email Anda untuk mengonfirmasi penghapusan akun.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF475569),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: deleteOtpController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 28,
+                  letterSpacing: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B),
+                ),
+                decoration: InputDecoration(
+                  counterText: '',
+                  fillColor: const Color(0xFFF8FAFC),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Batal',
+                      style: TextStyle(
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Obx(() => ElevatedButton(
+                    onPressed: isSaving.value
+                        ? null
+                        : () async {
+                            final otp = deleteOtpController.text.trim();
+                            if (otp.length < 4) {
+                              Get.snackbar(
+                                'Validasi',
+                                'Kode OTP harus 4 digit',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: const Color(0xFFDC2626),
+                                colorText: Colors.white,
+                                margin: const EdgeInsets.all(16),
+                              );
+                              return;
+                            }
+                            
+                            try {
+                              isSaving.value = true;
+                              await _repository.confirmDeleteAccount(otp);
+                              isSaving.value = false;
+                              Get.back(); // Tutup dialog OTP
+                              
+                              Get.snackbar(
+                                'Pengajuan Berhasil',
+                                'Akun Anda masuk ke status Pending Deletion selama 14 hari.',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: const Color(0xFF4CAF50),
+                                colorText: Colors.white,
+                                margin: const EdgeInsets.all(16),
+                                duration: const Duration(seconds: 5),
+                              );
+                              
+                              // Tunggu sebentar lalu logout
+                              await Future.delayed(const Duration(seconds: 2));
+                              logout();
+                            } catch (e) {
+                              isSaving.value = false;
+                              Get.snackbar(
+                                'Gagal',
+                                e.toString().replaceAll('Exception: ', ''),
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: const Color(0xFFDC2626),
+                                colorText: Colors.white,
+                                margin: const EdgeInsets.all(16),
+                              );
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: isSaving.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            'Hapus Akun',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                  )),
+                ],
+              ),
+            ],
+          ),
+        ),
+      )),
+      barrierDismissible: false,
     );
   }
 
   void changePassword() async {
-    if (newPasswordController.text != confirmPasswordController.text) {
+    final currentPassword = currentPasswordController.text;
+    final newPassword = newPasswordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (currentPassword.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Konfirmasi password tidak cocok',
+        'Validasi',
+        'Password saat ini harus diisi',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -361,22 +692,73 @@ class ProfileController extends GetxController {
       return;
     }
 
-    isSaving.value = true;
-    await Future.delayed(const Duration(seconds: 1));
-    isSaving.value = false;
+    if (newPassword.isEmpty) {
+      Get.snackbar(
+        'Validasi',
+        'Password baru harus diisi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
 
-    currentPasswordController.clear();
-    newPasswordController.clear();
-    confirmPasswordController.clear();
+    if (newPassword.length < 8) {
+      Get.snackbar(
+        'Validasi',
+        'Password baru minimal harus 8 karakter',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
 
-    Get.snackbar(
-      'Berhasil',
-      'Password berhasil diubah',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF4CAF50),
-      colorText: const Color(0xFFFFFFFF),
-      margin: const EdgeInsets.all(16),
-    );
+    if (newPassword != confirmPassword) {
+      Get.snackbar(
+        'Validasi',
+        'Konfirmasi password baru tidak cocok',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
+    try {
+      isSaving.value = true;
+      await _repository.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+
+      currentPasswordController.clear();
+      newPasswordController.clear();
+      confirmPasswordController.clear();
+
+      Get.snackbar(
+        'Berhasil',
+        'Password berhasil diubah',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF4CAF50),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        e.toString().replaceAll('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFDC2626),
+        colorText: const Color(0xFFFFFFFF),
+        margin: const EdgeInsets.all(16),
+      );
+    } finally {
+      isSaving.value = false;
+    }
   }
 
 }
