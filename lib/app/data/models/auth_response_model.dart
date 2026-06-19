@@ -4,11 +4,13 @@ class AuthResponseModel {
   final String accessToken;
   final String tokenType;
   final UserModel? user;
+  final String? message;
 
   const AuthResponseModel({
     required this.accessToken,
     required this.tokenType,
     this.user,
+    this.message,
   });
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class AuthResponseModel {
       user: json['user'] != null 
           ? UserModel.fromJson(json['user'] as Map<String, dynamic>)
           : null,
+      message: json['message'] as String?,
     );
   }
 }

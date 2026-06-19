@@ -672,8 +672,8 @@ class NotulenController extends GetxController {
       detailShowAiSummary.value = data['summary'] != null && (data['summary'] as String).isNotEmpty;
       detailIsEditing.value = false;
       
-      Get.snackbar('✅ Berhasil', 'Notulen "${detailTitle.value}" berhasil dimuat.',
-          backgroundColor: const Color(0xFF005AB4), colorText: Colors.white);
+      // Get.snackbar('✅ Berhasil', 'Notulen "${detailTitle.value}" berhasil dimuat.',
+      //     backgroundColor: const Color(0xFF005AB4), colorText: Colors.white);
     } catch (e) {
       print('❌ Load archive error: $e');
       Get.snackbar('❌ Gagal', 'Gagal memuat notulen.',

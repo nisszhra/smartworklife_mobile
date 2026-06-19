@@ -116,4 +116,26 @@ class AuthProvider {
     });
     return _dio.post('/auth/avatar', data: formData);
   }
+
+  Future<dio.Response> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return _dio.post('/auth/change-password', data: {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+    });
+  }
+
+  Future<dio.Response> requestDeleteAccount({String? password}) {
+    return _dio.post('/auth/request-delete-account', data: {
+      'password': password,
+    });
+  }
+
+  Future<dio.Response> confirmDeleteAccount(String otpCode) {
+    return _dio.post('/auth/confirm-delete-account', data: {
+      'otp_code': otpCode,
+    });
+  }
 }
