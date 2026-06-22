@@ -20,7 +20,6 @@ class NotulenView extends GetView<NotulenController> {
             _buildRecordingCard(),
             const SizedBox(height: 24),
             _buildActiveMeetingCard(),
-            const SizedBox(height: 24),
             _buildAnalysisButton(),
             Obx(() => controller.showAiSummary.value
                 ? Padding(
@@ -28,8 +27,7 @@ class NotulenView extends GetView<NotulenController> {
                     child: _buildAISummarySection(),
                   )
                 : const SizedBox.shrink()),
-            const SizedBox(height: 24),
-            _buildSaveButton(),
+            _buildSaveAndCancelButtons(),
             const SizedBox(height: 40),
             _buildArchivedMeetingsSection(),
             const SizedBox(height: 24),
@@ -373,9 +371,20 @@ class NotulenView extends GetView<NotulenController> {
   }
 
   Widget _buildAnalysisButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: Obx(() => ElevatedButton(
+    return Obx(() {
+      final hasText = controller.transcriptionText.value.isNotEmpty;
+      final isRec = controller.isRecording.value;
+      final isProc = controller.isProcessing.value;
+
+      if (!hasText || isRec || isProc) {
+        return const SizedBox.shrink();
+      }
+
+      return Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
             onPressed:
                 controller.isAnalyzing.value ? null : controller.analyzeTranscription,
             style: ElevatedButton.styleFrom(
@@ -398,8 +407,10 @@ class NotulenView extends GetView<NotulenController> {
                     'Analisis AI Summary',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-          )),
-    );
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildAISummarySection() {
@@ -513,11 +524,22 @@ class NotulenView extends GetView<NotulenController> {
                                   color: Color(0xFF181C22),
                                 ),
                               ),
+                              if (action.description.isNotEmpty && action.description != '-')
+                                Text(
+                                  action.description,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF414753),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               Text(
-                                'Assigned to ${action.assignee} • Due ${action.dueDate}',
+                                'Tenggat: ${action.dueDate}',
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: Color(0xFF717785),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -557,24 +579,151 @@ class NotulenView extends GetView<NotulenController> {
     );
   }
 
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton(
-        onPressed: _showSaveDialog,
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFF005AB4), width: 1.5),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+  Widget _buildSaveAndCancelButtons() {
+    return Obx(() {
+      final hasText = controller.transcriptionText.value.isNotEmpty;
+      final isRec = controller.isRecording.value;
+      final isProc = controller.isProcessing.value;
+
+      if (!hasText || isRec || isProc) {
+        return const SizedBox.shrink();
+      }
+
+      return Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _showDiscardConfirmDialog,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Batal / Hapus',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFDC2626),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _showSaveDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF005AB4),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Simpan Notulen',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        child: const Text(
-          'Simpan Notulen',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF005AB4),
+      );
+    });
+  }
+
+  void _showDiscardConfirmDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.delete_outline, color: Colors.red.shade600, size: 28),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Batal Simpan Notulen?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF181C22),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Tindakan ini akan membatalkan penyimpanan dan menghapus draft rekaman saat ini secara permanen.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF717785),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text(
+                        'Kembali',
+                        style: TextStyle(
+                          color: Color(0xFF717785),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back(); // close dialog
+                        controller.discardNotulen();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Ya, Hapus',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -861,21 +1010,113 @@ class NotulenView extends GetView<NotulenController> {
     );
   }
 
+  DateTime _parseDueDate(String dueDate) {
+    final now = DateTime.now();
+    final lower = dueDate.toLowerCase();
+
+    if (lower.contains('hari ini') || lower.contains('today')) {
+      return now;
+    }
+    if (lower.contains('besok') || lower.contains('tomorrow')) {
+      return now.add(const Duration(days: 1));
+    }
+    if (lower.contains('lusa') || lower.contains('day after tomorrow')) {
+      return now.add(const Duration(days: 2));
+    }
+    
+    // Try to parse dd/MM/yyyy or yyyy-MM-dd
+    final dateRegex = RegExp(r'(\d{1,2})[-/](\d{1,2})[-/](\d{4})');
+    final match = dateRegex.firstMatch(dueDate);
+    if (match != null) {
+      final day = int.tryParse(match.group(1) ?? '') ?? now.day;
+      final month = int.tryParse(match.group(2) ?? '') ?? now.month;
+      final year = int.tryParse(match.group(3) ?? '') ?? now.year;
+      return DateTime(year, month, day);
+    }
+    
+    final isoRegex = RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
+    final isoMatch = isoRegex.firstMatch(dueDate);
+    if (isoMatch != null) {
+      final year = int.tryParse(isoMatch.group(1) ?? '') ?? now.year;
+      final month = int.tryParse(isoMatch.group(2) ?? '') ?? now.month;
+      final day = int.tryParse(isoMatch.group(3) ?? '') ?? now.day;
+      return DateTime(year, month, day);
+    }
+
+    final idMonths = {
+      'januari': 1, 'jan': 1,
+      'februari': 2, 'feb': 2,
+      'maret': 3, 'mar': 3,
+      'april': 4, 'apr': 4,
+      'mei': 5,
+      'juni': 6, 'jun': 6,
+      'juli': 7, 'jul': 7,
+      'agustus': 8, 'agu': 8, 'agt': 8,
+      'september': 9, 'sep': 9,
+      'oktober': 10, 'okt': 10,
+      'november': 11, 'nov': 11,
+      'desember': 12, 'des': 12,
+    };
+    
+    for (var entry in idMonths.entries) {
+      if (lower.contains(entry.key)) {
+        final dayRegex = RegExp(r'\b(\d{1,2})\b');
+        final yearRegex = RegExp(r'\b(\d{4})\b');
+        
+        final dayMatch = dayRegex.firstMatch(dueDate);
+        final yearMatch = yearRegex.firstMatch(dueDate);
+        
+        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
+        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+        final month = entry.value;
+        
+        return DateTime(year, month, day);
+      }
+    }
+
+    final enMonths = {
+      'january': 1, 'jan': 1,
+      'february': 2, 'feb': 2,
+      'march': 3, 'mar': 3,
+      'april': 4, 'apr': 4,
+      'may': 5,
+      'june': 6, 'jun': 6,
+      'july': 7, 'jul': 7,
+      'august': 8, 'aug': 8,
+      'september': 9, 'sep': 9,
+      'october': 10, 'oct': 10,
+      'november': 11, 'nov': 11,
+      'december': 12, 'dec': 12,
+    };
+    
+    for (var entry in enMonths.entries) {
+      if (lower.contains(entry.key)) {
+        final dayRegex = RegExp(r'\b(\d{1,2})\b');
+        final yearRegex = RegExp(r'\b(\d{4})\b');
+        
+        final dayMatch = dayRegex.firstMatch(dueDate);
+        final yearMatch = yearRegex.firstMatch(dueDate);
+        
+        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
+        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+        final month = entry.value;
+        
+        return DateTime(year, month, day);
+      }
+    }
+
+    return now;
+  }
+
   void _showAddTodoBottomSheet(BuildContext context, ActionItem action) {
     final titleController = TextEditingController(text: action.title);
     
-    // Format description with assignee & original due date if present
-    String descText = '';
-    if (action.assignee.isNotEmpty && action.assignee != 'None' && action.assignee != '-') {
-      descText += 'Diserahkan kepada: ${action.assignee}\n';
-    }
-    if (action.dueDate.isNotEmpty && action.dueDate != 'None' && action.dueDate != '-') {
-      descText += 'Tenggat asli AI: ${action.dueDate}';
-    }
-    final descController = TextEditingController(text: descText.trim());
+    // Format description with action.description
+    final descController = TextEditingController(
+        text: action.description != '-' ? action.description : '');
     
-    final selectedDate = DateTime.now().obs;
-    final selectedTime = TimeOfDay.now().obs;
+    final selectedDate = _parseDueDate(action.dueDate).obs;
+    final selectedTime = const TimeOfDay(hour: 9, minute: 0).obs;
     final isPriority = false.obs;
 
     Get.bottomSheet(
@@ -1120,7 +1361,7 @@ class NotulenView extends GetView<NotulenController> {
     required bool isDetail,
   }) {
     final titleController = TextEditingController(text: action.title);
-    final assigneeController = TextEditingController(text: action.assignee);
+    final descController = TextEditingController(text: action.description);
     final dueDateController = TextEditingController(text: action.dueDate);
 
     Get.bottomSheet(
@@ -1180,12 +1421,12 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Penanggung Jawab (PJ)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const Text('Deskripsi Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
               const SizedBox(height: 8),
               TextField(
-                controller: assigneeController,
+                controller: descController,
                 decoration: InputDecoration(
-                  hintText: 'Nama penanggung jawab...',
+                  hintText: 'Deskripsi/detail tugas...',
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -1208,13 +1449,13 @@ class NotulenView extends GetView<NotulenController> {
                 child: ElevatedButton(
                   onPressed: () {
                     final t = titleController.text.trim();
-                    final a = assigneeController.text.trim();
+                    final desc = descController.text.trim();
                     final d = dueDateController.text.trim();
                     if (t.isEmpty) return;
                     if (isDetail) {
-                      controller.updateDetailActionItem(index, t, a, d);
+                      controller.updateDetailActionItem(index, t, desc, d);
                     } else {
-                      controller.updateActionItem(index, t, a, d);
+                      controller.updateActionItem(index, t, desc, d);
                     }
                     Get.back();
                   },
