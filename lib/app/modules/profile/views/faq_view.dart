@@ -46,7 +46,7 @@ class FaqView extends StatelessWidget {
               icon: Icons.mic_none_outlined,
               title: 'Smart Notulen',
               description:
-                  'Gunakan Smart Notulen untuk merekam & mentranskrip rapat secara otomatis dengan AI. Anda juga dapat menyunting draf notulen dan menyimpannya sebagai arsip digital.',
+                  'Gunakan Smart Notulen untuk merekam & mentranskrip percakapan secara otomatis dengan AI. Anda juga dapat menyunting draf notulen dan menyimpannya sebagai arsip digital.',
             ),
             const SizedBox(height: 12),
             _buildGuideCard(
@@ -73,9 +73,9 @@ class FaqView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildFaqTile(
-              question: 'Apakah hasil transkripsi rapat 100% akurat?',
+              question: 'Apakah hasil transkripsi percakapan 100% akurat?',
               answer:
-                  'Akurasi transkripsi otomatis dipengaruhi oleh kualitas rekaman audio dan kejelasan ucapan peserta rapat. Anda dapat menyunting kembali teks hasil transkrip draf sebelum disimpan.',
+                  'Akurasi transkripsi otomatis dipengaruhi oleh kualitas rekaman audio dan kejelasan ucapan pembicara. Anda dapat menyunting kembali teks hasil transkrip draf sebelum disimpan.',
             ),
             const Divider(height: 24, color: Color(0xFFE2E8F0)),
             _buildFaqTile(

@@ -46,8 +46,8 @@ class NotifikasiController extends GetxController {
       ),
       NotifikasiModel(
         id: '4',
-        title: 'Notulen Rapat Selesai Diproses 📝',
-        body: 'Transkripsi otomatis rapat "Sinkronisasi Mingguan" hari ini pukul 10:00 telah selesai diproses dengan akurasi 98%.',
+        title: 'Notulen Selesai Diproses 📝',
+        body: 'Transkripsi otomatis "Sinkronisasi Mingguan" hari ini pukul 10:00 telah selesai diproses dengan akurasi 98%.',
         timestamp: now.subtract(const Duration(hours: 4)),
         isRead: true,
         category: 'productivity',

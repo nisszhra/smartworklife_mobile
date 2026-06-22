@@ -505,6 +505,20 @@ class NotulenController extends GetxController {
     }
   }
 
+  void updateActionItem(int index, String title, String assignee, String dueDate) {
+    if (index >= 0 && index < actionItems.length) {
+      actionItems[index] = ActionItem(title: title, assignee: assignee, dueDate: dueDate);
+      actionItems.refresh();
+    }
+  }
+
+  void updateDetailActionItem(int index, String title, String assignee, String dueDate) {
+    if (index >= 0 && index < detailActionItems.length) {
+      detailActionItems[index] = ActionItem(title: title, assignee: assignee, dueDate: dueDate);
+      detailActionItems.refresh();
+    }
+  }
+
   Future<void> analyzeTranscription() async {
     final uploaded = await _ensureUploaded();
     if (!uploaded) return;
