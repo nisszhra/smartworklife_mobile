@@ -430,11 +430,22 @@ class NotulenDetailView extends GetView<NotulenController> {
                                   color: Color(0xFF181C22),
                                 ),
                               ),
+                              if (action.description.isNotEmpty && action.description != '-')
+                                Text(
+                                  action.description,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF414753),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               Text(
-                                'Assigned to ${action.assignee} • Due ${action.dueDate}',
+                                'Tenggat: ${action.dueDate}',
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: Color(0xFF717785),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -509,21 +520,113 @@ class NotulenDetailView extends GetView<NotulenController> {
     }
   }
 
+  DateTime _parseDueDate(String dueDate) {
+    final now = DateTime.now();
+    final lower = dueDate.toLowerCase();
+
+    if (lower.contains('hari ini') || lower.contains('today')) {
+      return now;
+    }
+    if (lower.contains('besok') || lower.contains('tomorrow')) {
+      return now.add(const Duration(days: 1));
+    }
+    if (lower.contains('lusa') || lower.contains('day after tomorrow')) {
+      return now.add(const Duration(days: 2));
+    }
+    
+    // Try to parse dd/MM/yyyy or yyyy-MM-dd
+    final dateRegex = RegExp(r'(\d{1,2})[-/](\d{1,2})[-/](\d{4})');
+    final match = dateRegex.firstMatch(dueDate);
+    if (match != null) {
+      final day = int.tryParse(match.group(1) ?? '') ?? now.day;
+      final month = int.tryParse(match.group(2) ?? '') ?? now.month;
+      final year = int.tryParse(match.group(3) ?? '') ?? now.year;
+      return DateTime(year, month, day);
+    }
+    
+    final isoRegex = RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
+    final isoMatch = isoRegex.firstMatch(dueDate);
+    if (isoMatch != null) {
+      final year = int.tryParse(isoMatch.group(1) ?? '') ?? now.year;
+      final month = int.tryParse(isoMatch.group(2) ?? '') ?? now.month;
+      final day = int.tryParse(isoMatch.group(3) ?? '') ?? now.day;
+      return DateTime(year, month, day);
+    }
+
+    final idMonths = {
+      'januari': 1, 'jan': 1,
+      'februari': 2, 'feb': 2,
+      'maret': 3, 'mar': 3,
+      'april': 4, 'apr': 4,
+      'mei': 5,
+      'juni': 6, 'jun': 6,
+      'juli': 7, 'jul': 7,
+      'agustus': 8, 'agu': 8, 'agt': 8,
+      'september': 9, 'sep': 9,
+      'oktober': 10, 'okt': 10,
+      'november': 11, 'nov': 11,
+      'desember': 12, 'des': 12,
+    };
+    
+    for (var entry in idMonths.entries) {
+      if (lower.contains(entry.key)) {
+        final dayRegex = RegExp(r'\b(\d{1,2})\b');
+        final yearRegex = RegExp(r'\b(\d{4})\b');
+        
+        final dayMatch = dayRegex.firstMatch(dueDate);
+        final yearMatch = yearRegex.firstMatch(dueDate);
+        
+        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
+        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+        final month = entry.value;
+        
+        return DateTime(year, month, day);
+      }
+    }
+
+    final enMonths = {
+      'january': 1, 'jan': 1,
+      'february': 2, 'feb': 2,
+      'march': 3, 'mar': 3,
+      'april': 4, 'apr': 4,
+      'may': 5,
+      'june': 6, 'jun': 6,
+      'july': 7, 'jul': 7,
+      'august': 8, 'aug': 8,
+      'september': 9, 'sep': 9,
+      'october': 10, 'oct': 10,
+      'november': 11, 'nov': 11,
+      'december': 12, 'dec': 12,
+    };
+    
+    for (var entry in enMonths.entries) {
+      if (lower.contains(entry.key)) {
+        final dayRegex = RegExp(r'\b(\d{1,2})\b');
+        final yearRegex = RegExp(r'\b(\d{4})\b');
+        
+        final dayMatch = dayRegex.firstMatch(dueDate);
+        final yearMatch = yearRegex.firstMatch(dueDate);
+        
+        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
+        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+        final month = entry.value;
+        
+        return DateTime(year, month, day);
+      }
+    }
+
+    return now;
+  }
+
   void _showAddTodoBottomSheet(BuildContext context, ActionItem action) {
     final titleController = TextEditingController(text: action.title);
     
-    // Format description with assignee & original due date if present
-    String descText = '';
-    if (action.assignee.isNotEmpty && action.assignee != 'None' && action.assignee != '-') {
-      descText += 'Diserahkan kepada: ${action.assignee}\n';
-    }
-    if (action.dueDate.isNotEmpty && action.dueDate != 'None' && action.dueDate != '-') {
-      descText += 'Tenggat asli AI: ${action.dueDate}';
-    }
-    final descController = TextEditingController(text: descText.trim());
+    // Format description with action.description
+    final descController = TextEditingController(
+        text: action.description != '-' ? action.description : '');
     
-    final selectedDate = DateTime.now().obs;
-    final selectedTime = TimeOfDay.now().obs;
+    final selectedDate = _parseDueDate(action.dueDate).obs;
+    final selectedTime = const TimeOfDay(hour: 9, minute: 0).obs;
     final isPriority = false.obs;
 
     Get.bottomSheet(
@@ -768,7 +871,7 @@ class NotulenDetailView extends GetView<NotulenController> {
     required bool isDetail,
   }) {
     final titleController = TextEditingController(text: action.title);
-    final assigneeController = TextEditingController(text: action.assignee);
+    final descController = TextEditingController(text: action.description);
     final dueDateController = TextEditingController(text: action.dueDate);
 
     Get.bottomSheet(
@@ -828,12 +931,12 @@ class NotulenDetailView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Penanggung Jawab (PJ)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const Text('Deskripsi Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
               const SizedBox(height: 8),
               TextField(
-                controller: assigneeController,
+                controller: descController,
                 decoration: InputDecoration(
-                  hintText: 'Nama penanggung jawab...',
+                  hintText: 'Deskripsi/detail tugas...',
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -856,13 +959,13 @@ class NotulenDetailView extends GetView<NotulenController> {
                 child: ElevatedButton(
                   onPressed: () {
                     final t = titleController.text.trim();
-                    final a = assigneeController.text.trim();
+                    final desc = descController.text.trim();
                     final d = dueDateController.text.trim();
                     if (t.isEmpty) return;
                     if (isDetail) {
-                      controller.updateDetailActionItem(index, t, a, d);
+                      controller.updateDetailActionItem(index, t, desc, d);
                     } else {
-                      controller.updateActionItem(index, t, a, d);
+                      controller.updateActionItem(index, t, desc, d);
                     }
                     Get.back();
                   },

@@ -31,9 +31,9 @@ class KeyInsight {
 
 class ActionItem {
   final String title;
-  final String assignee;
+  final String description;
   final String dueDate;
-  ActionItem({required this.title, required this.assignee, required this.dueDate});
+  ActionItem({required this.title, required this.description, required this.dueDate});
 }
 
 class NotulenController extends GetxController {
@@ -459,6 +459,8 @@ class NotulenController extends GetxController {
     }
   }
 
+
+
   Future<void> analyzeDetailTranscription() async {
     if (detailNotulenId.value.isEmpty) return;
 
@@ -482,14 +484,42 @@ class NotulenController extends GetxController {
           if (a is Map) {
             return ActionItem(
               title: (a['task'] ?? a['title'] ?? '').toString(),
-              assignee: (a['assignee'] ?? '-').toString(),
+              description: (a['description'] ?? a['desc'] ?? a['assignee'] ?? '-').toString(),
               dueDate: (a['due_date'] ?? '-').toString(),
             );
           } else {
+            String title = a.toString();
+            String description = '-';
+            String dueDate = '-';
+
+            // Extract PJ (old version)
+            final pjRegExp = RegExp(r'\[PJ:\s*([^\]]+)\]');
+            final pjMatch = pjRegExp.firstMatch(title);
+            if (pjMatch != null) {
+              description = pjMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(pjRegExp, '').trim();
+            }
+
+            // Extract Desc (new version)
+            final descRegExp = RegExp(r'\[Desc:\s*([^\]]+)\]');
+            final descMatch = descRegExp.firstMatch(title);
+            if (descMatch != null) {
+              description = descMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(descRegExp, '').trim();
+            }
+
+            // Extract Due
+            final dueRegExp = RegExp(r'\[Due:\s*([^\]]+)\]');
+            final dueMatch = dueRegExp.firstMatch(title);
+            if (dueMatch != null) {
+              dueDate = dueMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(dueRegExp, '').trim();
+            }
+
             return ActionItem(
-              title: a.toString(),
-              assignee: '-',
-              dueDate: '-',
+              title: title,
+              description: description,
+              dueDate: dueDate,
             );
           }
         }).toList();
@@ -505,19 +535,21 @@ class NotulenController extends GetxController {
     }
   }
 
-  void updateActionItem(int index, String title, String assignee, String dueDate) {
+  void updateActionItem(int index, String title, String description, String dueDate) {
     if (index >= 0 && index < actionItems.length) {
-      actionItems[index] = ActionItem(title: title, assignee: assignee, dueDate: dueDate);
+      actionItems[index] = ActionItem(title: title, description: description, dueDate: dueDate);
       actionItems.refresh();
     }
   }
 
-  void updateDetailActionItem(int index, String title, String assignee, String dueDate) {
+  void updateDetailActionItem(int index, String title, String description, String dueDate) {
     if (index >= 0 && index < detailActionItems.length) {
-      detailActionItems[index] = ActionItem(title: title, assignee: assignee, dueDate: dueDate);
+      detailActionItems[index] = ActionItem(title: title, description: description, dueDate: dueDate);
       detailActionItems.refresh();
     }
   }
+
+
 
   Future<void> analyzeTranscription() async {
     final uploaded = await _ensureUploaded();
@@ -543,14 +575,42 @@ class NotulenController extends GetxController {
           if (a is Map) {
             return ActionItem(
               title: (a['task'] ?? a['title'] ?? '').toString(),
-              assignee: (a['assignee'] ?? '-').toString(),
+              description: (a['description'] ?? a['desc'] ?? a['assignee'] ?? '-').toString(),
               dueDate: (a['due_date'] ?? '-').toString(),
             );
           } else {
+            String title = a.toString();
+            String description = '-';
+            String dueDate = '-';
+
+            // Extract PJ
+            final pjRegExp = RegExp(r'\[PJ:\s*([^\]]+)\]');
+            final pjMatch = pjRegExp.firstMatch(title);
+            if (pjMatch != null) {
+              description = pjMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(pjRegExp, '').trim();
+            }
+
+            // Extract Desc
+            final descRegExp = RegExp(r'\[Desc:\s*([^\]]+)\]');
+            final descMatch = descRegExp.firstMatch(title);
+            if (descMatch != null) {
+              description = descMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(descRegExp, '').trim();
+            }
+
+            // Extract Due
+            final dueRegExp = RegExp(r'\[Due:\s*([^\]]+)\]');
+            final dueMatch = dueRegExp.firstMatch(title);
+            if (dueMatch != null) {
+              dueDate = dueMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(dueRegExp, '').trim();
+            }
+
             return ActionItem(
-              title: a.toString(),
-              assignee: '-',
-              dueDate: '-',
+              title: title,
+              description: description,
+              dueDate: dueDate,
             );
           }
         }).toList();
@@ -590,12 +650,38 @@ class NotulenController extends GetxController {
     }
   }
 
+  Future<void> discardNotulen() async {
+    try {
+      isProcessing.value = true;
+      processingStatusText.value = 'Membatalkan dan menghapus draft...';
+      
+      if (currentNotulenId.value.isNotEmpty) {
+        await provider.delete(currentNotulenId.value);
+      }
+      
+      _resetState();
+      Get.snackbar('🗑️ Dibatalkan', 'Draft rekaman berhasil dibatalkan dan dihapus.',
+          backgroundColor: Colors.blueGrey, colorText: Colors.white);
+    } catch (e) {
+      print('❌ Discard error: $e');
+      _resetState();
+      Get.snackbar('⚠️ Info', 'Draft dibersihkan dari layar.',
+          backgroundColor: Colors.orange, colorText: Colors.white);
+    } finally {
+      isProcessing.value = false;
+    }
+  }
+
   void _resetState() {
     currentNotulenId.value = '';
     transcriptionText.value = '';
     liveText.value = '';
     meetingTitle.value = '';
     showAiSummary.value = false;
+    isAnalyzing.value = false;
+    isProcessing.value = false;
+    isEditingTranscription.value = false;
+    transcriptionController.clear();
     keyInsights.clear();
     actionItems.clear();
     isRecording.value = false;
@@ -606,6 +692,16 @@ class NotulenController extends GetxController {
     _committedText = '';
     _liveWords = '';
     _previousTranscript = '';
+
+    // Stop timer and cancel active speech listening session
+    _timer?.cancel();
+    try {
+      if (_speechToText.isListening) {
+        _speechToText.cancel();
+      }
+    } catch (e) {
+      print('Error cancelling speech listener: $e');
+    }
   }
 
   Future<void> fetchNotulen() async {
@@ -668,13 +764,13 @@ class NotulenController extends GetxController {
           if (a is Map) {
             return ActionItem(
               title: (a['task'] ?? a['title'] ?? '').toString(),
-              assignee: (a['assignee'] ?? '-').toString(),
+              description: (a['description'] ?? a['desc'] ?? a['assignee'] ?? '-').toString(),
               dueDate: (a['due_date'] ?? '-').toString(),
             );
           } else {
             return ActionItem(
               title: a.toString(),
-              assignee: '-',
+              description: '-',
               dueDate: '-',
             );
           }
