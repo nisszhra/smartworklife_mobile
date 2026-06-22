@@ -90,6 +90,160 @@ class TodolistView extends GetView<TodolistController> {
     );
   }
 
+  // ─── Tampilkan Modal Bottom Sheet "Perpanjang Tenggat Waktu" ──────────────────
+  void _showExtendDeadlineBottomSheet(TodoModel task) {
+    final initDate = DateTime.now().add(const Duration(days: 1));
+    final selectedDate = initDate.obs;
+    final selectedTime = const TimeOfDay(hour: 9, minute: 0).obs;
+
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 16,
+          bottom: MediaQuery.of(Get.context!).viewInsets.bottom + 32,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Perpanjang Tenggat Waktu',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close, size: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFEBEE),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFFCDD2)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Colors.red),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Tugas "${task.title}" telah melewati tenggat waktu. Perpanjangan tenggat waktu akan otomatis mengubah prioritas tugas ini menjadi Penting.',
+                        style: TextStyle(fontSize: 13, color: Colors.red[900]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildLabel('Pilih Tenggat Baru'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Obx(() => GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: Get.context!,
+                          initialDate: selectedDate.value,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) selectedDate.value = picked;
+                      },
+                      child: _buildDateTimePickerBox(
+                        Icons.calendar_today,
+                        '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
+                      ),
+                    )),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Obx(() => GestureDetector(
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: Get.context!,
+                          initialTime: selectedTime.value,
+                        );
+                        if (picked != null) selectedTime.value = picked;
+                      },
+                      child: _buildDateTimePickerBox(
+                        Icons.access_time,
+                        selectedTime.value.format(Get.context!),
+                      ),
+                    )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final d = selectedDate.value;
+                    final t = selectedTime.value;
+                    final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
+                    await controller.extendOverdueTask(task: task, newDeadline: deadline);
+                    Get.back();
+                    Get.snackbar(
+                      'Sukses',
+                      'Tenggat waktu berhasil diperpanjang & ditandai Penting!',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Simpan Perpanjangan',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
   Widget _buildBottomSheetWrapper({
     required String title,
     required TextEditingController titleController,
@@ -402,8 +556,38 @@ class TodolistView extends GetView<TodolistController> {
                 );
               }
 
-              final activeTasks = controller.tasks.where((t) => !t.isCompleted).toList();
-              final completedTasks = controller.tasks.where((t) => t.isCompleted).toList();
+              final now = DateTime.now();
+              final filteredTasks = controller.tasks.where((t) {
+                // Search query filter
+                if (controller.searchQuery.value.isNotEmpty) {
+                  final query = controller.searchQuery.value.toLowerCase();
+                  final titleMatch = t.title.toLowerCase().contains(query);
+                  final descMatch = t.description.toLowerCase().contains(query);
+                  if (!titleMatch && !descMatch) return false;
+                }
+
+                // Filter chip
+                if (controller.selectedFilter.value == 'Penting') {
+                  return t.isPriority;
+                } else if (controller.selectedFilter.value == 'Hari Ini') {
+                  return t.deadline != null &&
+                      t.deadline!.year == now.year &&
+                      t.deadline!.month == now.month &&
+                      t.deadline!.day == now.day;
+                } else if (controller.selectedFilter.value == 'Besok') {
+                  final tomorrow = now.add(const Duration(days: 1));
+                  return t.deadline != null &&
+                      t.deadline!.year == tomorrow.year &&
+                      t.deadline!.month == tomorrow.month &&
+                      t.deadline!.day == tomorrow.day;
+                } else if (controller.selectedFilter.value == 'Terlambat') {
+                  return t.isOverdue;
+                }
+                return true;
+              }).toList();
+
+              final activeTasks = filteredTasks.where((t) => !t.isCompleted).toList();
+              final completedTasks = filteredTasks.where((t) => t.isCompleted).toList();
 
               return RefreshIndicator(
                 onRefresh: controller.fetchTodos,
@@ -457,8 +641,9 @@ class TodolistView extends GetView<TodolistController> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
-      child: const TextField(
-        decoration: InputDecoration(
+      child: TextField(
+        onChanged: (val) => controller.searchQuery.value = val,
+        decoration: const InputDecoration(
           hintText: 'Cari tugas...',
           hintStyle: TextStyle(color: Color(0xFF5F6368), fontSize: 15),
           prefixIcon: Icon(Icons.search, color: Color(0xFF5F6368)),
@@ -470,35 +655,42 @@ class TodolistView extends GetView<TodolistController> {
   }
 
   Widget _buildFilterChips() {
-    final filters = ['Semua', 'Penting', 'Hari Ini', 'Besok'];
+    final filters = ['Semua', 'Penting', 'Hari Ini', 'Besok', 'Terlambat'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: filters.map((filter) {
-          bool isActive = filter == 'Semua';
-          return Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: FilterChip(
-              label: Text(filter),
-              labelStyle: TextStyle(
-                color: isActive ? Colors.white : const Color(0xFF5F6368),
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              ),
-              selected: isActive,
-              onSelected: (val) {},
-              backgroundColor: const Color(0xFFF1F3F4),
-              selectedColor: const Color(0xFF1A73E8),
-              checkmarkColor: Colors.white,
-              showCheckmark: false,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: isActive ? const Color(0xFF1A73E8) : Colors.transparent),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-            ),
-          );
-        }).toList(),
-      ),
+      child: Obx(() => Row(
+            children: filters.map((filter) {
+              bool isActive = controller.selectedFilter.value == filter;
+              return Container(
+                margin: const EdgeInsets.only(right: 12),
+                child: FilterChip(
+                  label: Text(filter),
+                  labelStyle: TextStyle(
+                    color: isActive ? Colors.white : const Color(0xFF5F6368),
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  selected: isActive,
+                  onSelected: (selected) {
+                    if (selected) {
+                      controller.selectedFilter.value = filter;
+                    }
+                  },
+                  backgroundColor: const Color(0xFFF1F3F4),
+                  selectedColor: const Color(0xFF1A73E8),
+                  checkmarkColor: Colors.white,
+                  showCheckmark: false,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                        color: isActive
+                            ? const Color(0xFF1A73E8)
+                            : Colors.transparent),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+              );
+            }).toList(),
+          )),
     );
   }
 
@@ -508,10 +700,16 @@ class TodolistView extends GetView<TodolistController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0).withOpacity(0.5)),
+        border: Border.all(
+          color: task.isOverdue
+              ? Colors.red[200]!
+              : const Color(0xFFE0E0E0).withOpacity(0.5),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: task.isOverdue
+                ? Colors.red.withOpacity(0.04)
+                : Colors.black.withOpacity(0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -531,10 +729,14 @@ class TodolistView extends GetView<TodolistController> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: task.isCompleted ? const Color(0xFF1A73E8) : const Color(0xFFE0E0E0),
+                    color: task.isCompleted
+                        ? const Color(0xFF1A73E8)
+                        : (task.isOverdue ? Colors.red : const Color(0xFFE0E0E0)),
                     width: 2,
                   ),
-                  color: task.isCompleted ? const Color(0xFF1A73E8).withOpacity(0.1) : Colors.white,
+                  color: task.isCompleted
+                      ? const Color(0xFF1A73E8).withOpacity(0.1)
+                      : (task.isOverdue ? Colors.red[50] : Colors.white),
                 ),
                 child: task.isCompleted
                     ? const Icon(Icons.check, size: 16, color: Color(0xFF1A73E8))
@@ -542,74 +744,150 @@ class TodolistView extends GetView<TodolistController> {
               ),
             ),
             const SizedBox(width: 16),
-            
-            // Konten
+
+            // Konten (Bisa diklik untuk Edit / Perpanjang)
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    task.title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (task.isOverdue) {
+                    _showExtendDeadlineBottomSheet(task);
+                  } else {
+                    _showEditTaskBottomSheet(task);
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      task.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: task.isCompleted ? Colors.grey : Colors.black87,
+                        decoration:
+                            task.isCompleted ? TextDecoration.lineThrough : null,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      // Badge Waktu
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: task.isPriority ? const Color(0xFFFFEBEE) : const Color(0xFFF1F3F4),
-                          borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        // Badge Waktu
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: task.isOverdue
+                                ? const Color(0xFFFFEBEE)
+                                : (task.isPriority
+                                    ? const Color(0xFFFFEBEE)
+                                    : const Color(0xFFF1F3F4)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                task.isOverdue
+                                    ? Icons.error_outline
+                                    : (task.isPriority
+                                        ? Icons.calendar_today
+                                        : Icons.access_time),
+                                size: 14,
+                                color: task.isOverdue
+                                    ? Colors.red[700]
+                                    : (task.isPriority
+                                        ? Colors.red[700]
+                                        : const Color(0xFF5F6368)),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                task.timeLabel,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: task.isOverdue
+                                      ? Colors.red[700]
+                                      : (task.isPriority
+                                          ? Colors.red[700]
+                                          : const Color(0xFF5F6368)),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              task.isPriority ? Icons.calendar_today : Icons.access_time,
-                              size: 14,
-                              color: task.isPriority ? Colors.red[700] : const Color(0xFF5F6368),
+                        if (task.isOverdue)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.red[100],
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              task.timeLabel,
+                            child: Text(
+                              'Terlambat',
                               style: TextStyle(
-                                fontSize: 12,
-                                color: task.isPriority ? Colors.red[700] : const Color(0xFF5F6368),
-                                fontWeight: FontWeight.w500,
+                                fontSize: 11,
+                                color: Colors.red[900],
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Label opsional (misal kategori dari deskripsi)
-                      if (task.description.isNotEmpty)
-                        Expanded(
-                          child: Text(
-                            task.description,
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF5F6368)),
+                          ),
+                        if (task.isExtended)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.orange[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Perpanjangan',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.orange[900],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        if (task.cleanDescription.isNotEmpty)
+                          Text(
+                            task.cleanDescription,
+                            style: const TextStyle(
+                                fontSize: 12, color: Color(0xFF5F6368)),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            
+
             // Menu
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert, color: Color(0xFF5F6368)),
               onSelected: (val) {
                 if (val == 'edit') _showEditTaskBottomSheet(task);
                 if (val == 'delete') controller.deleteTask(task.id);
+                if (val == 'extend') _showExtendDeadlineBottomSheet(task);
               },
               itemBuilder: (context) => [
+                if (task.isOverdue)
+                  const PopupMenuItem(
+                    value: 'extend',
+                    child: Row(
+                      children: [
+                        Icon(Icons.history, size: 18, color: Colors.blue),
+                        SizedBox(width: 8),
+                        Text('Perpanjang Tenggat'),
+                      ],
+                    ),
+                  ),
                 const PopupMenuItem(value: 'edit', child: Text('Edit')),
                 const PopupMenuItem(value: 'delete', child: Text('Hapus')),
               ],

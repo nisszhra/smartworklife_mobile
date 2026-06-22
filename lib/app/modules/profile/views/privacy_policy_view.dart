@@ -58,7 +58,7 @@ class PrivacyPolicyView extends StatelessWidget {
             _buildSection(
               title: '2. Pemrosesan Data Suara & Transkrip',
               content:
-                  'Untuk fitur Smart Notulen, rekaman audio dan transkripsi teks Anda diproses secara aman. Kami berkomitmen untuk menjaga data audio dan transkrip hasil rapat tetap privat dan hanya dapat diakses oleh pemilik akun.',
+                  'Untuk fitur Smart Notulen, rekaman audio dan transkripsi teks Anda diproses secara aman. Kami berkomitmen untuk menjaga data audio dan transkrip hasil rekaman tetap privat dan hanya dapat diakses oleh pemilik akun.',
             ),
             const SizedBox(height: 20),
             _buildSection(
@@ -76,7 +76,7 @@ class PrivacyPolicyView extends StatelessWidget {
             _buildSection(
               title: '5. Penghapusan Akun',
               content:
-                  'Apabila Anda memilih untuk menghapus akun melalui menu Akun & Keamanan, seluruh data personal, transkrip rapat, serta histori aktivitas Anda akan dihapus secara permanen dari basis data kami dan tidak dapat dikembalikan.',
+                  'Apabila Anda memilih untuk menghapus akun melalui menu Akun & Keamanan, seluruh data personal, transkrip rekaman, serta histori aktivitas Anda akan dihapus secara permanen dari basis data kami dan tidak dapat dikembalikan.',
             ),
           ],
         ),

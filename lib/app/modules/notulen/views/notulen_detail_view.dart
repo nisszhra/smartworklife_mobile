@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
+import '../../todolist/controllers/todolist_controller.dart';
 
 class NotulenDetailView extends GetView<NotulenController> {
   const NotulenDetailView({super.key});
@@ -328,6 +329,23 @@ class NotulenDetailView extends GetView<NotulenController> {
                   color: Color(0xFF181C22),
                 ),
               ),
+              const Spacer(),
+              Obx(() => IconButton(
+                    onPressed: controller.detailIsAnalyzing.value
+                        ? null
+                        : () => controller.analyzeDetailTranscription(),
+                    icon: controller.detailIsAnalyzing.value
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF005AB4),
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(Icons.refresh, color: Color(0xFF005AB4)),
+                    tooltip: 'Analisis Ulang AI Summary',
+                  )),
             ],
           ),
           const SizedBox(height: 24),
@@ -368,7 +386,7 @@ class NotulenDetailView extends GetView<NotulenController> {
               )),
           const SizedBox(height: 24),
           const Text(
-            'ACTION ITEMS',
+            'REKOMENDASI TUGAS',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
@@ -378,51 +396,78 @@ class NotulenDetailView extends GetView<NotulenController> {
           ),
           const SizedBox(height: 12),
           Obx(() => Column(
-                children: controller.detailActionItems
-                    .map((action) => Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
+                children: controller.detailActionItems.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final action = entry.value;
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(12),
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Row(
+                          child: const Icon(Icons.assignment_outlined,
+                              size: 18, color: Color(0xFF005AB4)),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF94A3B8),
-                                  borderRadius: BorderRadius.circular(4),
+                              Text(
+                                action.title,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF181C22),
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      action.title,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF181C22),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Assigned to ${action.assignee} • Due ${action.dueDate}',
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Color(0xFF717785),
-                                      ),
-                                    ),
-                                  ],
+                              Text(
+                                'Assigned to ${action.assignee} • Due ${action.dueDate}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF717785),
                                 ),
                               ),
                             ],
                           ),
-                        ))
-                    .toList(),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 20, color: Color(0xFF717785)),
+                          tooltip: 'Edit Rekomendasi',
+                          onPressed: () => _showEditRecommendationBottomSheet(
+                            context: Get.context!,
+                            index: idx,
+                            action: action,
+                            isDetail: true,
+                          ),
+                        ),
+                        Obx(() {
+                          final isAdded = Get.isRegistered<TodolistController>() &&
+                              Get.find<TodolistController>().tasks.any((t) => t.title == action.title);
+                          return IconButton(
+                            icon: Icon(
+                              isAdded ? Icons.check_circle : Icons.add_task,
+                              color: isAdded ? Colors.green : const Color(0xFF005AB4),
+                            ),
+                            tooltip: isAdded ? 'Sudah ditambahkan' : 'Tambah ke To-Do',
+                            onPressed: isAdded
+                                ? null
+                                : () => _showAddTodoBottomSheet(Get.context!, action),
+                          );
+                        }),
+                      ],
+                    ),
+                  );
+                }).toList(),
               )),
         ],
       ),
@@ -463,6 +508,381 @@ class NotulenDetailView extends GetView<NotulenController> {
       Get.back(); // Go back from detail view
     }
   }
+
+  void _showAddTodoBottomSheet(BuildContext context, ActionItem action) {
+    final titleController = TextEditingController(text: action.title);
+    
+    // Format description with assignee & original due date if present
+    String descText = '';
+    if (action.assignee.isNotEmpty && action.assignee != 'None' && action.assignee != '-') {
+      descText += 'Diserahkan kepada: ${action.assignee}\n';
+    }
+    if (action.dueDate.isNotEmpty && action.dueDate != 'None' && action.dueDate != '-') {
+      descText += 'Tenggat asli AI: ${action.dueDate}';
+    }
+    final descController = TextEditingController(text: descText.trim());
+    
+    final selectedDate = DateTime.now().obs;
+    final selectedTime = TimeOfDay.now().obs;
+    final isPriority = false.obs;
+
+    Get.bottomSheet(
+      _buildTodoFormBottomSheet(
+        context: context,
+        title: 'Tambah Tugas dari AI',
+        titleController: titleController,
+        descController: descController,
+        selectedDate: selectedDate,
+        selectedTime: selectedTime,
+        isPriority: isPriority,
+        onSave: () {
+          if (titleController.text.trim().isEmpty) return;
+          final d = selectedDate.value;
+          final t = selectedTime.value;
+          final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
+          final taskDateStr = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+          
+          Get.find<TodolistController>().addTask(
+            title: titleController.text.trim(),
+            description: descController.text.trim(),
+            isPriority: isPriority.value,
+            deadline: deadline,
+            taskDate: taskDateStr,
+          );
+          
+          Get.back();
+          Get.snackbar(
+            'Tugas Ditambahkan',
+            'Tugas berhasil ditambahkan ke Smart To-Do.',
+            backgroundColor: const Color(0xFFEFF6FF),
+            colorText: const Color(0xFF005AB4),
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        },
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildTodoFormBottomSheet({
+    required BuildContext context,
+    required String title,
+    required TextEditingController titleController,
+    required TextEditingController descController,
+    required Rx<DateTime> selectedDate,
+    required Rx<TimeOfDay> selectedTime,
+    required RxBool isPriority,
+    required VoidCallback onSave,
+  }) {
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: keyboardHeight),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, size: 18, color: Colors.black54),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text('Judul Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  hintText: 'Apa yang ingin Anda kerjakan?',
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.blue, width: 1.5)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('Deskripsi', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: descController,
+                maxLines: 2,
+                decoration: InputDecoration(
+                  hintText: 'Tambahkan catatan detail...',
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.blue, width: 1.5)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('Tenggat Waktu', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Obx(() => GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: Get.context!,
+                          initialDate: selectedDate.value,
+                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) selectedDate.value = picked;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                            const SizedBox(width: 8),
+                            Text('${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}', style: const TextStyle(fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                    )),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Obx(() => GestureDetector(
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: Get.context!,
+                          initialTime: selectedTime.value,
+                        );
+                        if (picked != null) selectedTime.value = picked;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                            const SizedBox(width: 8),
+                            Text(selectedTime.value.format(Get.context!), style: const TextStyle(fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                    )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Text('Prioritas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              Obx(() => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.priority_high, size: 20, color: isPriority.value ? Colors.red : Colors.grey),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Tandai sebagai Penting',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isPriority.value ? Colors.black87 : Colors.grey[600],
+                          fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: isPriority.value,
+                      onChanged: (val) => isPriority.value = val,
+                      activeColor: Colors.blue,
+                    ),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: onSave,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                  child: const Text('Simpan Tugas', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEditRecommendationBottomSheet({
+    required BuildContext context,
+    required int index,
+    required ActionItem action,
+    required bool isDetail,
+  }) {
+    final titleController = TextEditingController(text: action.title);
+    final assigneeController = TextEditingController(text: action.assignee);
+    final dueDateController = TextEditingController(text: action.dueDate);
+
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Edit Rekomendasi Tugas',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close, size: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text('Judul Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  hintText: 'Judul tugas...',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Penanggung Jawab (PJ)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: assigneeController,
+                decoration: InputDecoration(
+                  hintText: 'Nama penanggung jawab...',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Tenggat Waktu', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: dueDateController,
+                decoration: InputDecoration(
+                  hintText: 'Tenggat waktu...',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final t = titleController.text.trim();
+                    final a = assigneeController.text.trim();
+                    final d = dueDateController.text.trim();
+                    if (t.isEmpty) return;
+                    if (isDetail) {
+                      controller.updateDetailActionItem(index, t, a, d);
+                    } else {
+                      controller.updateActionItem(index, t, a, d);
+                    }
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF005AB4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Simpan Rekomendasi', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
 }
 
 class AiTypingIndicator extends StatefulWidget {

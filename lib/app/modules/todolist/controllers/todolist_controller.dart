@@ -17,6 +17,8 @@ class TodolistController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
   final isCompletedExpanded = true.obs;
+  final selectedFilter = 'Semua'.obs;
+  final searchQuery = ''.obs;
 
   @override
   void onInit() {
@@ -102,6 +104,26 @@ class TodolistController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     }
+  }
+
+  // ── Perpanjang tenggat waktu tugas terlambat ───────────────────────────────
+  Future<void> extendOverdueTask({
+    required TodoModel task,
+    required DateTime newDeadline,
+  }) async {
+    String newDesc = task.description;
+    if (!newDesc.startsWith('[Perpanjangan]')) {
+      newDesc = '[Perpanjangan] ${newDesc.trim()}'.trim();
+    }
+    final taskDateStr = '${newDeadline.year}-${newDeadline.month.toString().padLeft(2, '0')}-${newDeadline.day.toString().padLeft(2, '0')}';
+    await updateTask(
+      id: task.id,
+      title: task.title,
+      description: newDesc,
+      isPriority: true,
+      deadline: newDeadline,
+      taskDate: taskDateStr,
+    );
   }
 
   // ── Hapus tugas ────────────────────────────────────────────────────────────

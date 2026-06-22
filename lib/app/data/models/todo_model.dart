@@ -27,6 +27,23 @@ class TodoModel {
   bool get isCompleted => status == 'done';
   bool get isPriority => priority == 'important';
 
+  bool get isOverdue {
+    if (isCompleted) return false;
+    if (deadline == null) return false;
+    return deadline!.isBefore(DateTime.now());
+  }
+
+  bool get isExtended {
+    return description.startsWith('[Perpanjangan]');
+  }
+
+  String get cleanDescription {
+    if (description.startsWith('[Perpanjangan]')) {
+      return description.replaceFirst('[Perpanjangan]', '').trim();
+    }
+    return description;
+  }
+
   /// Label waktu yang ditampilkan di UI (deadline atau task_date)
   String get timeLabel {
     if (deadline != null) {
