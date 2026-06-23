@@ -748,163 +748,161 @@ class HomeView extends GetView<HomeController> {
     return Builder(
       builder: (context) {
         final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-        return Padding(
-          padding: EdgeInsets.only(bottom: keyboardHeight),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Row(
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 18, color: Colors.black54),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildLabel('Judul Tugas'),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: titleController,
+                  decoration: _getInputDecoration('Apa yang ingin Anda kerjakan?'),
+                ),
+                const SizedBox(height: 20),
+                _buildLabel('Deskripsi'),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: descController,
+                  maxLines: 2,
+                  decoration: _getInputDecoration('Tambahkan catatan detail...'),
+                ),
+                const SizedBox(height: 20),
+                _buildLabel('Tenggat Waktu'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Obx(() => GestureDetector(
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: Get.context!,
+                            initialDate: selectedDate.value,
+                            firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                            lastDate: DateTime(2100),
+                          );
+                          if (picked != null) selectedDate.value = picked;
+                        },
+                        child: _buildDateTimePickerBox(
+                          Icons.calendar_today,
+                          '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
+                        ),
+                      )),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Obx(() => GestureDetector(
+                        onTap: () async {
+                          final picked = await showTimePicker(
+                            context: Get.context!,
+                            initialTime: selectedTime.value,
+                          );
+                          if (picked != null) selectedTime.value = picked;
+                        },
+                        child: _buildDateTimePickerBox(
+                          Icons.access_time,
+                          selectedTime.value.format(Get.context!),
+                        ),
+                      )),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Obx(() => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isPriority.value ? const Color(0xFFFFEBEE) : const Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isPriority.value ? const Color(0xFFFFCDD2) : Colors.grey[200]!,
+                    ),
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      Expanded(
+                        child: Text(
+                          'Tandai sebagai Penting',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isPriority.value ? Colors.black87 : Colors.grey[600],
+                            fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
+                          ),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        icon: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close, size: 18, color: Colors.black54),
-                        ),
+                      Switch(
+                        value: isPriority.value,
+                        onChanged: (val) => isPriority.value = val,
+                        activeColor: Colors.blue,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  _buildLabel('Judul Tugas'),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: titleController,
-                    decoration: _getInputDecoration('Apa yang ingin Anda kerjakan?'),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildLabel('Deskripsi'),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: descController,
-                    maxLines: 2,
-                    decoration: _getInputDecoration('Tambahkan catatan detail...'),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildLabel('Tenggat Waktu'),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Obx(() => GestureDetector(
-                          onTap: () async {
-                            final picked = await showDatePicker(
-                              context: Get.context!,
-                              initialDate: selectedDate.value,
-                              firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                              lastDate: DateTime(2100),
-                            );
-                            if (picked != null) selectedDate.value = picked;
-                          },
-                          child: _buildDateTimePickerBox(
-                            Icons.calendar_today,
-                            '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
-                          ),
-                        )),
+                )),
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: onSave,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Obx(() => GestureDetector(
-                          onTap: () async {
-                            final picked = await showTimePicker(
-                              context: Get.context!,
-                              initialTime: selectedTime.value,
-                            );
-                            if (picked != null) selectedTime.value = picked;
-                          },
-                          child: _buildDateTimePickerBox(
-                            Icons.access_time,
-                            selectedTime.value.format(Get.context!),
-                          ),
-                        )),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Obx(() => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isPriority.value ? const Color(0xFFFFEBEE) : const Color(0xFFF8F9FA),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isPriority.value ? const Color(0xFFFFCDD2) : Colors.grey[200]!,
-                      ),
+                      elevation: 0,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Tandai sebagai Penting',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: isPriority.value ? Colors.black87 : Colors.grey[600],
-                              fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        Switch(
-                          value: isPriority.value,
-                          onChanged: (val) => isPriority.value = val,
-                          activeColor: Colors.blue,
-                        ),
-                      ],
-                    ),
-                  )),
-                  const SizedBox(height: 28),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: onSave,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Simpan Tugas',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
+                    child: const Text(
+                      'Simpan Tugas',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: keyboardHeight),
+              ],
             ),
           ),
         );
