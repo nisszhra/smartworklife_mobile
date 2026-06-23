@@ -768,10 +768,38 @@ class NotulenController extends GetxController {
               dueDate: (a['due_date'] ?? '-').toString(),
             );
           } else {
+            String title = a.toString();
+            String description = '-';
+            String dueDate = '-';
+
+            // Extract PJ (old version)
+            final pjRegExp = RegExp(r'\[PJ:\s*([^\]]+)\]');
+            final pjMatch = pjRegExp.firstMatch(title);
+            if (pjMatch != null) {
+              description = pjMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(pjRegExp, '').trim();
+            }
+
+            // Extract Desc (new version)
+            final descRegExp = RegExp(r'\[Desc:\s*([^\]]+)\]');
+            final descMatch = descRegExp.firstMatch(title);
+            if (descMatch != null) {
+              description = descMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(descRegExp, '').trim();
+            }
+
+            // Extract Due
+            final dueRegExp = RegExp(r'\[Due:\s*([^\]]+)\]');
+            final dueMatch = dueRegExp.firstMatch(title);
+            if (dueMatch != null) {
+              dueDate = dueMatch.group(1)?.trim() ?? '-';
+              title = title.replaceAll(dueRegExp, '').trim();
+            }
+
             return ActionItem(
-              title: a.toString(),
-              description: '-',
-              dueDate: '-',
+              title: title,
+              description: description,
+              dueDate: dueDate,
             );
           }
         }).toList();
