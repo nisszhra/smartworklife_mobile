@@ -11,7 +11,7 @@ class DioService extends GetxService {
   static const String baseStorageUrl = 'https://margarita-shallow-tactless.ngrok-free.dev';
 
 
-  late final Dio client;
+  late final Dio client;  
 
   @override
   void onInit() {
