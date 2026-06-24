@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/chat_detail_controller.dart';
+import '../../notulen/controllers/notulen_controller.dart';
 
 class ChatDetailView extends GetView<ChatDetailController> {
   const ChatDetailView({super.key});
