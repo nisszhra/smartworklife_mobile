@@ -217,10 +217,7 @@ class ChatDetailView extends GetView<ChatDetailController> {
               Column(
                 crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    displayText,
-                    style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 15),
-                  ),
+                  _buildMessageContent(displayText, isMe),
                   if (!isMe && displayText.startsWith('📋')) ...[
                     const SizedBox(height: 8),
                     Obx(() {
@@ -228,7 +225,7 @@ class ChatDetailView extends GetView<ChatDetailController> {
                       return Align(
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
-                          onTap: isSaved ? null : () => _saveNotulenFromMessage(msg.id, displayText, sharedNotulenId),
+                          onTap: () => _saveNotulenFromMessage(msg.id, displayText, sharedNotulenId, isSaved),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
@@ -283,7 +280,90 @@ class ChatDetailView extends GetView<ChatDetailController> {
     );
   }
 
-  void _saveNotulenFromMessage(String msgId, String messageText, String? sharedNotulenId) {
+  Widget _buildMessageContent(String text, bool isMe) {
+    if (text.startsWith('📋')) {
+      String title = "Notulen";
+      String date = "";
+      String duration = "";
+
+      final lines = text.split('\n');
+      if (lines.isNotEmpty) {
+        title = lines[0].replaceAll('📋', '').replaceAll('*', '').trim();
+      }
+      if (lines.length > 1) {
+        final parts = lines[1].split('⏱');
+        date = parts[0].replaceAll('📅', '').trim();
+        if (parts.length > 1) {
+          duration = parts[1].trim();
+        }
+      }
+
+      return Container(
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 4),
+        decoration: BoxDecoration(
+          color: isMe ? Colors.white.withValues(alpha: 0.15) : const Color(0xFFF0F4F8),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isMe ? Colors.white.withValues(alpha: 0.2) : Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.description_rounded,
+                color: isMe ? Colors.white : const Color(0xFF005AB4),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: isMe ? Colors.white : Colors.black87,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.calendar_today, size: 12, color: isMe ? Colors.white70 : const Color(0xFF64748B)),
+                      const SizedBox(width: 4),
+                      Text(date, style: TextStyle(fontSize: 11, color: isMe ? Colors.white70 : const Color(0xFF64748B))),
+                      const SizedBox(width: 10),
+                      Icon(Icons.timer_outlined, size: 12, color: isMe ? Colors.white70 : const Color(0xFF64748B)),
+                      const SizedBox(width: 4),
+                      Text(duration, style: TextStyle(fontSize: 11, color: isMe ? Colors.white70 : const Color(0xFF64748B))),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Text(
+      text,
+      style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 15),
+    );
+  }
+
+  void _saveNotulenFromMessage(String msgId, String messageText, String? sharedNotulenId, bool isAlreadySaved) {
     // Parse format: "📋 *Judul*\n📅 tanggal  ⏱ durasi"
     final lines = messageText.split('\n');
     // Ambil judul dari baris pertama: "📋 *Judul*" → "Judul"
@@ -294,14 +374,16 @@ class ChatDetailView extends GetView<ChatDetailController> {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Simpan ke Arsip?', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(isAlreadySaved ? 'Simpan Lagi?' : 'Simpan ke Arsip?', style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Notulen ini akan disalin ke arsip Anda secara utuh beserta AI summary dan detail lainnya.',
-              style: TextStyle(color: Color(0xFF717785), fontSize: 13),
+            Text(
+              isAlreadySaved
+                  ? 'Notulen ini sudah pernah Anda simpan. Menyimpan lagi akan membuat salinan duplikat di arsip Anda. Yakin ingin melanjutkan?'
+                  : 'Notulen ini akan disalin ke arsip Anda secara utuh beserta AI summary dan detail lainnya.',
+              style: const TextStyle(color: Color(0xFF717785), fontSize: 13),
             ),
             const SizedBox(height: 8),
             Container(

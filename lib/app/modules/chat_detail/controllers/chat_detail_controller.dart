@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/services/dio_service.dart';
 import '../../../data/services/auth_service.dart';
 import '../../chat/controllers/chat_controller.dart';
@@ -37,6 +39,9 @@ class ChatDetailController extends GetxController {
   final _dioService = Get.find<DioService>();
   final _authService = Get.find<AuthService>();
   
+  final _storage = const FlutterSecureStorage();
+  final String _savedMsgKey = 'saved_notulen_msgs';
+
   Timer? _pollingTimer;
 
   bool get isSelectionMode => selectedMessageIds.isNotEmpty;
@@ -44,8 +49,14 @@ class ChatDetailController extends GetxController {
   /// Ekspos Dio client untuk digunakan di View layer
   dynamic getDio() => _dioService.client;
 
-  void markAsSaved(String msgId) {
+  void markAsSaved(String msgId) async {
     savedMessageIds.add(msgId);
+    try {
+      final listStr = jsonEncode(savedMessageIds.toList());
+      await _storage.write(key: _savedMsgKey, value: listStr);
+    } catch (e) {
+      debugPrint("Error saving to storage: $e");
+    }
   }
 
   void toggleSelection(String id) {
@@ -63,6 +74,8 @@ class ChatDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadSavedMessages();
+    
     if (Get.arguments != null && Get.arguments is Map) {
       friendName.value = Get.arguments['friendName'] ?? 'User';
       friendId.value = Get.arguments['friendId'] ?? '';
@@ -75,6 +88,18 @@ class ChatDetailController extends GetxController {
       _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
         _loadMessages();
       });
+    }
+  }
+
+  Future<void> _loadSavedMessages() async {
+    try {
+      final data = await _storage.read(key: _savedMsgKey);
+      if (data != null) {
+        final List<dynamic> list = jsonDecode(data);
+        savedMessageIds.addAll(list.cast<String>());
+      }
+    } catch (e) {
+      debugPrint("Error loading from storage: $e");
     }
   }
 
@@ -92,7 +117,7 @@ class ChatDetailController extends GetxController {
             id: e['id'],
             text: e['content'],
             isMe: senderId == currentUser.id,
-            time: DateTime.parse(e['created_at']),
+            time: DateTime.parse(e['created_at']).toLocal(),
             isRead: e['is_read'] ?? false,
             deletedForEveryone: e['deleted_for_everyone'] ?? false,
           );

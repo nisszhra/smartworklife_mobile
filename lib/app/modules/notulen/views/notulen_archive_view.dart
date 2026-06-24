@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
 import 'notulen_detail_view.dart';
+import '../../../data/models/chat_model.dart';
+import '../../../data/services/auth_service.dart';
+import '../../../data/services/dio_service.dart';
 
 class NotulenArchiveView extends GetView<NotulenController> {
   const NotulenArchiveView({super.key});
@@ -313,7 +316,10 @@ class NotulenArchiveView extends GetView<NotulenController> {
     if (confirm == true) controller.deleteAll();
   }
 
-  void _showCardOptions(BuildContext context, String archiveId, String title) {
+  void _showCardOptions(BuildContext context, ArchivedMeeting archive) {
+    final archiveId = archive.id;
+    final title = archive.title;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -354,26 +360,10 @@ class NotulenArchiveView extends GetView<NotulenController> {
                 // Opsi Share
                 ListTile(
                   leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
-                  title: const Text('Share', style: TextStyle(fontSize: 15)),
+                  title: const Text('Share ke Rekan', style: TextStyle(fontSize: 15)),
                   onTap: () async {
                     Navigator.of(ctx).pop();
-                    // Load data notulen lalu share sebagai teks
-                    await controller.loadArchive(archiveId);
-                    final shareTitle = controller.detailTitle.value;
-                    final shareTranscript = controller.detailTranscript.value;
-                    if (shareTitle.isNotEmpty || shareTranscript.isNotEmpty) {
-                      final text = '📋 $shareTitle\n\n$shareTranscript';
-                      await Clipboard.setData(ClipboardData(text: text));
-                      Get.snackbar(
-                        'Disalin!',
-                        'Notulen telah disalin ke clipboard.',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: const Color(0xFF005AB4),
-                        colorText: Colors.white,
-                        icon: const Icon(Icons.check_circle, color: Colors.white),
-                        duration: const Duration(seconds: 2),
-                      );
-                    }
+                    _showShareToFriendBottomSheet(context, archive);
                   },
                 ),
                 // Opsi Hapus
@@ -492,7 +482,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                     )
                   else
                     GestureDetector(
-                      onTap: () => _showCardOptions(context, archive.id, archive.title),
+                      onTap: () => _showCardOptions(context, archive),
                       child: const Padding(
                         padding: EdgeInsets.only(left: 4),
                         child: Icon(Icons.more_vert,
@@ -537,5 +527,95 @@ class NotulenArchiveView extends GetView<NotulenController> {
         ),
       );
     });
+  }
+
+  void _showShareToFriendBottomSheet(BuildContext context, ArchivedMeeting archive) async {
+    final dioService = Get.find<DioService>();
+    final authService = Get.find<AuthService>();
+    
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+    
+    try {
+      final response = await dioService.client.get('/chat/friends');
+      Get.back(); // close loading
+      
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        final currentUser = authService.currentUser.value;
+        if (currentUser == null) return;
+        
+        final friends = data.map((e) => FriendshipResponse.fromJson(e))
+          .where((f) => f.status == 'accepted')
+          .map((f) {
+            final isRequester = f.requesterId == currentUser.id;
+            return isRequester ? f.addressee : f.requester;
+          })
+          .where((u) => u != null)
+          .toList();
+
+        if (friends.isEmpty) {
+          Get.snackbar('Share', 'Anda belum memiliki teman chat');
+          return;
+        }
+
+        Get.bottomSheet(
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Bagikan ke Rekan...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: friends.length,
+                    itemBuilder: (ctx, i) {
+                      final friend = friends[i]!;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
+                          child: Text(friend.fullName != null ? friend.fullName![0].toUpperCase() : friend.email[0].toUpperCase(), style: const TextStyle(color: Color(0xFF005AB4))),
+                        ),
+                        title: Text(friend.fullName ?? friend.email),
+                        onTap: () async {
+                          Get.back(); // close sheet
+                          
+                          // Kirim pesan
+                          final text = '📋 NOTULEN_SHARE: ${archive.id} | *${archive.title}*\n📅 ${archive.date}  ⏱ ${archive.duration}';
+                          
+                          try {
+                            await dioService.client.post('/chat/messages', data: {
+                              'receiver_id': friend.id,
+                              'content': text,
+                            });
+                            Get.snackbar(
+                              'Berhasil', 
+                              'Notulen berhasil dibagikan ke ${friend.fullName ?? friend.email}',
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          } catch (e) {
+                            Get.snackbar('Error', 'Gagal membagikan notulen');
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          )
+        );
+      }
+    } catch (e) {
+      Get.back(); // close loading
+      Get.snackbar('Error', 'Gagal mengambil daftar rekan');
+    }
   }
 }

@@ -178,12 +178,15 @@ class HomeView extends GetView<HomeController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text('My Points', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
-                              const SizedBox(width: 4),
-                              Icon(Icons.info_outline, color: Colors.white.withValues(alpha: 0.8), size: 14),
-                            ],
+                          GestureDetector(
+                            onTap: () => _showPointsInfoDialog(context),
+                            child: Row(
+                              children: [
+                                Text('My Points', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.info_outline, color: Colors.white.withValues(alpha: 0.8), size: 14),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Obx(() {
@@ -1140,6 +1143,110 @@ class HomeView extends GetView<HomeController> {
           Text(text, style: const TextStyle(fontSize: 13)),
         ],
       ),
+    );
+  }
+
+  void _showPointsInfoDialog(BuildContext context) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.star, color: Color(0xFF1A73E8)),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Informasi Points',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A73E8)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Kumpulkan poin dari aktivitas produktif Anda! Berikut perhitungannya:',
+                style: TextStyle(fontSize: 14, color: Color(0xFF414753)),
+              ),
+              const SizedBox(height: 16),
+              _buildInfoRow(Icons.timer, 'Fokus & Pomodoro', '1 Poin / sesi'),
+              const SizedBox(height: 8),
+              _buildInfoRow(Icons.accessibility, 'Exercise', '1 Poin / stretching'),
+              const SizedBox(height: 8),
+              _buildInfoRow(Icons.check_circle_outline, 'Tugas Selesai', '10 Poin / tugas'),
+              const SizedBox(height: 8),
+              const Text(
+                'Presentase Work-Life Balance dihitung berdasarkan proporsi dari total Poin Fokus, Istirahat, dan Olahraga/Hidrasi Anda.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF717785), fontStyle: FontStyle.italic),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.emoji_events, color: Color(0xFF1D4ED8), size: 16),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Leaderboard akan merangking pengguna berdasarkan poin per hari. Raih skor tertinggi Anda setiap harinya!',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF1D4ED8), fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1A73E8),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Mengerti'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String title, String value) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: const Color(0xFF414753)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF181C22)),
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1A73E8)),
+        ),
+      ],
     );
   }
 }

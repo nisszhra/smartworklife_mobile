@@ -53,7 +53,7 @@ class FriendshipResponse {
       requester: json['requester'] != null ? UserPublic.fromJson(json['requester']) : null,
       addressee: json['addressee'] != null ? UserPublic.fromJson(json['addressee']) : null,
       lastMessage: json['last_message'],
-      lastMessageTime: json['last_message_time'] != null ? DateTime.parse(json['last_message_time']) : null,
+      lastMessageTime: json['last_message_time'] != null ? DateTime.parse(json['last_message_time']).toLocal() : null,
       unreadCount: json['unread_count'] ?? 0,
     );
   }

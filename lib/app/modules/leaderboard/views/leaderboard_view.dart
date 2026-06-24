@@ -19,30 +19,57 @@ class LeaderboardView extends GetView<LeaderboardController> {
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF005AB4)));
-        }
-
-        if (controller.users.isEmpty) {
-          return const Center(child: Text('Leaderboard masih kosong.', style: TextStyle(color: Colors.grey)));
-        }
-
-        final currentUserRank = controller.currentUserRank;
-
-        return Column(
-          children: [
-            // Top 3 Podium
-            if (controller.users.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.only(top: 20, bottom: 40),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF005AB4),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFF005AB4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left, color: Colors.white),
+                  onPressed: controller.previousDay,
                 ),
+                Obx(() => Text(
+                      controller.formattedDate,
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    )),
+                Obx(() => IconButton(
+                      icon: Icon(
+                        Icons.chevron_right,
+                        color: controller.isToday ? Colors.transparent : Colors.white,
+                      ),
+                      onPressed: controller.isToday ? null : controller.nextDay,
+                    )),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator(color: Color(0xFF005AB4)));
+              }
+
+              if (controller.users.isEmpty) {
+                return const Center(child: Text('Leaderboard masih kosong.', style: TextStyle(color: Colors.grey)));
+              }
+
+              final currentUserRank = controller.currentUserRank;
+
+              return Column(
+                children: [
+                  // Top 3 Podium
+                  if (controller.users.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.only(top: 10, bottom: 40),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF005AB4),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                      ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -163,7 +190,9 @@ class LeaderboardView extends GetView<LeaderboardController> {
             ),
           ],
         );
-      }),
+      })),
+        ],
+      ),
     );
   }
 
