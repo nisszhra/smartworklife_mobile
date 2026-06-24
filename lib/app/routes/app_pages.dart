@@ -36,6 +36,8 @@ import '../modules/chat_detail/views/chat_detail_view.dart';
 
 import '../modules/friend_requests/bindings/friend_requests_binding.dart';
 import '../modules/friend_requests/views/friend_requests_view.dart';
+import '../modules/leaderboard/bindings/leaderboard_binding.dart';
+import '../modules/leaderboard/views/leaderboard_view.dart';
 
 part 'app_routes.dart';
 
@@ -134,6 +136,11 @@ class AppPages {
       name: _Paths.FRIEND_REQUESTS,
       page: () => const FriendRequestsView(),
       binding: FriendRequestsBinding(),
+    ),
+    GetPage(
+      name: _Paths.LEADERBOARD,
+      page: () => const LeaderboardView(),
+      binding: LeaderboardBinding(),
     ),
   ];
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
 import '../../todolist/controllers/todolist_controller.dart';
@@ -54,8 +55,8 @@ class NotulenDetailView extends GetView<NotulenController> {
                 onPressed: controller.toggleEditDetailTranscription,
               )),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () => _confirmDelete(context),
+            icon: const Icon(Icons.more_vert, color: Color(0xFF717785)),
+            onPressed: () => _showOptions(context),
           ),
         ],
         bottom: const PreferredSize(
@@ -977,6 +978,83 @@ class NotulenDetailView extends GetView<NotulenController> {
       ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+    );
+  }
+  void _showOptions(BuildContext context) {
+    final title = controller.detailTitle.value;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Judul notulen
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color(0xFF181C22),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Divider(height: 1),
+                // Opsi Share (copy to clipboard)
+                ListTile(
+                  leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
+                  title: const Text('Share', style: TextStyle(fontSize: 15)),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    final transcript = controller.detailTranscript.value;
+                    final text = '📋 $title\n\n$transcript';
+                    await Clipboard.setData(ClipboardData(text: text));
+                    Get.snackbar(
+                      'Disalin!',
+                      'Notulen telah disalin ke clipboard.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: const Color(0xFF005AB4),
+                      colorText: Colors.white,
+                      icon: const Icon(Icons.check_circle, color: Colors.white),
+                      duration: const Duration(seconds: 2),
+                    );
+                  },
+                ),
+                // Opsi Hapus
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
+                  title: const Text('Hapus', style: TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _confirmDelete(context);
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

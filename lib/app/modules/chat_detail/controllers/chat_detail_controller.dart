@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:async';
 import '../../../data/services/dio_service.dart';
 import '../../../data/services/auth_service.dart';
+import '../../chat/controllers/chat_controller.dart';
 
 class ChatMessage {
   final String id;
@@ -30,12 +31,22 @@ class ChatDetailController extends GetxController {
   final textController = TextEditingController();
   final scrollController = ScrollController();
   
+  // Set untuk melacak ID pesan notulen yang sudah disimpan
+  final savedMessageIds = <String>{}.obs;
+
   final _dioService = Get.find<DioService>();
   final _authService = Get.find<AuthService>();
   
   Timer? _pollingTimer;
 
   bool get isSelectionMode => selectedMessageIds.isNotEmpty;
+
+  /// Ekspos Dio client untuk digunakan di View layer
+  dynamic getDio() => _dioService.client;
+
+  void markAsSaved(String msgId) {
+    savedMessageIds.add(msgId);
+  }
 
   void toggleSelection(String id) {
     if (selectedMessageIds.contains(id)) {
@@ -113,6 +124,10 @@ class ChatDetailController extends GetxController {
       await _dioService.client.put('/chat/messages/read', data: {
         'message_ids': ids
       });
+      // Refresh chat list to update the unread badge
+      if (Get.isRegistered<ChatController>()) {
+        Get.find<ChatController>().fetchFriends(silent: true);
+      }
     } catch (e) {
       print(e);
     }
@@ -157,6 +172,30 @@ class ChatDetailController extends GetxController {
       _loadMessages();
     } catch (e) {
       Get.snackbar('Error', 'Failed to send message');
+      messages.removeWhere((m) => m.id == tempId);
+    }
+  }
+
+  Future<void> sendNotulenMessage(String content) async {
+    if (content.isEmpty || friendId.value.isEmpty) return;
+
+    final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+    messages.add(ChatMessage(
+      id: tempId,
+      text: content,
+      isMe: true,
+      time: DateTime.now(),
+    ));
+    _scrollToBottom();
+
+    try {
+      await _dioService.client.post('/chat/messages', data: {
+        'receiver_id': friendId.value,
+        'content': content,
+      });
+      _loadMessages();
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal mengirim notulen');
       messages.removeWhere((m) => m.id == tempId);
     }
   }

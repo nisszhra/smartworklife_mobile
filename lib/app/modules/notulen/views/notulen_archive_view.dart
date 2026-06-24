@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
 import 'notulen_detail_view.dart';
@@ -180,7 +181,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                       itemCount: controller.archivedMeetings.length,
                       itemBuilder: (context, index) {
                         final archive = controller.archivedMeetings[index];
-                        return _buildArchiveCard(archive);
+                        return _buildArchiveCard(context, archive);
                       },
                     )),
             ],
@@ -312,7 +313,114 @@ class NotulenArchiveView extends GetView<NotulenController> {
     if (confirm == true) controller.deleteAll();
   }
 
-  Widget _buildArchiveCard(ArchivedMeeting archive) {
+  void _showCardOptions(BuildContext context, String archiveId, String title) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Judul notulen
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color(0xFF181C22),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Divider(height: 1),
+                // Opsi Share
+                ListTile(
+                  leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
+                  title: const Text('Share', style: TextStyle(fontSize: 15)),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    // Load data notulen lalu share sebagai teks
+                    await controller.loadArchive(archiveId);
+                    final shareTitle = controller.detailTitle.value;
+                    final shareTranscript = controller.detailTranscript.value;
+                    if (shareTitle.isNotEmpty || shareTranscript.isNotEmpty) {
+                      final text = '📋 $shareTitle\n\n$shareTranscript';
+                      await Clipboard.setData(ClipboardData(text: text));
+                      Get.snackbar(
+                        'Disalin!',
+                        'Notulen telah disalin ke clipboard.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFF005AB4),
+                        colorText: Colors.white,
+                        icon: const Icon(Icons.check_circle, color: Colors.white),
+                        duration: const Duration(seconds: 2),
+                      );
+                    }
+                  },
+                ),
+                // Opsi Hapus
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
+                  title: const Text('Hapus', style: TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    final confirm = await Get.dialog<bool>(
+                      AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        title: const Text('Hapus Notulen?',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        content: Text(
+                          'Notulen "$title" akan dihapus permanen.',
+                          style: const TextStyle(color: Color(0xFF717785)),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Get.back(result: false),
+                            child: const Text('Batal', style: TextStyle(color: Color(0xFF717785))),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Get.back(result: true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFDC2626),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            child: const Text('Hapus'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) controller.deleteNotulen(archiveId);
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildArchiveCard(BuildContext context, ArchivedMeeting archive) {
     return Obx(() {
       final isSelected = controller.selectedIds.contains(archive.id);
       final inSelection = controller.isSelectionMode.value;
@@ -384,43 +492,11 @@ class NotulenArchiveView extends GetView<NotulenController> {
                     )
                   else
                     GestureDetector(
-                      onTap: () async {
-                        final confirm = await Get.dialog<bool>(
-                          AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            title: const Text('Hapus Notulen?',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            content: Text(
-                              'Notulen "${archive.title}" akan dihapus permanen.',
-                              style: const TextStyle(
-                                  color: Color(0xFF717785)),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Get.back(result: false),
-                                child: const Text('Batal'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Get.back(result: true),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFDC2626),
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Hapus'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (confirm == true) {
-                          controller.deleteNotulen(archive.id);
-                        }
-                      },
+                      onTap: () => _showCardOptions(context, archive.id, archive.title),
                       child: const Padding(
                         padding: EdgeInsets.only(left: 4),
-                        child: Icon(Icons.delete_outline,
-                            size: 18, color: Color(0xFFDC2626)),
+                        child: Icon(Icons.more_vert,
+                            size: 20, color: Color(0xFF94A3B8)),
                       ),
                     ),
                 ],

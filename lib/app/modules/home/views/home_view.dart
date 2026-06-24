@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import '../controllers/home_controller.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/models/todo_model.dart';
@@ -82,52 +83,73 @@ class HomeView extends GetView<HomeController> {
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Row(
+                      Obx(() {
+                        final summary = controller.summary.value;
+                        final workPct = summary?.workPercentage ?? 0.0;
+                        final restPct = summary?.restPercentage ?? 0.0;
+                        final exercisePct = summary?.exercisePercentage ?? 0.0;
+
+                        // Pastikan persentase dikalikan 100 jika dari backend bukan 0-100,
+                        // Namun backend kita sekarang me-return persen 0-100.
+                        final workFlex = (workPct > 0) ? workPct.toInt() : 1; // 1 minimal untuk prevent render error
+                        final restFlex = (restPct > 0) ? restPct.toInt() : 0;
+                        final exerciseFlex = (exercisePct > 0) ? exercisePct.toInt() : 0;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              flex: 75,
-                              child: Container(height: 14, color: const Color(0xFF005AB4)),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Row(
+                                children: [
+                                  if (workFlex > 0 || (restFlex == 0 && exerciseFlex == 0))
+                                    Expanded(
+                                      flex: workFlex,
+                                      child: Container(height: 14, color: const Color(0xFF005AB4)),
+                                    ),
+                                  if (restFlex > 0)
+                                    Expanded(
+                                      flex: restFlex,
+                                      child: Container(height: 14, color: const Color(0xFF8D6E63)),
+                                    ),
+                                  if (exerciseFlex > 0)
+                                    Expanded(
+                                      flex: exerciseFlex,
+                                      child: Container(height: 14, color: const Color(0xFF4CAF50)),
+                                    ),
+                                ],
+                              ),
                             ),
-                            Expanded(
-                              flex: 15,
-                              child: Container(height: 14, color: const Color(0xFF8D6E63)),
-                            ),
-                            Expanded(
-                              flex: 10,
-                              child: Container(height: 14, color: const Color(0xFF4CAF50)),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF005AB4), shape: BoxShape.circle)),
+                                    const SizedBox(width: 6),
+                                    Text('Work (${workPct.toStringAsFixed(1)}%)', style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF8D6E63), shape: BoxShape.circle)),
+                                    const SizedBox(width: 6),
+                                    Text('Break (${restPct.toStringAsFixed(1)}%)', style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle)),
+                                    const SizedBox(width: 6),
+                                    Text('Exercise (${exercisePct.toStringAsFixed(1)}%)', style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF005AB4), shape: BoxShape.circle)),
-                              const SizedBox(width: 6),
-                              const Text('Work (75%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF8D6E63), shape: BoxShape.circle)),
-                              const SizedBox(width: 6),
-                              const Text('Break (15%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle)),
-                              const SizedBox(width: 6),
-                              const Text('Exercise (10%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        ],
-                      ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -164,15 +186,20 @@ class HomeView extends GetView<HomeController> {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            '1,250 Points',
-                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
+                          Obx(() {
+                            final points = controller.summary.value?.points ?? 0;
+                            // Format points with comma
+                            final formattedPoints = NumberFormat('#,###').format(points);
+                            return Text(
+                              '$formattedPoints Points',
+                              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                            );
+                          }),
                         ],
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed(Routes.LEADERBOARD),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF1A73E8),
