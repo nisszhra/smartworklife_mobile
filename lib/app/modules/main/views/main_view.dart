@@ -42,6 +42,10 @@ class MainView extends GetView<MainController> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.chat_bubble_outline, color: Color(0xFF005AB4)),
+            onPressed: () => Get.toNamed('/chat'),
+          ),
+          IconButton(
             icon: const Icon(Icons.notifications_none, color: Color(0xFF005AB4)),
             onPressed: () => Get.toNamed('/notifikasi'),
           ),

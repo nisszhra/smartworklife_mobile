@@ -63,7 +63,8 @@ class AuthService extends GetxService {
 
   /// Hapus semua data sesi.
   Future<void> clearSession() async {
-    await _storage.deleteAll();
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _userKey);
     currentUser.value = null;
   }
 

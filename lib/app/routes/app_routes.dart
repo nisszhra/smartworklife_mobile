@@ -18,6 +18,9 @@ abstract class Routes {
   static const ONBOARDING = _Paths.ONBOARDING;
   static const NOTIFIKASI = _Paths.NOTIFIKASI;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
+  static const CHAT = _Paths.CHAT;
+  static const CHAT_DETAIL = _Paths.CHAT_DETAIL;
+  static const FRIEND_REQUESTS = _Paths.FRIEND_REQUESTS;
 }
 
 abstract class _Paths {
@@ -37,4 +40,7 @@ abstract class _Paths {
   static const ONBOARDING = '/onboarding';
   static const NOTIFIKASI = '/notifikasi';
   static const FORGOT_PASSWORD = '/forgot-password';
+  static const CHAT = '/chat';
+  static const CHAT_DETAIL = '/chat/detail';
+  static const FRIEND_REQUESTS = '/friend-requests';
 }
