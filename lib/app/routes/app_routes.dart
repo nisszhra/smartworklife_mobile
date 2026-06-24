@@ -21,6 +21,7 @@ abstract class Routes {
   static const CHAT = _Paths.CHAT;
   static const CHAT_DETAIL = _Paths.CHAT_DETAIL;
   static const FRIEND_REQUESTS = _Paths.FRIEND_REQUESTS;
+  static const LEADERBOARD = _Paths.LEADERBOARD;
 }
 
 abstract class _Paths {
@@ -43,4 +44,5 @@ abstract class _Paths {
   static const CHAT = '/chat';
   static const CHAT_DETAIL = '/chat/detail';
   static const FRIEND_REQUESTS = '/friend-requests';
+  static const LEADERBOARD = '/leaderboard';
 }

@@ -73,22 +73,22 @@ class StretchingView extends GetView<StretchingController> {
                 _buildExerciseCard(
                   title: 'Upper Back',
                   subtitle: 'Punggung Atas',
-                  icon: Icons.accessibility_new,
+                  imagePath: 'assets/images/PUNGGUNG ATAS.png',
                 ),
                 _buildExerciseCard(
                   title: 'Seated Twist',
                   subtitle: 'Putar Duduk',
-                  icon: Icons.event_seat,
+                  imagePath: 'assets/images/PUTAR DUDUK.png',
                 ),
                 _buildExerciseCard(
                   title: 'Wrist Circle',
                   subtitle: 'Putar Pergelangan',
-                  icon: Icons.pan_tool,
+                  imagePath: 'assets/images/PERGELANGAN.png',
                 ),
                 _buildExerciseCard(
                   title: 'Hamstring',
                   subtitle: 'Otot Paha',
-                  icon: Icons.directions_walk,
+                  imagePath: 'assets/images/OTOT PAHA.png',
                 ),
               ],
             ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/services/dio_service.dart';
 import '../../../data/services/auth_service.dart';
+import '../../chat/controllers/chat_controller.dart';
 
 class ChatMessage {
   final String id;
@@ -30,12 +33,31 @@ class ChatDetailController extends GetxController {
   final textController = TextEditingController();
   final scrollController = ScrollController();
   
+  // Set untuk melacak ID pesan notulen yang sudah disimpan
+  final savedMessageIds = <String>{}.obs;
+
   final _dioService = Get.find<DioService>();
   final _authService = Get.find<AuthService>();
   
+  final _storage = const FlutterSecureStorage();
+  final String _savedMsgKey = 'saved_notulen_msgs';
+
   Timer? _pollingTimer;
 
   bool get isSelectionMode => selectedMessageIds.isNotEmpty;
+
+  /// Ekspos Dio client untuk digunakan di View layer
+  dynamic getDio() => _dioService.client;
+
+  void markAsSaved(String msgId) async {
+    savedMessageIds.add(msgId);
+    try {
+      final listStr = jsonEncode(savedMessageIds.toList());
+      await _storage.write(key: _savedMsgKey, value: listStr);
+    } catch (e) {
+      debugPrint("Error saving to storage: $e");
+    }
+  }
 
   void toggleSelection(String id) {
     if (selectedMessageIds.contains(id)) {
@@ -52,6 +74,8 @@ class ChatDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadSavedMessages();
+    
     if (Get.arguments != null && Get.arguments is Map) {
       friendName.value = Get.arguments['friendName'] ?? 'User';
       friendId.value = Get.arguments['friendId'] ?? '';
@@ -64,6 +88,18 @@ class ChatDetailController extends GetxController {
       _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
         _loadMessages();
       });
+    }
+  }
+
+  Future<void> _loadSavedMessages() async {
+    try {
+      final data = await _storage.read(key: _savedMsgKey);
+      if (data != null) {
+        final List<dynamic> list = jsonDecode(data);
+        savedMessageIds.addAll(list.cast<String>());
+      }
+    } catch (e) {
+      debugPrint("Error loading from storage: $e");
     }
   }
 
@@ -81,7 +117,7 @@ class ChatDetailController extends GetxController {
             id: e['id'],
             text: e['content'],
             isMe: senderId == currentUser.id,
-            time: DateTime.parse(e['created_at']),
+            time: DateTime.parse(e['created_at']).toLocal(),
             isRead: e['is_read'] ?? false,
             deletedForEveryone: e['deleted_for_everyone'] ?? false,
           );
@@ -113,6 +149,10 @@ class ChatDetailController extends GetxController {
       await _dioService.client.put('/chat/messages/read', data: {
         'message_ids': ids
       });
+      // Refresh chat list to update the unread badge
+      if (Get.isRegistered<ChatController>()) {
+        Get.find<ChatController>().fetchFriends(silent: true);
+      }
     } catch (e) {
       print(e);
     }
@@ -157,6 +197,30 @@ class ChatDetailController extends GetxController {
       _loadMessages();
     } catch (e) {
       Get.snackbar('Error', 'Failed to send message');
+      messages.removeWhere((m) => m.id == tempId);
+    }
+  }
+
+  Future<void> sendNotulenMessage(String content) async {
+    if (content.isEmpty || friendId.value.isEmpty) return;
+
+    final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+    messages.add(ChatMessage(
+      id: tempId,
+      text: content,
+      isMe: true,
+      time: DateTime.now(),
+    ));
+    _scrollToBottom();
+
+    try {
+      await _dioService.client.post('/chat/messages', data: {
+        'receiver_id': friendId.value,
+        'content': content,
+      });
+      _loadMessages();
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal mengirim notulen');
       messages.removeWhere((m) => m.id == tempId);
     }
   }

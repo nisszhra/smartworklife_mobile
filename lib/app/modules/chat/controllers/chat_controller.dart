@@ -16,6 +16,9 @@ class ChatController extends GetxController {
 
   Timer? _pollingTimer;
 
+  /// Total pesan belum dibaca dari semua percakapan
+  int get totalUnreadCount => chatList.fold(0, (sum, item) => sum + (item.unreadCount ?? 0));
+
   @override
   void onInit() {
     super.onInit();

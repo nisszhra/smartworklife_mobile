@@ -7,6 +7,7 @@ import '../../health/views/health_view.dart';
 import '../../pomodoro/views/pomodoro_view.dart';
 import '../../notulen/views/notulen_view.dart';
 import '../../stretching/views/stretching_view.dart';
+import '../../chat/controllers/chat_controller.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -41,10 +42,52 @@ class MainView extends GetView<MainController> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.chat_bubble_outline, color: Color(0xFF005AB4)),
-            onPressed: () => Get.toNamed('/chat'),
-          ),
+          Obx(() {
+            // Coba dapatkan ChatController jika sudah diinisialisasi
+            // Jika belum (baru buka aplikasi), Get.put akan menginisialisasinya
+            // agar bisa memonitor pesan masuk secara background (karena ada timer di dalamnya)
+            final chatCtrl = Get.isRegistered<ChatController>()
+                ? Get.find<ChatController>()
+                : Get.put(ChatController());
+            
+            final unreadCount = chatCtrl.totalUnreadCount;
+            
+            return Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline, color: Color(0xFF005AB4)),
+                  onPressed: () => Get.toNamed('/chat'),
+                ),
+                if (unreadCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        unreadCount > 99 ? '99+' : unreadCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Color(0xFF005AB4)),
             onPressed: () => Get.toNamed('/notifikasi'),

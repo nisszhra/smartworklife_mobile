@@ -21,12 +21,14 @@ class NotulenView extends GetView<NotulenController> {
             const SizedBox(height: 24),
             _buildActiveMeetingCard(),
             _buildAnalysisButton(),
-            Obx(() => controller.showAiSummary.value
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 24),
-                    child: _buildAISummarySection(),
-                  )
-                : const SizedBox.shrink()),
+            Obx(
+              () => controller.showAiSummary.value
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: _buildAISummarySection(),
+                    )
+                  : const SizedBox.shrink(),
+            ),
             _buildSaveAndCancelButtons(),
             const SizedBox(height: 40),
             _buildArchivedMeetingsSection(),
@@ -63,8 +65,20 @@ class NotulenView extends GetView<NotulenController> {
               (index) => Container(
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 width: 4,
-                height: [12, 18, 24, 16, 28, 20, 24, 16, 20, 14, 10, 8][index]
-                    .toDouble(),
+                height: [
+                  12,
+                  18,
+                  24,
+                  16,
+                  28,
+                  20,
+                  24,
+                  16,
+                  20,
+                  14,
+                  10,
+                  8,
+                ][index].toDouble(),
                 decoration: BoxDecoration(
                   color: const Color(0xFF005AB4),
                   borderRadius: BorderRadius.circular(2),
@@ -108,10 +122,11 @@ class NotulenView extends GetView<NotulenController> {
                               ? null
                               : [
                                   BoxShadow(
-                                    color: (isRec
-                                            ? Colors.orange.shade600
-                                            : Colors.green.shade600)
-                                        .withOpacity(0.3),
+                                    color:
+                                        (isRec
+                                                ? Colors.orange.shade600
+                                                : Colors.green.shade600)
+                                            .withOpacity(0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -127,7 +142,7 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                   const SizedBox(width: 24),
                 ],
-                
+
                 // Main Button: Mic (to start) or Stop (to stop and upload)
                 GestureDetector(
                   onTap: isProc
@@ -148,17 +163,22 @@ class NotulenView extends GetView<NotulenController> {
                         color: isProc
                             ? const Color(0xFF94A3B8)
                             : ((isRec || isPaused)
-                                ? const Color(0xFFDC2626) // merah saat merekam/pause untuk stop
-                                : const Color(0xFF005AB4)), // biru saat ready untuk start
+                                  ? const Color(
+                                      0xFFDC2626,
+                                    ) // merah saat merekam/pause untuk stop
+                                  : const Color(
+                                      0xFF005AB4,
+                                    )), // biru saat ready untuk start
                         shape: BoxShape.circle,
                         boxShadow: isProc
                             ? null
                             : [
                                 BoxShadow(
-                                  color: ((isRec || isPaused)
-                                          ? const Color(0xFFDC2626)
-                                          : const Color(0xFF005AB4))
-                                      .withOpacity(0.3),
+                                  color:
+                                      ((isRec || isPaused)
+                                              ? const Color(0xFFDC2626)
+                                              : const Color(0xFF005AB4))
+                                          .withOpacity(0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8),
                                 ),
@@ -176,14 +196,16 @@ class NotulenView extends GetView<NotulenController> {
             );
           }),
           const SizedBox(height: 20),
-          Obx(() => Text(
-                controller.meetingTitle.value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF181C22),
-                ),
-              )),
+          Obx(
+            () => Text(
+              controller.meetingTitle.value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF181C22),
+              ),
+            ),
+          ),
           const SizedBox(height: 4),
           Obx(() {
             final isRec = controller.isRecording.value;
@@ -198,7 +220,8 @@ class NotulenView extends GetView<NotulenController> {
               status = 'Merekam • ${controller.formattedDuration.value}';
               color = const Color(0xFFDC2626);
             } else if (isPaused) {
-              status = 'Merekam Ditangguhkan • ${controller.formattedDuration.value}';
+              status =
+                  'Merekam Ditangguhkan • ${controller.formattedDuration.value}';
               color = Colors.orange.shade700;
             } else if (isProc) {
               status = 'Memproses dengan AI...';
@@ -237,8 +260,11 @@ class NotulenView extends GetView<NotulenController> {
             padding: const EdgeInsets.fromLTRB(20, 20, 12, 12),
             child: Row(
               children: [
-                const Icon(Icons.auto_awesome,
-                    size: 18, color: Color(0xFF005AB4)),
+                const Icon(
+                  Icons.auto_awesome,
+                  size: 18,
+                  color: Color(0xFF005AB4),
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'Hasil Transkripsi (Groq AI)',
@@ -249,15 +275,17 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                 ),
                 const Spacer(),
-                Obx(() => IconButton(
-                      onPressed: controller.toggleEditTranscription,
-                      icon: Icon(
-                        controller.isEditingTranscription.value
-                            ? Icons.check_circle_outline
-                            : Icons.edit_note,
-                        color: const Color(0xFF414753),
-                      ),
-                    )),
+                Obx(
+                  () => IconButton(
+                    onPressed: controller.toggleEditTranscription,
+                    icon: Icon(
+                      controller.isEditingTranscription.value
+                          ? Icons.check_circle_outline
+                          : Icons.edit_note,
+                      color: const Color(0xFF414753),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -291,7 +319,8 @@ class NotulenView extends GetView<NotulenController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 10, height: 10,
+                          width: 10,
+                          height: 10,
                           decoration: const BoxDecoration(
                             color: Color(0xFFDC2626),
                             shape: BoxShape.circle,
@@ -385,8 +414,9 @@ class NotulenView extends GetView<NotulenController> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed:
-                controller.isAnalyzing.value ? null : controller.analyzeTranscription,
+            onPressed: controller.isAnalyzing.value
+                ? null
+                : controller.analyzeTranscription,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF005AB4),
               foregroundColor: Colors.white,
@@ -401,7 +431,9 @@ class NotulenView extends GetView<NotulenController> {
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2),
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
                   )
                 : const Text(
                     'Analisis AI Summary',
@@ -432,8 +464,11 @@ class NotulenView extends GetView<NotulenController> {
                   color: const Color(0xFFD6E3FF),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.auto_awesome,
-                    size: 20, color: Color(0xFF005AB4)),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  size: 20,
+                  color: Color(0xFF005AB4),
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -457,27 +492,32 @@ class NotulenView extends GetView<NotulenController> {
             ),
           ),
           const SizedBox(height: 12),
-          ...controller.keyInsights.map((insight) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.check_circle,
-                        size: 20, color: Color(0xFF005AB4)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        insight.text,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Color(0xFF181C22),
-                          height: 1.4,
-                        ),
+          ...controller.keyInsights.map(
+            (insight) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.check_circle,
+                    size: 20,
+                    color: Color(0xFF005AB4),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      insight.text,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFF181C22),
+                        height: 1.4,
                       ),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
           const Text(
             'REKOMENDASI TUGAS',
@@ -489,91 +529,111 @@ class NotulenView extends GetView<NotulenController> {
             ),
           ),
           const SizedBox(height: 12),
-          Obx(() => Column(
-                children: controller.actionItems.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final action = entry.value;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.assignment_outlined,
-                              size: 18, color: Color(0xFF005AB4)),
+          Obx(
+            () => Column(
+              children: controller.actionItems.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final action = entry.value;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                action.title,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF181C22),
-                                ),
+                        child: const Icon(
+                          Icons.assignment_outlined,
+                          size: 18,
+                          color: Color(0xFF005AB4),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              action.title,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF181C22),
                               ),
-                              if (action.description.isNotEmpty && action.description != '-')
-                                Text(
-                                  action.description,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF414753),
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              Text(
-                                'Tenggat: ${action.dueDate}',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xFF717785),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 20, color: Color(0xFF717785)),
-                          tooltip: 'Edit Rekomendasi',
-                          onPressed: () => _showEditRecommendationBottomSheet(
-                            context: Get.context!,
-                            index: idx,
-                            action: action,
-                            isDetail: false,
-                          ),
-                        ),
-                        Obx(() {
-                          final isAdded = Get.isRegistered<TodolistController>() &&
-                              Get.find<TodolistController>().tasks.any((t) => t.title == action.title);
-                          return IconButton(
-                            icon: Icon(
-                              isAdded ? Icons.check_circle : Icons.add_task,
-                              color: isAdded ? Colors.green : const Color(0xFF005AB4),
                             ),
-                            tooltip: isAdded ? 'Sudah ditambahkan' : 'Tambah ke To-Do',
-                            onPressed: isAdded
-                                ? null
-                                : () => _showAddTodoBottomSheet(Get.context!, action),
-                          );
-                        }),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              )),
+                            if (action.description.isNotEmpty &&
+                                action.description != '-')
+                              Text(
+                                action.description,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF414753),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            Text(
+                              'Tenggat: ${action.dueDate}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF717785),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          size: 20,
+                          color: Color(0xFF717785),
+                        ),
+                        tooltip: 'Edit Rekomendasi',
+                        onPressed: () => _showEditRecommendationBottomSheet(
+                          context: Get.context!,
+                          index: idx,
+                          action: action,
+                          isDetail: false,
+                        ),
+                      ),
+                      Obx(() {
+                        final isAdded =
+                            Get.isRegistered<TodolistController>() &&
+                            Get.find<TodolistController>().tasks.any(
+                              (t) => t.title == action.title,
+                            );
+                        return IconButton(
+                          icon: Icon(
+                            isAdded ? Icons.check_circle : Icons.add_task,
+                            color: isAdded
+                                ? Colors.green
+                                : const Color(0xFF005AB4),
+                          ),
+                          tooltip: isAdded
+                              ? 'Sudah ditambahkan'
+                              : 'Tambah ke To-Do',
+                          onPressed: isAdded
+                              ? null
+                              : () => _showAddTodoBottomSheet(
+                                  Get.context!,
+                                  action,
+                                ),
+                        );
+                      }),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -628,10 +688,7 @@ class NotulenView extends GetView<NotulenController> {
                 ),
                 child: const Text(
                   'Simpan Notulen',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -660,7 +717,11 @@ class NotulenView extends GetView<NotulenController> {
                   color: Colors.red.shade50,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.delete_outline, color: Colors.red.shade600, size: 28),
+                child: Icon(
+                  Icons.delete_outline,
+                  color: Colors.red.shade600,
+                  size: 28,
+                ),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -731,10 +792,12 @@ class NotulenView extends GetView<NotulenController> {
   }
 
   void _showSaveDialog() {
-    final titleController =
-        TextEditingController(text: controller.meetingTitle.value);
-    final dateController =
-        TextEditingController(text: DateTime.now().toString().split(' ')[0]);
+    final titleController = TextEditingController(
+      text: controller.meetingTitle.value,
+    );
+    final dateController = TextEditingController(
+      text: DateTime.now().toString().split(' ')[0],
+    );
 
     Get.dialog(
       Dialog(
@@ -793,8 +856,10 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: Color(0xFF005AB4), width: 2),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF005AB4),
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -823,8 +888,11 @@ class NotulenView extends GetView<NotulenController> {
                   }
                 },
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.calendar_today,
-                      size: 20, color: Color(0xFF005AB4)),
+                  prefixIcon: const Icon(
+                    Icons.calendar_today,
+                    size: 20,
+                    color: Color(0xFF005AB4),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF1F5F9),
                   border: OutlineInputBorder(
@@ -889,7 +957,6 @@ class NotulenView extends GetView<NotulenController> {
     );
   }
 
-
   Widget _buildArchivedMeetingsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -913,98 +980,105 @@ class NotulenView extends GetView<NotulenController> {
             ),
             TextButton(
               onPressed: () => Get.to(() => const NotulenArchiveView()),
-              child: const Text('Lihat Semua', 
-              style: TextStyle(
-                color: Color(0xFF005AB4),
-                fontWeight: FontWeight.w600,
-              ),),
+              child: const Text(
+                'Lihat Semua',
+                style: TextStyle(
+                  color: Color(0xFF005AB4),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 16),
         SizedBox(
           height: 160,
-          child: Obx(() => ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: controller.archivedMeetings.length,
-                itemBuilder: (context, index) {
-                  final archive = controller.archivedMeetings[index];
-                  return GestureDetector(
-                    onTap: () async {
-                      await controller.loadArchive(archive.id);
-                      Get.to(() => const NotulenDetailView());
-                    },
-                    child: Container(
-                      width: 280,
-                      margin: const EdgeInsets.only(right: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  archive.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF181C22),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                archive.date,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF717785),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Expanded(
-                            child: Text(
-                              archive.preview,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF414753),
-                                height: 1.4,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Icon(Icons.timer_outlined,
-                                  size: 14, color: Color(0xFF94A3B8)),
-                              const SizedBox(width: 4),
-                              Text(
-                                archive.duration,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF717785),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+          child: Obx(
+            () => ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: controller.archivedMeetings.length,
+              itemBuilder: (context, index) {
+                final archive = controller.archivedMeetings[index];
+                return GestureDetector(
+                  onTap: () async {
+                    await controller.loadArchive(archive.id);
+                    Get.to(() => const NotulenDetailView());
+                  },
+                  child: Container(
+                    width: 280,
+                    margin: const EdgeInsets.only(right: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
-                  );
-                },
-              )),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                archive.title,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF181C22),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              archive.date,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF717785),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: Text(
+                            archive.preview,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF414753),
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.timer_outlined,
+                              size: 14,
+                              color: Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              archive.duration,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF717785),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
@@ -1023,7 +1097,7 @@ class NotulenView extends GetView<NotulenController> {
     if (lower.contains('lusa') || lower.contains('day after tomorrow')) {
       return now.add(const Duration(days: 2));
     }
-    
+
     // Try to parse dd/MM/yyyy or yyyy-MM-dd
     final dateRegex = RegExp(r'(\d{1,2})[-/](\d{1,2})[-/](\d{4})');
     final match = dateRegex.firstMatch(dueDate);
@@ -1033,7 +1107,7 @@ class NotulenView extends GetView<NotulenController> {
       final year = int.tryParse(match.group(3) ?? '') ?? now.year;
       return DateTime(year, month, day);
     }
-    
+
     final isoRegex = RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
     final isoMatch = isoRegex.firstMatch(dueDate);
     if (isoMatch != null) {
@@ -1044,63 +1118,94 @@ class NotulenView extends GetView<NotulenController> {
     }
 
     final idMonths = {
-      'januari': 1, 'jan': 1,
-      'februari': 2, 'feb': 2,
-      'maret': 3, 'mar': 3,
-      'april': 4, 'apr': 4,
+      'januari': 1,
+      'jan': 1,
+      'februari': 2,
+      'feb': 2,
+      'maret': 3,
+      'mar': 3,
+      'april': 4,
+      'apr': 4,
       'mei': 5,
-      'juni': 6, 'jun': 6,
-      'juli': 7, 'jul': 7,
-      'agustus': 8, 'agu': 8, 'agt': 8,
-      'september': 9, 'sep': 9,
-      'oktober': 10, 'okt': 10,
-      'november': 11, 'nov': 11,
-      'desember': 12, 'des': 12,
+      'juni': 6,
+      'jun': 6,
+      'juli': 7,
+      'jul': 7,
+      'agustus': 8,
+      'agu': 8,
+      'agt': 8,
+      'september': 9,
+      'sep': 9,
+      'oktober': 10,
+      'okt': 10,
+      'november': 11,
+      'nov': 11,
+      'desember': 12,
+      'des': 12,
     };
-    
+
     for (var entry in idMonths.entries) {
       if (lower.contains(entry.key)) {
         final dayRegex = RegExp(r'\b(\d{1,2})\b');
         final yearRegex = RegExp(r'\b(\d{4})\b');
-        
+
         final dayMatch = dayRegex.firstMatch(dueDate);
         final yearMatch = yearRegex.firstMatch(dueDate);
-        
-        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
-        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+
+        final day = dayMatch != null
+            ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day)
+            : now.day;
+        final year = yearMatch != null
+            ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year)
+            : now.year;
         final month = entry.value;
-        
+
         return DateTime(year, month, day);
       }
     }
 
     final enMonths = {
-      'january': 1, 'jan': 1,
-      'february': 2, 'feb': 2,
-      'march': 3, 'mar': 3,
-      'april': 4, 'apr': 4,
+      'january': 1,
+      'jan': 1,
+      'february': 2,
+      'feb': 2,
+      'march': 3,
+      'mar': 3,
+      'april': 4,
+      'apr': 4,
       'may': 5,
-      'june': 6, 'jun': 6,
-      'july': 7, 'jul': 7,
-      'august': 8, 'aug': 8,
-      'september': 9, 'sep': 9,
-      'october': 10, 'oct': 10,
-      'november': 11, 'nov': 11,
-      'december': 12, 'dec': 12,
+      'june': 6,
+      'jun': 6,
+      'july': 7,
+      'jul': 7,
+      'august': 8,
+      'aug': 8,
+      'september': 9,
+      'sep': 9,
+      'october': 10,
+      'oct': 10,
+      'november': 11,
+      'nov': 11,
+      'december': 12,
+      'dec': 12,
     };
-    
+
     for (var entry in enMonths.entries) {
       if (lower.contains(entry.key)) {
         final dayRegex = RegExp(r'\b(\d{1,2})\b');
         final yearRegex = RegExp(r'\b(\d{4})\b');
-        
+
         final dayMatch = dayRegex.firstMatch(dueDate);
         final yearMatch = yearRegex.firstMatch(dueDate);
-        
-        final day = dayMatch != null ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day) : now.day;
-        final year = yearMatch != null ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year) : now.year;
+
+        final day = dayMatch != null
+            ? (int.tryParse(dayMatch.group(1) ?? '') ?? now.day)
+            : now.day;
+        final year = yearMatch != null
+            ? (int.tryParse(yearMatch.group(1) ?? '') ?? now.year)
+            : now.year;
         final month = entry.value;
-        
+
         return DateTime(year, month, day);
       }
     }
@@ -1110,11 +1215,12 @@ class NotulenView extends GetView<NotulenController> {
 
   void _showAddTodoBottomSheet(BuildContext context, ActionItem action) {
     final titleController = TextEditingController(text: action.title);
-    
+
     // Format description with action.description
     final descController = TextEditingController(
-        text: action.description != '-' ? action.description : '');
-    
+      text: action.description != '-' ? action.description : '',
+    );
+
     final selectedDate = _parseDueDate(action.dueDate).obs;
     final selectedTime = const TimeOfDay(hour: 9, minute: 0).obs;
     final isPriority = false.obs;
@@ -1133,8 +1239,9 @@ class NotulenView extends GetView<NotulenController> {
           final d = selectedDate.value;
           final t = selectedTime.value;
           final deadline = DateTime(d.year, d.month, d.day, t.hour, t.minute);
-          final taskDateStr = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-          
+          final taskDateStr =
+              '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
           Get.find<TodolistController>().addTask(
             title: titleController.text.trim(),
             description: descController.text.trim(),
@@ -1142,7 +1249,7 @@ class NotulenView extends GetView<NotulenController> {
             deadline: deadline,
             taskDate: taskDateStr,
           );
-          
+
           Get.back();
           Get.snackbar(
             'Tugas Ditambahkan',
@@ -1211,27 +1318,57 @@ class NotulenView extends GetView<NotulenController> {
                       color: Colors.grey[100],
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, size: 18, color: Colors.black54),
+                    child: const Icon(
+                      Icons.close,
+                      size: 18,
+                      color: Colors.black54,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Judul Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+            const Text(
+              'Judul Tugas',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: titleController,
               decoration: InputDecoration(
                 hintText: 'Apa yang ingin Anda kerjakan?',
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.blue, width: 1.5)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Deskripsi', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+            const Text(
+              'Deskripsi',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: descController,
@@ -1239,97 +1376,168 @@ class NotulenView extends GetView<NotulenController> {
               decoration: InputDecoration(
                 hintText: 'Tambahkan catatan detail...',
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.blue, width: 1.5)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Tenggat Waktu', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+            const Text(
+              'Tenggat Waktu',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
-                  child: Obx(() => GestureDetector(
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: Get.context!,
-                        initialDate: selectedDate.value,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime(2100),
-                      );
-                      if (picked != null) selectedDate.value = picked;
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(12)),
-                      child: Row(
-                        children: [
-                          Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
-                          const SizedBox(width: 8),
-                          Text('${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}', style: const TextStyle(fontSize: 13)),
-                        ],
+                  child: Obx(
+                    () => GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: Get.context!,
+                          initialDate: selectedDate.value,
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) selectedDate.value = picked;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              size: 16,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${selectedDate.value.day}/${selectedDate.value.month}/${selectedDate.value.year}',
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Obx(() => GestureDetector(
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: Get.context!,
-                        initialTime: selectedTime.value,
-                      );
-                      if (picked != null) selectedTime.value = picked;
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(12)),
-                      child: Row(
-                        children: [
-                          Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
-                          const SizedBox(width: 8),
-                          Text(selectedTime.value.format(Get.context!), style: const TextStyle(fontSize: 13)),
-                        ],
+                  child: Obx(
+                    () => GestureDetector(
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: Get.context!,
+                          initialTime: selectedTime.value,
+                        );
+                        if (picked != null) selectedTime.value = picked;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              selectedTime.value.format(Get.context!),
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-            const Text('Prioritas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
-            const SizedBox(height: 8),
-            Obx(() => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12),
+            const Text(
+              'Prioritas',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.priority_high, size: 20, color: isPriority.value ? Colors.red : Colors.grey),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Tandai sebagai Penting',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isPriority.value ? Colors.black87 : Colors.grey[600],
-                        fontWeight: isPriority.value ? FontWeight.w600 : FontWeight.normal,
+            ),
+            const SizedBox(height: 8),
+            Obx(
+              () => Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.priority_high,
+                      size: 20,
+                      color: isPriority.value ? Colors.red : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Tandai sebagai Penting',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isPriority.value
+                              ? Colors.black87
+                              : Colors.grey[600],
+                          fontWeight: isPriority.value
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
                       ),
                     ),
-                  ),
-                  Switch(
-                    value: isPriority.value,
-                    onChanged: (val) => isPriority.value = val,
-                    activeColor: Colors.blue,
-                  ),
-                ],
+                    Switch(
+                      value: isPriority.value,
+                      onChanged: (val) => isPriority.value = val,
+                      activeColor: Colors.blue,
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
             const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
@@ -1339,10 +1547,15 @@ class NotulenView extends GetView<NotulenController> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('Simpan Tugas', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                child: const Text(
+                  'Simpan Tugas',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
             SizedBox(height: keyboardHeight),
@@ -1403,36 +1616,72 @@ class NotulenView extends GetView<NotulenController> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Text('Judul Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const Text(
+                'Judul Tugas',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
                   hintText: 'Judul tugas...',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Deskripsi Tugas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const Text(
+                'Deskripsi Tugas',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: descController,
                 decoration: InputDecoration(
                   hintText: 'Deskripsi/detail tugas...',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Tenggat Waktu', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+              const Text(
+                'Tenggat Waktu',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: dueDateController,
                 decoration: InputDecoration(
                   hintText: 'Tenggat waktu...',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -1455,9 +1704,14 @@ class NotulenView extends GetView<NotulenController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF005AB4),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Simpan Rekomendasi', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Simpan Rekomendasi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
@@ -1469,7 +1723,6 @@ class NotulenView extends GetView<NotulenController> {
       backgroundColor: Colors.transparent,
     );
   }
-
 }
 
 class AiTypingIndicator extends StatefulWidget {
@@ -1496,9 +1749,10 @@ class _AiTypingIndicatorState extends State<AiTypingIndicator>
     );
 
     _animations = _controllers.map((controller) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
-      );
+      return Tween<double>(
+        begin: 0.0,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
     }).toList();
 
     for (int i = 0; i < 3; i++) {

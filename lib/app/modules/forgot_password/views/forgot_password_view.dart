@@ -39,7 +39,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                       children: [
                         // Logo
                         Image.asset(
-                          'assets/images/logo smart-worklife trans.png',
+                          'assets/images/logo smart-worklife NEW.png',
                           height: 80,
                         ),
                         const SizedBox(height: 32),

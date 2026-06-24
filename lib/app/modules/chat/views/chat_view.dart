@@ -75,7 +75,17 @@ class ChatView extends GetView<ChatController> {
             if (isPending) {
               subtitleText = 'Menunggu Konfirmasi Rekan';
             } else if (lastMsg != null) {
-              subtitleText = lastMsg;
+              if (lastMsg.startsWith('📋 NOTULEN_SHARE:')) {
+                final parts = lastMsg.split(' | ');
+                if (parts.length >= 2) {
+                  final titleLine = parts[1].split('\n')[0].replaceAll('*', '').trim();
+                  subtitleText = '📋 $titleLine';
+                } else {
+                  subtitleText = '📋 Mengirim Notulen';
+                }
+              } else {
+                subtitleText = lastMsg;
+              }
             }
             
             return Padding(

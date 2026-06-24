@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/notulen_controller.dart';
 import 'notulen_detail_view.dart';
+import '../../../data/models/chat_model.dart';
+import '../../../data/services/auth_service.dart';
+import '../../../data/services/dio_service.dart';
 
 class NotulenArchiveView extends GetView<NotulenController> {
   const NotulenArchiveView({super.key});
@@ -180,7 +184,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                       itemCount: controller.archivedMeetings.length,
                       itemBuilder: (context, index) {
                         final archive = controller.archivedMeetings[index];
-                        return _buildArchiveCard(archive);
+                        return _buildArchiveCard(context, archive);
                       },
                     )),
             ],
@@ -312,7 +316,101 @@ class NotulenArchiveView extends GetView<NotulenController> {
     if (confirm == true) controller.deleteAll();
   }
 
-  Widget _buildArchiveCard(ArchivedMeeting archive) {
+  void _showCardOptions(BuildContext context, ArchivedMeeting archive) {
+    final archiveId = archive.id;
+    final title = archive.title;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Judul notulen
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color(0xFF181C22),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Divider(height: 1),
+                // Opsi Share
+                ListTile(
+                  leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
+                  title: const Text('Share ke Rekan', style: TextStyle(fontSize: 15)),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    _showShareToFriendBottomSheet(context, archive);
+                  },
+                ),
+                // Opsi Hapus
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
+                  title: const Text('Hapus', style: TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    final confirm = await Get.dialog<bool>(
+                      AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        title: const Text('Hapus Notulen?',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        content: Text(
+                          'Notulen "$title" akan dihapus permanen.',
+                          style: const TextStyle(color: Color(0xFF717785)),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Get.back(result: false),
+                            child: const Text('Batal', style: TextStyle(color: Color(0xFF717785))),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Get.back(result: true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFDC2626),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            child: const Text('Hapus'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) controller.deleteNotulen(archiveId);
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildArchiveCard(BuildContext context, ArchivedMeeting archive) {
     return Obx(() {
       final isSelected = controller.selectedIds.contains(archive.id);
       final inSelection = controller.isSelectionMode.value;
@@ -384,43 +482,11 @@ class NotulenArchiveView extends GetView<NotulenController> {
                     )
                   else
                     GestureDetector(
-                      onTap: () async {
-                        final confirm = await Get.dialog<bool>(
-                          AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            title: const Text('Hapus Notulen?',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            content: Text(
-                              'Notulen "${archive.title}" akan dihapus permanen.',
-                              style: const TextStyle(
-                                  color: Color(0xFF717785)),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Get.back(result: false),
-                                child: const Text('Batal'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Get.back(result: true),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFDC2626),
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Hapus'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (confirm == true) {
-                          controller.deleteNotulen(archive.id);
-                        }
-                      },
+                      onTap: () => _showCardOptions(context, archive),
                       child: const Padding(
                         padding: EdgeInsets.only(left: 4),
-                        child: Icon(Icons.delete_outline,
-                            size: 18, color: Color(0xFFDC2626)),
+                        child: Icon(Icons.more_vert,
+                            size: 20, color: Color(0xFF94A3B8)),
                       ),
                     ),
                 ],
@@ -461,5 +527,95 @@ class NotulenArchiveView extends GetView<NotulenController> {
         ),
       );
     });
+  }
+
+  void _showShareToFriendBottomSheet(BuildContext context, ArchivedMeeting archive) async {
+    final dioService = Get.find<DioService>();
+    final authService = Get.find<AuthService>();
+    
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+    
+    try {
+      final response = await dioService.client.get('/chat/friends');
+      Get.back(); // close loading
+      
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        final currentUser = authService.currentUser.value;
+        if (currentUser == null) return;
+        
+        final friends = data.map((e) => FriendshipResponse.fromJson(e))
+          .where((f) => f.status == 'accepted')
+          .map((f) {
+            final isRequester = f.requesterId == currentUser.id;
+            return isRequester ? f.addressee : f.requester;
+          })
+          .where((u) => u != null)
+          .toList();
+
+        if (friends.isEmpty) {
+          Get.snackbar('Share', 'Anda belum memiliki teman chat');
+          return;
+        }
+
+        Get.bottomSheet(
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Bagikan ke Rekan...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: friends.length,
+                    itemBuilder: (ctx, i) {
+                      final friend = friends[i]!;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
+                          child: Text(friend.fullName != null ? friend.fullName![0].toUpperCase() : friend.email[0].toUpperCase(), style: const TextStyle(color: Color(0xFF005AB4))),
+                        ),
+                        title: Text(friend.fullName ?? friend.email),
+                        onTap: () async {
+                          Get.back(); // close sheet
+                          
+                          // Kirim pesan
+                          final text = '📋 NOTULEN_SHARE: ${archive.id} | *${archive.title}*\n📅 ${archive.date}  ⏱ ${archive.duration}';
+                          
+                          try {
+                            await dioService.client.post('/chat/messages', data: {
+                              'receiver_id': friend.id,
+                              'content': text,
+                            });
+                            Get.snackbar(
+                              'Berhasil', 
+                              'Notulen berhasil dibagikan ke ${friend.fullName ?? friend.email}',
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          } catch (e) {
+                            Get.snackbar('Error', 'Gagal membagikan notulen');
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          )
+        );
+      }
+    } catch (e) {
+      Get.back(); // close loading
+      Get.snackbar('Error', 'Gagal mengambil daftar rekan');
+    }
   }
 }
