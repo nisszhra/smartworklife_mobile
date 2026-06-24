@@ -10,11 +10,42 @@ class StretchingView extends GetView<StretchingController> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isFromPomodoro = Get.arguments != null && Get.arguments is Map && Get.arguments['fromPomodoro'] == true;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+      appBar: isFromPomodoro
+          ? AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFF005AB4)),
+                onPressed: () => Get.back(),
+              ),
+              title: const Text(
+                'Smart Stretching',
+                style: TextStyle(
+                  color: Color(0xFF005AB4),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              centerTitle: true,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Container(
+                  color: const Color(0xFFE2E8F0),
+                  height: 1,
+                ),
+              ),
+            )
+          : null,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Header ---
@@ -63,6 +94,7 @@ class StretchingView extends GetView<StretchingController> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

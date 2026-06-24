@@ -1,0 +1,203 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:dio/dio.dart';
+import '../../../data/services/auth_service.dart';
+import '../../../data/services/dio_service.dart';
+import '../../../data/models/chat_model.dart';
+
+class ChatController extends GetxController {
+  final chatList = <ChatListItem>[].obs;
+  final friendNameController = TextEditingController();
+  final isSearching = false.obs;
+  final isLoading = true.obs;
+
+  final _dioService = Get.find<DioService>();
+
+  Timer? _pollingTimer;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchFriends();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      fetchFriends(silent: true);
+    });
+  }
+
+  Future<void> fetchFriends({bool silent = false}) async {
+    if (!silent) isLoading.value = true;
+    try {
+      final response = await _dioService.client.get('/chat/friends');
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        final friendships = data.map((e) => FriendshipResponse.fromJson(e)).toList();
+        
+        final currentUser = Get.find<AuthService>().currentUser.value;
+        if (currentUser == null) return;
+
+        final items = friendships.where((f) => f.status == 'accepted' || (f.status == 'pending' && f.requesterId == currentUser.id)).map((f) {
+           final isRequester = f.requesterId == currentUser.id;
+           final otherUser = isRequester ? f.addressee : f.requester;
+           return ChatListItem(
+             friendshipId: f.id,
+             friendId: otherUser?.id ?? '',
+             friendName: otherUser?.fullName ?? otherUser?.email ?? 'Unknown',
+             status: f.status,
+             isRequester: isRequester,
+             lastMessage: f.lastMessage,
+             lastMessageTime: f.lastMessageTime,
+             unreadCount: f.unreadCount,
+           );
+        }).toList();
+        
+        // Sort by last message time (descending)
+        items.sort((a, b) {
+          if (a.lastMessageTime == null && b.lastMessageTime == null) return 0;
+          if (a.lastMessageTime == null) return 1;
+          if (b.lastMessageTime == null) return -1;
+          return b.lastMessageTime!.compareTo(a.lastMessageTime!);
+        });
+            
+        chatList.assignAll(items);
+      }
+    } catch (e) {
+      //
+    } finally {
+      if (!silent) isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteChatHistory(ChatListItem item) async {
+    try {
+      await _dioService.client.delete('/chat/messages/all/${item.friendId}');
+      fetchFriends();
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal menghapus obrolan');
+    }
+  }
+
+  @override
+  void onClose() {
+    _pollingTimer?.cancel();
+    friendNameController.dispose();
+    super.onClose();
+  }
+
+  final searchResult = Rxn<UserPublic>();
+
+  Future<void> searchUser(String name) async {
+    isSearching.value = true;
+    searchResult.value = null; // reset
+    
+    try {
+      final response = await _dioService.client.get('/chat/users/search', queryParameters: {'q': name});
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        if (data.isNotEmpty) {
+           searchResult.value = UserPublic.fromJson(data.first);
+        } else {
+          Get.snackbar(
+            'Tidak Ditemukan', 
+            'User dengan akun "$name" tidak terdaftar.',
+            snackPosition: SnackPosition.BOTTOM, 
+            backgroundColor: Colors.orange[50],
+            colorText: Colors.orange[900],
+          );
+        }
+      }
+    } catch (e) {
+        Get.snackbar(
+          'Error', 
+          'Terjadi kesalahan saat mencari user.',
+          snackPosition: SnackPosition.BOTTOM, 
+          backgroundColor: Colors.red[50],
+          colorText: Colors.red[900],
+        );
+    } finally {
+        isSearching.value = false;
+    }
+  }
+
+  Future<void> addFriendFromSearch() async {
+    final targetUser = searchResult.value;
+    if (targetUser == null) return;
+    
+    try {
+      final response = await _dioService.client.post('/chat/friends/request', data: {
+        'addressee_id': targetUser.id
+      });
+      
+        if (response.statusCode == 200 || response.statusCode == 201) {
+         Get.snackbar(
+          'Sukses', 
+          'Berhasil mengirim permintaan pertemanan ke ${targetUser.fullName ?? targetUser.email}.',
+          snackPosition: SnackPosition.BOTTOM, 
+          backgroundColor: Colors.green[50],
+          colorText: Colors.green[900],
+        );
+        fetchFriends(); // Refresh list to show pending
+      }
+    } on DioException catch (e) {
+      Get.snackbar(
+        'Gagal', 
+        e.response?.data['detail'] ?? 'Permintaan sudah dikirim atau gagal.',
+        snackPosition: SnackPosition.BOTTOM, 
+        backgroundColor: Colors.orange[50],
+        colorText: Colors.orange[900],
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal', 
+        'Terjadi kesalahan saat mengirim permintaan.',
+        snackPosition: SnackPosition.BOTTOM, 
+        backgroundColor: Colors.orange[50],
+        colorText: Colors.orange[900],
+      );
+    }
+    
+    searchResult.value = null;
+    friendNameController.clear();
+    Get.back(); // close dialog
+  }
+
+  void deleteFriend(ChatListItem item) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        title: const Text('Hapus Obrolan?', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Text('Apakah Anda yakin ingin menghapus obrolan dengan ${item.friendName}? Riwayat pesan juga akan terhapus.'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await _dioService.client.delete('/chat/friends/${item.friendshipId}');
+                chatList.removeWhere((i) => i.friendshipId == item.friendshipId);
+                Get.back();
+                Get.snackbar(
+                  'Terhapus',
+                  'Obrolan dengan ${item.friendName} telah dihapus.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.blue[50],
+                  colorText: Colors.blue[900],
+                );
+              } catch (e) {
+                Get.snackbar('Error', 'Gagal menghapus obrolan.');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+}

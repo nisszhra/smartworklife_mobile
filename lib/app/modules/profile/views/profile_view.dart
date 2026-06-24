@@ -145,6 +145,20 @@ class ProfileView extends GetView<ProfileController> {
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              color: const Color(0xFF005AB4).withValues(alpha: 0.1),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF005AB4),
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            );
+                          },
                           errorBuilder: (context, error, stackTrace) {
                             return const Icon(Icons.person, size: 50, color: Colors.white);
                           },

@@ -29,6 +29,13 @@ import '../modules/verifikasi/bindings/verifikasi_binding.dart';
 import '../modules/verifikasi/views/verifikasi_view.dart';
 import '../modules/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/forgot_password/views/forgot_password_view.dart';
+import '../modules/chat/bindings/chat_binding.dart';
+import '../modules/chat/views/chat_view.dart';
+import '../modules/chat_detail/bindings/chat_detail_binding.dart';
+import '../modules/chat_detail/views/chat_detail_view.dart';
+
+import '../modules/friend_requests/bindings/friend_requests_binding.dart';
+import '../modules/friend_requests/views/friend_requests_view.dart';
 
 part 'app_routes.dart';
 
@@ -112,6 +119,21 @@ class AppPages {
       name: _Paths.FORGOT_PASSWORD,
       page: () => const ForgotPasswordView(),
       binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT,
+      page: () => const ChatView(),
+      binding: ChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT_DETAIL,
+      page: () => const ChatDetailView(),
+      binding: ChatDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.FRIEND_REQUESTS,
+      page: () => const FriendRequestsView(),
+      binding: FriendRequestsBinding(),
     ),
   ];
 }

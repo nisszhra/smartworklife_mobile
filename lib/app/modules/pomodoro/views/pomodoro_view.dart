@@ -192,28 +192,49 @@ class PomodoroView extends GetView<PomodoroController> {
                 // Start button
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      controller.startSession(mode);
-                      Get.to(() => const PomodoroTimerView());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonColor,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Obx(() {
+                    final isActive = controller.selectedMode.value == mode &&
+                        controller.pomodoroState.value != PomodoroState.idle;
+                    final isAnotherActive = controller.selectedMode.value != null &&
+                        controller.selectedMode.value != mode &&
+                        controller.pomodoroState.value != PomodoroState.idle;
+
+                    return ElevatedButton(
+                      onPressed: () {
+                        if (isActive) {
+                          Get.to(() => const PomodoroTimerView());
+                        } else if (isAnotherActive) {
+                          Get.snackbar(
+                            'Sesi Aktif',
+                            'Harap hentikan sesi yang sedang berjalan terlebih dahulu jika ingin memulai mode baru.',
+                            backgroundColor: Colors.red[50],
+                            colorText: Colors.red[900],
+                            snackPosition: SnackPosition.BOTTOM,
+                            margin: const EdgeInsets.all(16),
+                            icon: Icon(Icons.warning_rounded, color: Colors.red[900]),
+                          );
+                        } else {
+                          _showSessionBottomSheet(mode);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isActive ? const Color(0xFF4CAF50) : buttonColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: Text(
-                      buttonLabel,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                      child: Text(
+                        isActive ? 'Lanjutkan Sesi' : buttonLabel,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ),
               ],
             ),
@@ -223,5 +244,205 @@ class PomodoroView extends GetView<PomodoroController> {
     );
   }
 
+  void _showSessionBottomSheet(PomodoroMode mode) {
+    final sessions = 1.obs;
+
+    String title = '';
+    String description = '';
+    int workMins = 0;
+    int breakMins = 0;
+
+    switch (mode) {
+      case PomodoroMode.klasik:
+        title = 'Atur Sesi Klasik';
+        description = '1 Sesi Klasik terdiri dari 25 menit fokus dan 5 menit istirahat.';
+        workMins = 25;
+        breakMins = 5;
+        break;
+      case PomodoroMode.deepWork:
+        title = 'Atur Sesi Deep Work';
+        description = '1 Sesi Deep Work terdiri dari 50 menit fokus dan 10 menit istirahat.';
+        workMins = 50;
+        breakMins = 10;
+        break;
+      case PomodoroMode.extended:
+        title = 'Atur Sesi Extended';
+        description = '1 Sesi Extended terdiri dari 90 menit fokus dan 30 menit istirahat.';
+        workMins = 90;
+        breakMins = 30;
+        break;
+    }
+
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF181C22),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF717785),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Jumlah Sesi',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF181C22),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (sessions.value > 1) sessions.value--;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: const Icon(Icons.remove, size: 18, color: Color(0xFF414753)),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Obx(() => Text(
+                            '${sessions.value}x',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF005AB4),
+                            ),
+                          )),
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () {
+                          sessions.value++;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: const Icon(Icons.add, size: 18, color: Color(0xFF414753)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Obx(() {
+              final totalMinutes = sessions.value * (workMins + breakMins);
+              final hours = totalMinutes ~/ 60;
+              final mins = totalMinutes % 60;
+              final timeString = hours > 0
+                  ? (mins > 0 ? '$hours jam $mins menit' : '$hours jam')
+                  : '$mins menit';
+                  
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: Color(0xFF005AB4), size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Total waktu: $timeString\n(${sessions.value} sesi kerja & ${sessions.value} istirahat)',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF00458D),
+                          fontWeight: FontWeight.w500,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  controller.startSession(mode, sessions: sessions.value);
+                  Get.to(() => const PomodoroTimerView());
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF005AB4),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Mulai Sekarang',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
 
 }

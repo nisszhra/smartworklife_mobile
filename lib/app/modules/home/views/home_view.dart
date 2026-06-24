@@ -61,7 +61,135 @@ class HomeView extends GetView<HomeController> {
                   ],
                 );
               }),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+
+              // Work-Life Balance Progress Bar Card
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Work-Life Balance',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 75,
+                              child: Container(height: 14, color: const Color(0xFF005AB4)),
+                            ),
+                            Expanded(
+                              flex: 15,
+                              child: Container(height: 14, color: const Color(0xFF8D6E63)),
+                            ),
+                            Expanded(
+                              flex: 10,
+                              child: Container(height: 14, color: const Color(0xFF4CAF50)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF005AB4), shape: BoxShape.circle)),
+                              const SizedBox(width: 6),
+                              const Text('Work (75%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF8D6E63), shape: BoxShape.circle)),
+                              const SizedBox(width: 6),
+                              const Text('Break (15%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle)),
+                              const SizedBox(width: 6),
+                              const Text('Exercise (10%)', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // My Points Banner Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A73E8),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.star, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text('My Points', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                              const SizedBox(width: 4),
+                              Icon(Icons.info_outline, color: Colors.white.withValues(alpha: 0.8), size: 14),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            '1,250 Points',
+                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF1A73E8),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      child: const Text(
+                        'Lihat Leaderboard &\nRewards',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               
               // Smart To-Do
               Card(
@@ -149,90 +277,120 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               
-              const Text(
-                'Today\'s Balance',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              
-              // Today's Balance Pie Chart
-              Obx(() {
-                if (controller.isLoading.value && controller.summary.value == null) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                
-                final summary = controller.summary.value;
-                final workPct = summary?.workPercentage ?? 0.0;
-                final restPct = summary?.restPercentage ?? 0.0;
-                
-                // If both are 0, we can just show a default empty chart or a message
-                final hasData = (workPct > 0 || restPct > 0);
-
-                return Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
+              // Smart Insight
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 120,
-                        height: 120,
-                        child: hasData 
-                          ? PieChart(
-                              PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 40,
-                                sections: [
-                                  PieChartSectionData(
-                                    color: const Color(0xFF1A73E8),
-                                    value: workPct,
-                                    title: '${workPct.toInt()}%',
-                                    radius: 20,
-                                    titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                  PieChartSectionData(
-                                    color: const Color(0xFFFF9800),
-                                    value: restPct,
-                                    title: '${restPct.toInt()}%',
-                                    radius: 20,
-                                    titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Smart Insight',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Lihat Lainnya',
+                              style: TextStyle(
+                                color: Color(0xFF005AB4),
+                                fontWeight: FontWeight.w600,
                               ),
-                            )
-                          : const Center(child: Text('No Data', style: TextStyle(color: Colors.grey))),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 24),
-                      Expanded(
+                      const SizedBox(height: 16),
+                      // Insight Card 1
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLegendItem(color: const Color(0xFF1A73E8), label: 'Work (Focus)', value: '${workPct.toInt()}%'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'TRENDING',
+                                  style: TextStyle(
+                                    color: Color(0xFF005AB4),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                Text(
+                                  '5 min read',
+                                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                ),
+                              ],
+                            ),
                             const SizedBox(height: 12),
-                            _buildLegendItem(color: const Color(0xFFFF9800), label: 'Rest (Break)', value: '${restPct.toInt()}%'),
-                            const SizedBox(height: 16),
                             const Text(
-                              'Keep a healthy balance between focus time and breaks to prevent burnout.',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              '5 Ways to Optimize Your Remote Workspace',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Discover how small changes to your lighting, ergonomics, and digital habits can boost your dai...',
+                              style: TextStyle(color: Colors.grey[600], fontSize: 14, height: 1.4),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Insight Card 2
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'VIDEO HIGHLIGHT',
+                              style: TextStyle(
+                                color: Color(0xFFB9770E),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              '5-Minute Desk Yoga for Neck Relief',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'YouTube • 5:15',
+                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                );
-              }),
+                ),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
