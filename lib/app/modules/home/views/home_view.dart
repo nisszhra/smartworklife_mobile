@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../controllers/home_controller.dart';
@@ -324,13 +325,14 @@ class HomeView extends GetView<HomeController> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
                             'Smart Insight',
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () => Get.toNamed(Routes.BERITA),
                             child: const Text(
                               'Lihat Lainnya',
                               style: TextStyle(
@@ -341,81 +343,121 @@ class HomeView extends GetView<HomeController> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      // Insight Card 1
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'TRENDING',
-                                  style: TextStyle(
-                                    color: Color(0xFF005AB4),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                                Text(
-                                  '5 min read',
-                                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              '5 Ways to Optimize Your Remote Workspace',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Discover how small changes to your lighting, ergonomics, and digital habits can boost your dai...',
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14, height: 1.4),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Insight Card 2
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'VIDEO HIGHLIGHT',
-                              style: TextStyle(
-                                color: Color(0xFFB9770E),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
+                      Obx(() {
+                        if (controller.listBerita.isNotEmpty) {
+                          final lastUpdate = controller.listBerita.first.scrapedAt ?? '';
+                          if (lastUpdate.isNotEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                'Diperbarui: $lastUpdate',
+                                style: TextStyle(fontSize: 10, color: Colors.grey[500]),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              '5-Minute Desk Yoga for Neck Relief',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'YouTube • 5:15',
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
+                            );
+                          }
+                        }
+                        return const SizedBox.shrink();
+                      }),
+                      const SizedBox(height: 8),
+                      // List Berita
+                      Obx(() {
+                        if (controller.isBeritaLoading.value && controller.listBerita.isEmpty) {
+                          return const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()));
+                        }
+                        if (controller.listBerita.isEmpty) {
+                          return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text("Belum ada berita.")));
+                        }
+
+                        return Column(
+                          children: controller.listBerita.take(3).map((berita) {
+                            // Waktu publikasi berita
+                            String publishTime = berita.publishedDate ?? '';
+                            if (publishTime.isEmpty) publishTime = 'Baru saja';
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              (berita.keyword ?? 'TRENDING').toUpperCase(),
+                                              style: const TextStyle(
+                                                color: Color(0xFF005AB4),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 1.2,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: (berita.source == 'YouTube') ? Colors.red[50] : Colors.blue[50],
+                                              borderRadius: BorderRadius.circular(4),
+                                              border: Border.all(
+                                                color: (berita.source == 'YouTube') ? Colors.red[200]! : Colors.blue[200]!,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              berita.source ?? 'Web',
+                                              style: TextStyle(
+                                                color: (berita.source == 'YouTube') ? Colors.red[700] : Colors.blue[700],
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        publishTime,
+                                        style: TextStyle(color: Colors.grey[500], fontSize: 10),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    berita.title ?? '',
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (berita.link != null && berita.link!.isNotEmpty) {
+                                        final url = Uri.parse(berita.link!);
+                                        try {
+                                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                                        } catch (e) {
+                                          debugPrint("Could not launch $url");
+                                        }
+                                      }
+                                    },
+                                    child: Text(
+                                      'Selengkapnya...',
+                                      style: TextStyle(color: Colors.blue[600], fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }),
                     ],
                   ),
                 ),
