@@ -38,6 +38,8 @@ import '../modules/friend_requests/bindings/friend_requests_binding.dart';
 import '../modules/friend_requests/views/friend_requests_view.dart';
 import '../modules/leaderboard/bindings/leaderboard_binding.dart';
 import '../modules/leaderboard/views/leaderboard_view.dart';
+import '../modules/berita/bindings/berita_binding.dart';
+import '../modules/berita/views/berita_view.dart';
 
 part 'app_routes.dart';
 
@@ -141,6 +143,11 @@ class AppPages {
       name: _Paths.LEADERBOARD,
       page: () => const LeaderboardView(),
       binding: LeaderboardBinding(),
+    ),
+    GetPage(
+      name: _Paths.BERITA,
+      page: () => const BeritaView(),
+      binding: BeritaBinding(),
     ),
   ];
 }

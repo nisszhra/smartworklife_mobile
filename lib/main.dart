@@ -9,6 +9,7 @@ import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/data/services/dio_service.dart';
 import 'package:worklife_mobile/app/data/services/user_service.dart';
 import 'package:worklife_mobile/app/data/services/notification_service.dart';
+import 'package:worklife_mobile/app/data/services/berita_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ Future<void> main() async {
 
   // 1. Init DioService dulu (tidak butuh dependency lain)
   await Get.putAsync<DioService>(() async => DioService());
+  Get.put(BeritaService());
 
   // 2. Init AuthService (restore token dari secure storage)
   // 2. Init AuthService dan tunggu sampai sesi pulih
