@@ -5,8 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../data/repositories/stretching_repository.dart';
 
 class StretchingController extends GetxController {
+  final StretchingRepository _repository;
+  StretchingController(this._repository);
   CameraController? cameraController;
   PoseDetector? poseDetector;
   bool isBusy = false;
@@ -19,6 +22,10 @@ class StretchingController extends GetxController {
   var currentExercise = "".obs;
   var reps = 0.obs;
   final int targetReps = 8;
+  var isSessionCompleted = false.obs;
+
+  // API tracking
+  String? _sessionId;
 
   // Exercise State
   int _counter = 0;
@@ -41,11 +48,37 @@ class StretchingController extends GetxController {
     super.onInit();
     currentExercise.value = Get.arguments ?? "Neck Tilt";
     reps.value = 0;
+    isSessionCompleted.value = false;
     _isMovingUp = false;
     _hasTilted = false;
     _shoulderRatioHistory.clear();
     _initializeCamera();
     _initializePoseDetector();
+    _startStretchingSession();
+  }
+
+  Future<void> _startStretchingSession() async {
+    // exerciseId dipakai sebagai nama latihan (backend akan fallback jika UUID tidak valid)
+    // Idealnya exercise_id dari GET /stretching/exercises, tapi bisa pakai nama sebagai placeholder
+    try {
+      final sessionId = await _repository.startSession(
+        exerciseId: currentExercise.value,
+      );
+      if (sessionId != null) {
+        _sessionId = sessionId;
+        print('[Stretching] Session started → ID: $sessionId');
+      }
+    } catch (e) {
+      print('[Stretching] Warning: could not start session: $e');
+    }
+  }
+
+  Future<void> _completeStretchingSession() async {
+    if (_sessionId == null || isSessionCompleted.value) return;
+    isSessionCompleted.value = true;
+    final success = await _repository.completeSession(sessionId: _sessionId!);
+    print('[Stretching] Session completed → success=$success');
+    _sessionId = null;
   }
 
   void _initializePoseDetector() {
@@ -140,6 +173,9 @@ class StretchingController extends GetxController {
         _hasTilted = false;
         if (reps.value < targetReps) {
           reps.value++;
+          if (reps.value >= targetReps) {
+            _completeStretchingSession();
+          }
         }
         warningMessage.value = "Miringkan leher Anda ke samping";
         percentage.value = 0.0;
@@ -237,6 +273,9 @@ class StretchingController extends GetxController {
             _isMovingUp = false;
             if (reps.value < targetReps) {
               reps.value++;
+              if (reps.value >= targetReps) {
+                _completeStretchingSession();
+              }
             }
           }
           warningMessage.value = "Angkat bahu Anda ke atas mendekati telinga";

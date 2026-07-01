@@ -4,12 +4,17 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/services/notification_service.dart';
+import '../../../data/repositories/pomodoro_repository.dart';
 
 enum PomodoroMode { klasik, deepWork, extended }
 
 enum PomodoroState { idle, working, breaking }
 
 class PomodoroController extends GetxController with WidgetsBindingObserver {
+  // Dependencies
+  final PomodoroRepository _repository;
+  PomodoroController(this._repository);
+
   // Current mode
   final selectedMode = Rx<PomodoroMode?>(null);
   final pomodoroState = PomodoroState.idle.obs;
@@ -28,7 +33,7 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
 
   // Session count
   final completedSessions = 0.obs;
-  final totalTargetSessions = 4.obs; // Default
+  final totalTargetSessions = 4.obs;
 
   // Phases
   final currentPhaseIndex = 0.obs;
@@ -38,7 +43,13 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
   final refuelChecked = false.obs;
   final eyeRestChecked = false.obs;
 
-  // Mode configurations
+  // ─── API tracking ──────────────────────────────────────────────────
+  /// ID sesi yang sedang berjalan di backend (null = belum ada)
+  String? _currentSessionId;
+  /// Waktu mulai sesi ini di client (untuk hitung actual duration)
+  DateTime? _sessionStartTime;
+
+  // Mode configurations (durasi asli sesuai masing-masing mode)
   Map<PomodoroMode, List<Map<String, dynamic>>> get modeConfig => {
     PomodoroMode.klasik: [
       {'state': PomodoroState.working, 'minutes': 15},
@@ -71,7 +82,6 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
 
-    // Register port for background notification actions
     IsolateNameServer.removePortNameMapping('pomodoro_port');
     IsolateNameServer.registerPortWithName(_port.sendPort, 'pomodoro_port');
     _port.listen((dynamic data) {
@@ -100,13 +110,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       if (!isPaused.value &&
           _lastBackgroundTime != null &&
           pomodoroState.value != PomodoroState.idle) {
-        final elapsedSeconds = DateTime.now()
-            .difference(_lastBackgroundTime!)
-            .inSeconds;
+        final elapsedSeconds =
+            DateTime.now().difference(_lastBackgroundTime!).inSeconds;
         _lastBackgroundTime = null;
-
         _fastForwardTime(elapsedSeconds);
-
         if (pomodoroState.value != PomodoroState.idle) {
           _startTimer();
           _updateNotification();
@@ -118,7 +125,6 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
   void _fastForwardTime(int secondsToAdvance) {
     while (secondsToAdvance > 0) {
       if (pomodoroState.value == PomodoroState.idle) break;
-
       if (secondsToAdvance >= remainingSeconds.value) {
         secondsToAdvance -= remainingSeconds.value;
         remainingSeconds.value = 0;
@@ -131,12 +137,15 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  // ─── Session Lifecycle ─────────────────────────────────────────────
+
   void startSession(PomodoroMode mode, {int sessions = 1}) {
     selectedMode.value = mode;
     totalTargetSessions.value = sessions;
     completedSessions.value = 0;
     currentPhaseIndex.value = 0;
     isPaused.value = false;
+    _currentSessionId = null;
     _startCurrentPhase();
   }
 
@@ -145,14 +154,13 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
 
     final phases = modeConfig[selectedMode.value]!;
     if (currentPhaseIndex.value >= phases.length) {
-      // Session complete
+      // Satu set sesi selesai
       completedSessions.value++;
       if (completedSessions.value < totalTargetSessions.value) {
-        // Next session
         currentPhaseIndex.value = 0;
         _setupNextPhase();
       } else {
-        // All sessions complete
+        // Semua sesi selesai
         pomodoroState.value = PomodoroState.idle;
         selectedMode.value = null;
       }
@@ -174,10 +182,68 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
   void _startCurrentPhase() {
     _setupNextPhase();
     if (pomodoroState.value != PomodoroState.idle) {
+      // Rekam sesi ke backend
+      _recordSessionStart();
       _startTimer();
       _updateNotification();
     }
   }
+
+  /// Kirim start_session ke backend dan simpan ID yang dikembalikan
+  Future<void> _recordSessionStart() async {
+    if (selectedMode.value == null) return;
+    if (pomodoroState.value == PomodoroState.idle) return;
+
+    final modeStr = _modeToString(selectedMode.value!);
+    final typeStr = pomodoroState.value == PomodoroState.working ? 'focus' : 'break';
+    final durationSecs = totalSeconds.value;
+
+    _sessionStartTime = DateTime.now();
+    final sessionId = await _repository.startSession(
+      mode: modeStr,
+      sessionType: typeStr,
+      durationSeconds: durationSecs,
+    );
+
+    if (sessionId != null) {
+      _currentSessionId = sessionId;
+      print('[Pomodoro] Session started → ID: $sessionId');
+    } else {
+      print('[Pomodoro] Warning: Failed to record session start to backend');
+    }
+  }
+
+  /// Kirim end_session ke backend dengan status & durasi aktual
+  Future<void> _recordSessionEnd({required String status}) async {
+    if (_currentSessionId == null) return;
+
+    final actualSecs = _sessionStartTime != null
+        ? DateTime.now().difference(_sessionStartTime!).inSeconds
+        : (totalSeconds.value - remainingSeconds.value);
+
+    final success = await _repository.endSession(
+      sessionId: _currentSessionId!,
+      status: status,
+      actualDurationSeconds: actualSecs,
+    );
+
+    print('[Pomodoro] Session ended (status=$status, actual=${actualSecs}s) → success=$success');
+    _currentSessionId = null;
+    _sessionStartTime = null;
+  }
+
+  String _modeToString(PomodoroMode mode) {
+    switch (mode) {
+      case PomodoroMode.klasik:
+        return 'classic';
+      case PomodoroMode.deepWork:
+        return 'deep_work';
+      case PomodoroMode.extended:
+        return 'extend';
+    }
+  }
+
+  // ─── Timer Controls ────────────────────────────────────────────────
 
   void _updateNotification() {
     final title = pomodoroState.value == PomodoroState.working
@@ -204,6 +270,8 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
         remainingSeconds.value--;
       } else {
         _timer?.cancel();
+        // Sesi ini selesai alami (completed)
+        _recordSessionEnd(status: 'completed');
         currentPhaseIndex.value++;
         _startCurrentPhase();
       }
@@ -247,8 +315,12 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
     _startTimer();
   }
 
+  /// Stop/batalkan sesi yang sedang berjalan
   void stopSession() {
     _timer?.cancel();
+    // Kirim cancelled ke backend
+    _recordSessionEnd(status: 'cancelled');
+
     pomodoroState.value = PomodoroState.idle;
     selectedMode.value = null;
     remainingSeconds.value = 0;
@@ -275,7 +347,6 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       title = 'Sesi Pomodoro Selesai!';
       body = 'Selamat! Anda telah menyelesaikan seluruh target sesi.';
     } else {
-      // Cek fase berikutnya
       PomodoroState nextState;
       if (isLastPhaseInSession) {
         nextState = phases[0]['state'];
