@@ -12,7 +12,7 @@ class RatingController extends GetxController {
 
   final features = [
     "Keseluruhan Aplikasi",
-    "🍅 Pomodoro",
+    "⏱️ Pomodoro",
     "✅ Smart Todo",
     "💧 Smart Health (Hydration)",
     "🎙️ Smart Notulen",

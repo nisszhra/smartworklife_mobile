@@ -21,7 +21,7 @@ Modul cerdas yang memantau gerakan peregangan tubuh secara real-time untuk mengu
 * **Panel Glassmorphism:** Kontrol dan informasi gerakan didesain dengan efek kaca transparan premium (`BackdropFilter` & `blur`) untuk visual yang bersih dan modern.
 * **Smart Completion:** Tombol "Selesai" hanya akan aktif secara dinamis ketika pengguna berhasil mencapai jumlah repetisi target.
 
-### 🍅 2. Pengatur Waktu Pomodoro (*Pomodoro Timer*)
+### ⏱️ 2. Pengatur Waktu Pomodoro (*Pomodoro Timer*)
 Meningkatkan fokus dan produktivitas melalui teknik manajemen waktu Pomodoro klasik:
 * Durasi kerja terfokus (misalnya 25 menit) diselingi dengan istirahat singkat (misalnya 5 menit).
 * Tampilan visual yang hidup dengan mikro-animasi transisi saat beroperasi.
