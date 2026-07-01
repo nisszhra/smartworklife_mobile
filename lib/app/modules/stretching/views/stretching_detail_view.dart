@@ -13,6 +13,16 @@ class StretchingDetailView extends GetView<StretchingController> {
   Widget build(BuildContext context) {
     final String title = Get.arguments ?? 'Neck Tilt';
 
+    const Map<String, String> subtitleMap = {
+      'Neck Tilt': 'Peregangan Leher',
+      'Shoulder Rolls': 'Peregangan Bahu',
+      'Upper Back': 'Peregangan Punggung Atas',
+      'Seated Twist': 'Peregangan Pinggang Duduk',
+      'Wrist Circle': 'Peregangan Pergelangan Tangan',
+      'Hamstring': 'Peregangan Otot Paha Belakang',
+    };
+    final String subtitle = subtitleMap[title] ?? 'Peregangan';
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -128,7 +138,74 @@ class StretchingDetailView extends GetView<StretchingController> {
                           ),
                         ),
                       )),
-                      const SizedBox(height: 20),
+                      // ── Hold Timer (hanya untuk timer-based exercise) ──
+                      Obx(() {
+                        if (!controller.isTimerBased) return const SizedBox(height: 20);
+                        final holding = controller.isHolding.value;
+                        final secs = controller.holdSeconds.value;
+                        final target = controller.targetHoldSeconds;
+                        final progress = holding ? (secs / target).clamp(0.0, 1.0) : 0.0;
+                        return Column(
+                          children: [
+                            const SizedBox(height: 12),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.65),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: holding
+                                      ? const Color(0xFF0056B3).withOpacity(0.5)
+                                      : Colors.grey.withOpacity(0.3),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Durasi Tahan',
+                                        style: TextStyle(
+                                          color: Colors.blue[700],
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${secs}s / ${target}s',
+                                        style: TextStyle(
+                                          color: holding ? const Color(0xFF0056B3) : Colors.grey[500],
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: LinearProgressIndicator(
+                                      value: progress,
+                                      backgroundColor: Colors.blue.withOpacity(0.1),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        holding ? const Color(0xFF0056B3) : Colors.grey.shade300,
+                                      ),
+                                      minHeight: 8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      }),
+                      // ──────────────────────────────────────────────────────
+                      const SizedBox(height: 4),
 
                       // Title & Repetisi Row
                       Row(
@@ -145,9 +222,9 @@ class StretchingDetailView extends GetView<StretchingController> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const Text(
-                                'Peregangan Leher & Bahu',
-                                style: TextStyle(
+                              Text(
+                                subtitle,
+                                style: const TextStyle(
                                   color: Color(0xFF4A5568),
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
@@ -157,6 +234,9 @@ class StretchingDetailView extends GetView<StretchingController> {
                           ),
                           Obx(() {
                             final completed = controller.reps.value >= controller.targetReps;
+                            final label = controller.isTimerBased
+                                ? 'Set ${controller.reps.value} / ${controller.targetReps}'
+                                : '${controller.reps.value} / ${controller.targetReps} Rep';
                             return Container(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                               decoration: BoxDecoration(
@@ -170,9 +250,9 @@ class StretchingDetailView extends GetView<StretchingController> {
                                 ),
                               ),
                               child: Text(
-                                '${controller.reps.value} / ${controller.targetReps}',
+                                label,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   color: completed ? Colors.green[800] : const Color(0xFF0056B3),
                                 ),

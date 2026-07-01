@@ -12,7 +12,54 @@ class StretchingPreviewView extends GetView<StretchingController> {
 
   @override
   Widget build(BuildContext context) {
-    final String title = Get.arguments ?? 'Neck Roll';
+    final String title = Get.arguments ?? 'Neck Tilt';
+
+    // Map stretching data berdasarkan title
+    final Map<String, Map<String, String>> stretchingData = {
+      'Neck Tilt': {
+        'gif': 'assets/gif/neck.gif',
+        'subtitle': 'Peregangan Leher',
+        'instruction':
+            'Miringkan kepala ke sisi kanan hingga telinga mendekati bahu. Tahan selama 8 detik, lalu ulangi ke sisi kiri. Pastikan bahu tetap rileks dan tidak terangkat selama gerakan.',
+      },
+      'Shoulder Rolls': {
+        'gif': 'assets/gif/bahu rolls.gif',
+        'subtitle': 'Peregangan Bahu',
+        'instruction':
+            'Putar kedua bahu ke depan secara bersamaan membentuk lingkaran penuh, lakukan 4 kali. Kemudian ulangi gerakan ke arah belakang sebanyak 4 kali. Lakukan dengan lambat dan penuh kontrol untuk merilekskan otot bahu.',
+      },
+      'Upper Back': {
+        'gif': 'assets/gif/punggung atas.gif',
+        'subtitle': 'Peregangan Punggung Atas',
+        'instruction':
+            'Satukan kedua tangan di depan dada, lalu dorong tangan ke depan sambil membungkukkan punggung atas. Tahan posisi ini selama 8 detik sambil merasakan regangan di antara tulang belikat. Ulangi 2–3 kali.',
+      },
+      'Seated Twist': {
+        'gif': 'assets/gif/putar duduk.gif',
+        'subtitle': 'Peregangan Pinggang Duduk',
+        'instruction':
+            'Duduk tegak di kursi, lalu putar tubuh bagian atas ke sisi kanan sambil memegang sandaran kursi. Tahan selama 8 detik, kemudian ulangi ke sisi kiri. Pastikan pinggul tetap menghadap ke depan selama gerakan.',
+      },
+      'Wrist Circle': {
+        'gif': 'assets/gif/pergelangan.gif',
+        'subtitle': 'Peregangan Pergelangan Tangan',
+        'instruction':
+            'Rentangkan salah satu tangan ke depan, lalu putar pergelangan tangan membentuk lingkaran penuh searah jarum jam sebanyak 4 kali, kemudian ulangi berlawanan arah jarum jam. Lakukan pada kedua tangan secara bergantian untuk merilekskan sendi pergelangan.',
+      },
+      'Hamstring': {
+        'gif': 'assets/gif/paha.gif',
+        'subtitle': 'Peregangan Otot Paha Belakang',
+        'instruction':
+            'Berdiri tegak dengan kaki selebar bahu. Bungkukkan tubuh ke depan perlahan dengan menjaga lutut tetap lurus, lalu raih ujung kaki atau lantai. Tahan posisi ini 8 detik sambil merasakan regangan di bagian belakang paha, kemudian tegakkan kembali.',
+      },
+    };
+
+    final data = stretchingData[title] ??
+        {
+          'gif': 'assets/gif/neck.gif',
+          'subtitle': 'Peregangan',
+          'instruction': 'Ikuti gerakan peregangan dengan perlahan dan penuh kontrol.',
+        };
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -64,11 +111,10 @@ class StretchingPreviewView extends GetView<StretchingController> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Replace with actual GIF asset if available
                         Expanded(
                           child: Center(
                             child: Image.asset(
-                              'assets/gif/peregangan.gif', 
+                              data['gif']!,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -99,32 +145,11 @@ class StretchingPreviewView extends GetView<StretchingController> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Peregangan Leher & Bahu',
-                        style: TextStyle(
+                      Text(
+                        data['subtitle']!,
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Color(0xFF5F6368),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0061D2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.timer_outlined, color: Colors.white, size: 18),
-                      SizedBox(width: 6),
-                      Text(
-                        '04:20 s',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -160,9 +185,9 @@ class StretchingPreviewView extends GetView<StretchingController> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Putar leher perlahan searah jarum jam. Pastikan bahu tetap rileks dan tidak terangkat. Lakukan gerakan dengan lembut untuk menghindari ketegangan berlebih.',
-                    style: TextStyle(
+                  Text(
+                    data['instruction']!,
+                    style: const TextStyle(
                       fontSize: 15,
                       color: Color(0xFF3C4043),
                       height: 1.5,
