@@ -5,6 +5,7 @@ import 'security_view.dart';
 import 'faq_view.dart';
 import 'privacy_policy_view.dart';
 import 'preferensi_user_view.dart';
+import 'rating_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -364,6 +365,16 @@ class ProfileView extends GetView<ProfileController> {
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
               onTap: () {
                 Get.to(() => const FaqView());
+              },
+            ),
+            const Divider(color: Color(0xFFF1F5F9)),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.star_outline, color: Color(0xFF64748B)),
+              title: const Text('Feedback & Penilaian', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.to(() => const RatingView());
               },
             ),
             const Divider(color: Color(0xFFF1F5F9)),
