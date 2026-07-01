@@ -7,8 +7,9 @@ import 'package:worklife_mobile/app/routes/app_pages.dart';
 class DioService extends GetxService {
   // TODO: Ganti dengan base URL production saat deploy
   // static const String _baseUrl = 'http://192.168.1.10:8000/api/v1';
-  static const String _baseUrl = 'https://margarita-shallow-tactless.ngrok-free.dev/api/v1';
-  static const String baseStorageUrl = 'https://margarita-shallow-tactless.ngrok-free.dev';
+  // static const String _baseUrl = 'https://margarita-shallow-tactless.ngrok-free.dev/api/v1';
+  static const String _baseUrl = 'https://smartworklifedev.vercel.app/api/v1';
+  static const String baseStorageUrl = 'https://smartworklifedev.vercel.app';
 
 
   late final Dio client;  
