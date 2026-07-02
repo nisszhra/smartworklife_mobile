@@ -52,28 +52,34 @@ class SecurityView extends GetView<ProfileController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.lock_outline, size: 20, color: primary),
-                        SizedBox(width: 8),
-                        Text(
-                          'Ubah Password',
-                          style: TextStyle(
+                        const Icon(Icons.lock_outline, size: 20, color: primary),
+                        const SizedBox(width: 8),
+                        Obx(() => Text(
+                          controller.hasPassword ? 'Ubah Password' : 'Buat Password',
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF181C22),
                           ),
-                        ),
+                        )),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Obx(() => _buildPasswordField(
-                          label: 'Current Password',
-                          controller: controller.currentPasswordController,
-                          isVisible: controller.showCurrentPassword.value,
-                          onToggle: controller.toggleCurrentPassword,
-                        )),
-                    const SizedBox(height: 16),
+                    Obx(() => controller.hasPassword
+                        ? Column(
+                            children: [
+                              _buildPasswordField(
+                                label: 'Current Password',
+                                controller: controller.currentPasswordController,
+                                isVisible: controller.showCurrentPassword.value,
+                                onToggle: controller.toggleCurrentPassword,
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          )
+                        : const SizedBox.shrink()),
                     Obx(() => _buildPasswordField(
                           label: 'New Password',
                           controller: controller.newPasswordController,
@@ -114,32 +120,92 @@ class SecurityView extends GetView<ProfileController> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Ubah Password',
-                                style: TextStyle(
+                            : Text(
+                                controller.hasPassword ? 'Ubah Password' : 'Buat Password',
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                       ),
                     )),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        onPressed: () {
-                          Get.toNamed(Routes.FORGOT_PASSWORD);
-                        },
-                        child: const Text(
-                          'Lupa Password?',
-                          style: TextStyle(
-                            color: primary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
+                      Obx(() => controller.hasPassword
+                          ? Column(
+                              children: [
+                                const SizedBox(height: 16),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Get.toNamed(Routes.FORGOT_PASSWORD);
+                                    },
+                                    child: const Text(
+                                      'Lupa Password?',
+                                      style: TextStyle(
+                                        color: primary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                const SizedBox(height: 16),
+                                if (controller.isSnoozed)
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF9C4),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: const Color(0xFFFBC02D)),
+                                    ),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.info_outline, color: Color(0xFFF57F17), size: 20),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Untuk keamanan maksimal, sebaiknya Anda segera membuat password untuk melindungi akun ini.',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFFF57F17),
+                                              height: 1.4,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        controller.snoozePasswordReminder();
+                                        Get.back();
+                                        Get.snackbar(
+                                          'Diingatkan Nanti', 
+                                          'Anda dapat membuat password kapan saja melalui menu ini.', 
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          backgroundColor: const Color(0xFFFFF9C4),
+                                          colorText: const Color(0xFF181C22),
+                                        );
+                                      },
+                                      child: const Text(
+                                        'Nanti Saja',
+                                        style: TextStyle(
+                                          color: Color(0xFF64748B),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            )),
                   ],
                 ),
               ),

@@ -17,6 +17,9 @@ class AuthService extends GetxService {
 
   /// Observable current user — null jika belum login.
   final Rxn<UserModel> currentUser = Rxn<UserModel>();
+  
+  /// Track if the user has snoozed the password reminder
+  final RxBool hasSnoozedPasswordReminder = false.obs;
 
   bool get isLoggedIn => currentUser.value != null;
   bool get isOnboarded => currentUser.value?.isOnboarded ?? false;
@@ -37,6 +40,13 @@ class AuthService extends GetxService {
         final userData = jsonDecode(userJson) as Map<String, dynamic>;
         currentUser.value = UserModel.fromJson(userData);
         print("DEBUG: Sesi berhasil dipulihkan untuk: ${currentUser.value?.email}");
+        
+        // Restore snooze state specific to this user
+        if (currentUser.value?.id != null) {
+          final snoozeKey = 'snooze_password_${currentUser.value!.id}';
+          final snoozeVal = await _storage.read(key: snoozeKey);
+          hasSnoozedPasswordReminder.value = snoozeVal == 'true';
+        }
       } catch (e) {
         print("DEBUG: Gagal decode user data: $e");
         await clearSession();
@@ -61,11 +71,32 @@ class AuthService extends GetxService {
   /// Ambil token dari secure storage.
   Future<String?> getToken() => _storage.read(key: _tokenKey);
 
+  /// Snooze password reminder
+  Future<void> snoozePasswordReminder() async {
+    final userId = currentUser.value?.id;
+    if (userId != null) {
+      hasSnoozedPasswordReminder.value = true;
+      await _storage.write(key: 'snooze_password_$userId', value: 'true');
+    }
+  }
+
+  /// Clear snooze password reminder
+  Future<void> clearSnoozePasswordReminder() async {
+    final userId = currentUser.value?.id;
+    if (userId != null) {
+      hasSnoozedPasswordReminder.value = false;
+      await _storage.delete(key: 'snooze_password_$userId');
+    }
+  }
+
   /// Hapus semua data sesi.
   Future<void> clearSession() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _userKey);
+    // don't delete snooze states here so they persist, or delete them if needed. 
+    // It's fine to leave them since they are keyed by user ID.
     currentUser.value = null;
+    hasSnoozedPasswordReminder.value = false;
   }
 
   /// Logout — hapus sesi dan redirect ke login.

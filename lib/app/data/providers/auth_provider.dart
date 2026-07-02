@@ -81,6 +81,7 @@ class AuthProvider {
   }
 
   Future<dio.Response> onboarding({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -90,6 +91,7 @@ class AuthProvider {
     double? height,
   }) {
     return _dio.put('/auth/onboarding', data: {
+      if (fullName != null) 'full_name': fullName,
       if (gender != null) 'gender': gender,
       if (age != null) 'age': age,
       if (industry != null) 'industry': industry,
@@ -100,9 +102,10 @@ class AuthProvider {
     });
   }
 
-  Future<dio.Response> googleAuth(String idToken) {
+  Future<dio.Response> googleAuth(String idToken, {bool isLogin = false}) {
     return _dio.post('/auth/google', data: {
       'id_token': idToken,
+      'is_login': isLogin,
     });
   }
 

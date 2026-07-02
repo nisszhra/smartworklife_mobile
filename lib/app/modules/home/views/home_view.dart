@@ -12,11 +12,21 @@ import '../../todolist/controllers/todolist_controller.dart';
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  String _formatDuration(int minutes) {
-    if (minutes < 60) return '${minutes}m';
-    final h = minutes ~/ 60;
-    final m = minutes % 60;
+  String _formatDuration(int seconds) {
+    if (seconds < 60 && seconds > 0) return '${seconds}s';
+    final totalMinutes = seconds ~/ 60;
+    if (totalMinutes < 60) return '${totalMinutes}m';
+    final h = totalMinutes ~/ 60;
+    final m = totalMinutes % 60;
     return '${h}h ${m}m';
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    if (hour >= 17 && hour < 20) return 'Good Evening';
+    return 'Good Night';
   }
 
   @override
@@ -32,7 +42,7 @@ class HomeView extends GetView<HomeController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Obx(() => Text(
-                'Good Morning, ${Get.find<AuthService>().currentUser.value?.fullName ?? 'User'} 👋',
+                '${_getGreeting()}, ${Get.find<AuthService>().currentUser.value?.fullName ?? 'User'} 👋',
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               )),
               const SizedBox(height: 8),

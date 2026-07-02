@@ -9,7 +9,7 @@ class DashboardProvider {
     _dio = Get.find<DioService>().client;
   }
 
-  Future<Response> getDashboardSummary() {
-    return _dio.get('/dashboard/summary');
+  Future<Response> getDashboardSummary(String targetDate) {
+    return _dio.get('/dashboard/summary', queryParameters: {'target_date': targetDate});
   }
 }

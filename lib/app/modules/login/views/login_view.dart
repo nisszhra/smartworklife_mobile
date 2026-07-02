@@ -74,7 +74,7 @@ class LoginView extends GetView<LoginController> {
                         controller: ctrl.emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'name@company.com',
+                          hintText: 'example@gmail.com',
                           hintStyle: const TextStyle(color: outlineVariant),
                           prefixIcon: const Icon(Icons.mail_outline, color: outline),
                           filled: true,

@@ -8,6 +8,7 @@ import '../../pomodoro/views/pomodoro_view.dart';
 import '../../notulen/views/notulen_view.dart';
 import '../../stretching/views/stretching_view.dart';
 import '../../chat/controllers/chat_controller.dart';
+import '../../../data/services/auth_service.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -17,10 +18,46 @@ class MainView extends GetView<MainController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.person_outline, color: Color(0xFF005AB4)),
-          onPressed: () => Get.toNamed('/profile'),
-        ),
+        leading: Obx(() {
+          final authService = Get.find<AuthService>();
+          final hasPassword = authService.currentUser.value?.hasPassword ?? true;
+          final snoozed = authService.hasSnoozedPasswordReminder.value;
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.person_outline, color: Color(0xFF005AB4)),
+                onPressed: () => Get.toNamed('/profile'),
+              ),
+              if (!hasPassword && !snoozed)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: const Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }),
         title: Obx(() => Text(
           _getTitle(controller.currentIndex.value),
           style: const TextStyle(

@@ -38,6 +38,7 @@ abstract class AuthRepository {
   });
 
   Future<UserModel> onboarding({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -47,7 +48,7 @@ abstract class AuthRepository {
     double? height,
   });
 
-  Future<AuthResponseModel> googleAuth(String idToken);
+  Future<AuthResponseModel> googleAuth(String idToken, {bool isLogin = false});
 
   Future<UserModel> uploadAvatar(String filePath);
 
@@ -78,9 +79,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResponseModel> googleAuth(String idToken) async {
+  Future<AuthResponseModel> googleAuth(String idToken, {bool isLogin = false}) async {
     try {
-      final res = await _provider.googleAuth(idToken);
+      final res = await _provider.googleAuth(idToken, isLogin: isLogin);
       return AuthResponseModel.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw _handleError(e);
@@ -188,6 +189,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel> onboarding({
+    String? fullName,
     String? gender,
     int? age,
     String? industry,
@@ -198,6 +200,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final res = await _provider.onboarding(
+        fullName: fullName,
         gender: gender,
         age: age,
         industry: industry,

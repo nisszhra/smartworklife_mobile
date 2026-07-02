@@ -14,6 +14,9 @@ class OnboardingController extends GetxController {
   final PageController pageController = PageController();
 
   // Health Profile Fields
+  final nameController = TextEditingController();
+  final nameFocusNode = FocusNode();
+  var isEditingName = false.obs;
   var selectedGender = ''.obs; // 'Laki-laki' or 'Perempuan'
   final ageController = TextEditingController();
   final weightController = TextEditingController();
@@ -23,6 +26,7 @@ class OnboardingController extends GetxController {
   var startTime = '08:00'.obs;
   var endTime = '17:00'.obs;
   var selectedIndustry = ''.obs;
+  final otherIndustryController = TextEditingController();
 
   final List<String> industries = [
     'Teknologi',
@@ -32,6 +36,17 @@ class OnboardingController extends GetxController {
     'Bisnis',
     'Lainnya'
   ];
+
+  @override
+  void onInit() {
+    super.onInit();
+    nameController.text = _authService.currentUser.value?.fullName ?? '';
+    nameFocusNode.addListener(() {
+      if (!nameFocusNode.hasFocus) {
+        isEditingName.value = false;
+      }
+    });
+  }
 
   void next() {
     if (currentPage.value == 0) {
@@ -55,6 +70,11 @@ class OnboardingController extends GetxController {
       // Validasi Step 2: Profil Pekerjaan
       if (selectedIndustry.value.isEmpty) {
         Get.snackbar('Data Belum Lengkap', 'Silakan pilih Bidang Industri Anda.',
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
+        return;
+      }
+      if (selectedIndustry.value == 'Lainnya' && otherIndustryController.text.trim().isEmpty) {
+        Get.snackbar('Data Belum Lengkap', 'Silakan isi Bidang Industri Anda.',
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
@@ -96,10 +116,12 @@ class OnboardingController extends GetxController {
     
     try {
       // 1. Save to Backend Database
+      final industryToSave = selectedIndustry.value == 'Lainnya' ? otherIndustryController.text.trim() : selectedIndustry.value;
       final updatedUser = await _repository.onboarding(
+        fullName: nameController.text.isNotEmpty ? nameController.text : null,
         gender: selectedGender.value,
         age: int.tryParse(ageController.text),
-        industry: selectedIndustry.value,
+        industry: industryToSave,
         startTime: startTime.value,
         endTime: endTime.value,
         weight: double.tryParse(weightController.text),
@@ -117,7 +139,7 @@ class OnboardingController extends GetxController {
       userService.height.value = heightController.text;
       userService.startTime.value = startTime.value;
       userService.endTime.value = endTime.value;
-      userService.selectedIndustry.value = selectedIndustry.value;
+      userService.selectedIndustry.value = industryToSave;
 
       Get.offAllNamed('/main');
     } catch (e) {
@@ -127,9 +149,12 @@ class OnboardingController extends GetxController {
 
   @override
   void onClose() {
+    nameFocusNode.dispose();
+    nameController.dispose();
     ageController.dispose();
     weightController.dispose();
     heightController.dispose();
+    otherIndustryController.dispose();
     pageController.dispose();
     super.onClose();
   }

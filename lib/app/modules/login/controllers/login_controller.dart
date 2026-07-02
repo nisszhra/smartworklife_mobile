@@ -114,7 +114,7 @@ class LoginController extends GetxController {
         return;
       }
 
-      final response = await _repository.googleAuth(idToken);
+      final response = await _repository.googleAuth(idToken, isLogin: true);
       
       await _authService.saveToken(response.accessToken);
       if (response.user != null) {
@@ -143,7 +143,18 @@ class LoginController extends GetxController {
       });
     } catch (e) {
       if (isClosed) return;
-      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
+      final err = e.toString().replaceFirst('Exception: ', '');
+      if (err.contains('Akun belum terdaftar')) {
+        Get.snackbar(
+          'Akun Tidak Ditemukan',
+          'Akun Anda belum terdaftar. Silakan Sign Up terlebih dahulu.',
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
+      } else {
+        errorMessage.value = err;
+      }
       isLoading.value = false;
     }
   }

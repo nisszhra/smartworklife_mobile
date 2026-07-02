@@ -66,6 +66,13 @@ class ProfileController extends GetxController {
   // Loading state
   final isSaving = false.obs;
 
+  bool get hasPassword => _authService.currentUser.value?.hasPassword ?? true;
+  bool get isSnoozed => _authService.hasSnoozedPasswordReminder.value;
+
+  void snoozePasswordReminder() {
+    _authService.snoozePasswordReminder();
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -680,7 +687,7 @@ class ProfileController extends GetxController {
     final newPassword = newPasswordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    if (currentPassword.isEmpty) {
+    if (hasPassword && currentPassword.isEmpty) {
       Get.snackbar(
         'Validasi',
         'Password saat ini harus diisi',
@@ -741,12 +748,21 @@ class ProfileController extends GetxController {
 
       Get.snackbar(
         'Berhasil',
-        'Password berhasil diubah',
+        hasPassword ? 'Password berhasil diubah' : 'Password berhasil dibuat',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF),
         margin: const EdgeInsets.all(16),
       );
+
+      if (!hasPassword) {
+        // Update user state manually so the UI knows they now have a password
+        final user = _authService.currentUser.value;
+        if (user != null) {
+          _authService.saveUser(user.copyWith(hasPassword: true));
+          _authService.clearSnoozePasswordReminder();
+        }
+      }
     } catch (e) {
       Get.snackbar(
         'Gagal',

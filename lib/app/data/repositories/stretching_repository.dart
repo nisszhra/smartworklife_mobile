@@ -19,9 +19,19 @@ class StretchingRepository {
   }
 
   /// Tandai sesi selesai di backend
-  Future<bool> completeSession({required String sessionId}) async {
+  Future<bool> completeSession({
+    required String sessionId,
+    int? totalReps,
+    int? correctReps,
+    String? status,
+  }) async {
     try {
-      final response = await _provider.completeSession(sessionId: sessionId);
+      final response = await _provider.completeSession(
+        sessionId: sessionId,
+        totalReps: totalReps,
+        correctReps: correctReps,
+        status: status,
+      );
       return response.statusCode == 200;
     } catch (e) {
       print('[StretchingRepo] completeSession error: $e');
