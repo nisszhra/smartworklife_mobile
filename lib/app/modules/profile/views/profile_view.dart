@@ -6,6 +6,7 @@ import 'faq_view.dart';
 import 'privacy_policy_view.dart';
 import 'preferensi_user_view.dart';
 import 'rating_view.dart';
+import 'package:worklife_mobile/app/data/services/auth_service.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -312,8 +313,46 @@ class ProfileView extends GetView<ProfileController> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.lock_person_outlined, color: Color(0xFF64748B)),
               title: const Text('Akun & Keamanan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              subtitle: const Text('Ubah password atau hapus akun Anda', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
-              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              subtitle: Obx(() => Text(
+                controller.hasPassword 
+                    ? 'Ubah password atau hapus akun Anda' 
+                    : 'Buat password untuk mengamankan akun', 
+                style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))
+              )),
+              trailing: Obx(() {
+                final authService = Get.find<AuthService>();
+                final snoozed = authService.hasSnoozedPasswordReminder.value;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!controller.hasPassword)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: snoozed ? Colors.orange : Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                        ),
+                        child: snoozed 
+                          ? const Icon(Icons.priority_high, size: 12, color: Colors.white)
+                          : const Text(
+                              '1',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                      ),
+                    const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+                  ],
+                );
+              }),
               onTap: () {
                 Get.to(() => const SecurityView());
               },

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:worklife_mobile/app/data/models/hydration_model.dart';
 import 'package:worklife_mobile/app/data/models/user_model.dart';
@@ -103,7 +104,8 @@ class HealthController extends GetxController {
   Future<void> fetchTodayHydration() async {
     isHydrationLoading.value = true;
     try {
-      final data = await _hydrationRepository.getTodayHydration();
+      final dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final data = await _hydrationRepository.getTodayHydration(dateStr);
       final settings = await _hydrationRepository.getSettings();
       if (isClosed) return;
 
@@ -187,7 +189,8 @@ class HealthController extends GetxController {
         ((intakeLiters.value / targetLiters.value) * 100).round().clamp(0, 100);
 
     try {
-      final newLog = await _hydrationRepository.addLog(ml);
+      final dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final newLog = await _hydrationRepository.addLog(ml, dateStr);
       if (!isClosed) {
         hydrationLogs.insert(0, newLog);
         

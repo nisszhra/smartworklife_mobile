@@ -18,7 +18,9 @@ class OnboardingView extends GetView<OnboardingController> {
 
     return Scaffold(
       backgroundColor: background,
-      body: SafeArea(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
         child: Column(
           children: [
             // Persistent Header
@@ -94,6 +96,7 @@ class OnboardingView extends GetView<OnboardingController> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -116,6 +119,27 @@ class OnboardingView extends GetView<OnboardingController> {
               style: TextStyle(fontSize: 16, color: onSurfaceVariant),
             ),
             const SizedBox(height: 32),
+
+            // Name
+            Text('Nama Pengguna', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+            const SizedBox(height: 8),
+            Obx(() => TextFormField(
+              controller: ctrl.nameController,
+              focusNode: ctrl.nameFocusNode,
+              readOnly: !ctrl.isEditingName.value,
+              decoration: InputDecoration(
+                hintText: 'Masukkan nama pengguna',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.edit, color: ctrl.isEditingName.value ? primary : outline),
+                  onPressed: () {
+                    ctrl.isEditingName.value = true;
+                    ctrl.nameFocusNode.requestFocus();
+                  },
+                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            )),
+            const SizedBox(height: 24),
 
             // Gender
             Text('Jenis Kelamin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
@@ -340,6 +364,26 @@ class OnboardingView extends GetView<OnboardingController> {
               items: ctrl.industries.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
               onChanged: (value) => ctrl.selectedIndustry.value = value ?? '',
             )),
+            Obx(() {
+              if (ctrl.selectedIndustry.value == 'Lainnya') {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: ctrl.otherIndustryController,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan bidang pekerjaan',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: outline.withOpacity(0.5))),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            }),
             const SizedBox(height: 32),
 
             // Tip Box
@@ -369,7 +413,7 @@ class OnboardingView extends GetView<OnboardingController> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: ctrl.finish,
+                onPressed: ctrl.next,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primary,
                   foregroundColor: Colors.white,

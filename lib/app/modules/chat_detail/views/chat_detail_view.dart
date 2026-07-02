@@ -99,17 +99,22 @@ class ChatDetailView extends GetView<ChatDetailController> {
                 }
                 return ListView.builder(
                   controller: controller.scrollController,
+                  reverse: true, // List dimulai dari bawah
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   itemCount: controller.messages.length,
                   itemBuilder: (context, index) {
-                    final msg = controller.messages[index];
+                    // Karena reverse, index 0 adalah elemen terbawah layar (pesan terbaru).
+                    // Namun 'messages' di controller tersusun urut kronologis [lama -> baru].
+                    // Jadi kita harus membalik pengambilannya:
+                    final reversedIndex = controller.messages.length - 1 - index;
+                    final msg = controller.messages[reversedIndex];
 
                     // Check if we need to show date separator
                     bool showDate = false;
-                    if (index == 0) {
+                    if (reversedIndex == 0) {
                       showDate = true;
                     } else {
-                      final prevMsg = controller.messages[index - 1];
+                      final prevMsg = controller.messages[reversedIndex - 1];
                       if (msg.time.day != prevMsg.time.day || msg.time.month != prevMsg.time.month || msg.time.year != prevMsg.time.year) {
                         showDate = true;
                       }

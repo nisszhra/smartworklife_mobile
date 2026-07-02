@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../data/repositories/stretching_repository.dart';
+import '../../home/controllers/home_controller.dart';
 
 class StretchingController extends GetxController {
   final StretchingRepository _repository;
@@ -166,12 +167,21 @@ class StretchingController extends GetxController {
     }
   }
 
-  Future<void> _completeStretchingSession() async {
+  Future<void> _completeStretchingSession({String status = 'completed'}) async {
     if (_sessionId == null || isSessionCompleted.value) return;
     isSessionCompleted.value = true;
-    final success = await _repository.completeSession(sessionId: _sessionId!);
-    print('[Stretching] Session completed → success=$success');
+    final success = await _repository.completeSession(
+      sessionId: _sessionId!,
+      totalReps: targetReps,
+      correctReps: reps.value,
+      status: status,
+    );
+    print('[Stretching] Session completed → success=$success, status=$status');
     _sessionId = null;
+
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().fetchDashboardSummary();
+    }
   }
 
   void _initializePoseDetector() {
@@ -706,6 +716,9 @@ class StretchingController extends GetxController {
 
   @override
   void onClose() {
+    if (!isSessionCompleted.value && _sessionId != null) {
+      _completeStretchingSession(status: 'cancelled');
+    }
     _holdTimer?.cancel();
     cameraController?.dispose();
     poseDetector?.close();

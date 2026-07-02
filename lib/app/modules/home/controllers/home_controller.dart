@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../data/models/dashboard_summary_model.dart';
 import '../../../data/repositories/dashboard_repository.dart';
 import '../../../data/models/berita_model.dart';
@@ -45,7 +46,8 @@ class HomeController extends GetxController {
     isLoading.value = true;
     errorMessage.value = '';
     try {
-      final data = await _repository.getDashboardSummary();
+      final dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final data = await _repository.getDashboardSummary(dateStr);
       summary.value = data;
     } catch (e) {
       errorMessage.value = e.toString();

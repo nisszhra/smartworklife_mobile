@@ -6,8 +6,8 @@ class DashboardRepository {
 
   DashboardRepository(this._provider);
 
-  Future<DashboardSummaryModel> getDashboardSummary() async {
-    final response = await _provider.getDashboardSummary();
+  Future<DashboardSummaryModel> getDashboardSummary(String targetDate) async {
+    final response = await _provider.getDashboardSummary(targetDate);
     if (response.statusCode == 200) {
       return DashboardSummaryModel.fromJson(response.data);
     } else {

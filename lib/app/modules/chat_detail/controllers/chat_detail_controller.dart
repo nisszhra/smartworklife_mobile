@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../data/services/dio_service.dart';
 import '../../../data/services/auth_service.dart';
 import '../../chat/controllers/chat_controller.dart';
@@ -42,8 +43,8 @@ class ChatDetailController extends GetxController {
   final _storage = const FlutterSecureStorage();
   final String _savedMsgKey = 'saved_notulen_msgs';
 
-  Timer? _pollingTimer;
-
+  WebSocketChannel? _wsChannel;
+  
   bool get isSelectionMode => selectedMessageIds.isNotEmpty;
 
   /// Ekspos Dio client untuk digunakan di View layer
@@ -85,9 +86,60 @@ class ChatDetailController extends GetxController {
     
     if (friendId.value.isNotEmpty) {
       _loadMessages();
-      _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-        _loadMessages();
-      });
+      _connectWebSocket();
+    }
+  }
+
+  void _connectWebSocket() async {
+    try {
+      final token = await _authService.getToken();
+      if (token == null) return;
+
+      String baseUrl = _dioService.client.options.baseUrl;
+      String wsUrl = baseUrl.replaceFirst('http', 'ws');
+      // e.g. https://... -> wss://...
+      
+      final uri = Uri.parse('$wsUrl/chat/ws?token=$token');
+      
+      _wsChannel = WebSocketChannel.connect(uri);
+      
+      _wsChannel!.stream.listen(
+        (data) {
+          final decoded = jsonDecode(data);
+          // Pastikan pesan yang masuk berasal dari teman chat kita saat ini
+          // atau pesan yang baru kita kirim sendiri
+          if (decoded['sender_id'] == friendId.value || decoded['receiver_id'] == friendId.value) {
+            final newMsg = ChatMessage(
+              id: decoded['id'],
+              text: decoded['content'],
+              isMe: decoded['sender_id'] != friendId.value,
+              time: DateTime.parse(decoded['created_at']).toLocal(),
+              isRead: decoded['is_read'] ?? false,
+              deletedForEveryone: decoded['deleted_for_everyone'] ?? false,
+            );
+            
+            // Cek apakah pesan sudah ada (menghindari duplikasi saat mengirim)
+            final index = messages.indexWhere((m) => m.id == newMsg.id);
+            if (index == -1) {
+              messages.add(newMsg);
+              _scrollToBottom();
+              
+              if (!newMsg.isMe) {
+                 _markAsRead([newMsg.id]);
+              }
+            }
+          }
+        },
+        onError: (error) {
+          debugPrint('WebSocket Error: $error');
+        },
+        onDone: () {
+          debugPrint('WebSocket Disconnected');
+          // Opsional: reconnect otomatis
+        },
+      );
+    } catch (e) {
+      debugPrint('WebSocket connect error: $e');
     }
   }
 
@@ -190,11 +242,26 @@ class ChatDetailController extends GetxController {
     _scrollToBottom();
 
     try {
-      await _dioService.client.post('/chat/messages', data: {
+      final response = await _dioService.client.post('/chat/messages', data: {
         'receiver_id': friendId.value,
         'content': text,
       });
-      _loadMessages();
+      // Sukses dikirim via API
+      // Backend akan men-trigger WebSocket, tetapi kita sudah handle tempId di atas
+      // Atau biarkan WebSocket yang menangkap pesan resminya, lalu hapus pesan temp.
+      
+      final realMsgData = response.data;
+      
+      // Update tempId dengan ID asli dari backend
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        messages[index] = ChatMessage(
+          id: realMsgData['id'],
+          text: realMsgData['content'],
+          isMe: true,
+          time: DateTime.parse(realMsgData['created_at']).toLocal(),
+        );
+      }
     } catch (e) {
       Get.snackbar('Error', 'Failed to send message');
       messages.removeWhere((m) => m.id == tempId);
@@ -229,7 +296,7 @@ class ChatDetailController extends GetxController {
     if (scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 100), () {
         scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
+          0.0, // Karena ListView sekarang di-reverse, 0.0 adalah posisi paling bawah
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -239,7 +306,7 @@ class ChatDetailController extends GetxController {
 
   @override
   void onClose() {
-    _pollingTimer?.cancel();
+    _wsChannel?.sink.close();
     textController.dispose();
     scrollController.dispose();
     super.onClose();

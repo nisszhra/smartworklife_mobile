@@ -10,13 +10,17 @@ class HydrationProvider {
   dio.Dio get _dio => Get.find<DioService>().client;
 
   /// GET /health/hydration/today
-  Future<dio.Response> getTodayHydration() {
-    return _dio.get('/health/hydration/today');
+  Future<dio.Response> getTodayHydration(String targetDate) {
+    return _dio.get('/health/hydration/today', queryParameters: {'target_date': targetDate});
   }
 
   /// POST /health/hydration/logs — log minum (amount_ml)
-  Future<dio.Response> addLog(double amountMl) {
-    return _dio.post('/health/hydration/logs', data: {'amount_ml': amountMl});
+  Future<dio.Response> addLog(double amountMl, String targetDate) {
+    return _dio.post(
+      '/health/hydration/logs', 
+      data: {'amount_ml': amountMl},
+      queryParameters: {'target_date': targetDate},
+    );
   }
 
   /// DELETE /health/hydration/logs/{log_id}

@@ -11,6 +11,7 @@ class UserModel {
   final String? workEndTime;
   final double? weightKg;
   final double? heightCm;
+  final bool hasPassword;
 
   /// Mengecek apakah user sudah melengkapi data onboarding.
   bool get isOnboarded => gender != null && age != null && industry != null;
@@ -28,6 +29,7 @@ class UserModel {
     this.workEndTime,
     this.weightKg,
     this.heightCm,
+    this.hasPassword = true,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class UserModel {
       workEndTime: json['work_end_time'] as String?,
       weightKg: (json['weight_kg'] as num?)?.toDouble(),
       heightCm: (json['height_cm'] as num?)?.toDouble(),
+      hasPassword: json['has_password'] as bool? ?? true,
     );
   }
 
@@ -60,6 +63,7 @@ class UserModel {
         'work_end_time': workEndTime,
         'weight_kg': weightKg,
         'height_cm': heightCm,
+        'has_password': hasPassword,
       };
 
   UserModel copyWith({
@@ -75,6 +79,7 @@ class UserModel {
     String? workEndTime,
     double? weightKg,
     double? heightCm,
+    bool? hasPassword,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -89,6 +94,7 @@ class UserModel {
       workEndTime: workEndTime ?? this.workEndTime,
       weightKg: weightKg ?? this.weightKg,
       heightCm: heightCm ?? this.heightCm,
+      hasPassword: hasPassword ?? this.hasPassword,
     );
   }
 }

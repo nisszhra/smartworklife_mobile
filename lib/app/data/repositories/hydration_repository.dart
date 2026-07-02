@@ -4,8 +4,8 @@ import 'package:worklife_mobile/app/data/models/hydration_model.dart';
 import 'package:worklife_mobile/app/data/providers/hydration_provider.dart';
 
 abstract class HydrationRepository {
-  Future<HydrationTodayModel> getTodayHydration();
-  Future<HydrationLogModel> addLog(double amountMl);
+  Future<HydrationTodayModel> getTodayHydration(String targetDate);
+  Future<HydrationLogModel> addLog(double amountMl, String targetDate);
   Future<void> deleteLog(String logId);
   Future<HydrationSettingModel> getSettings();
   Future<HydrationSettingModel> updateSettings({
@@ -22,9 +22,9 @@ class HydrationRepositoryImpl implements HydrationRepository {
   HydrationRepositoryImpl(this._provider);
 
   @override
-  Future<HydrationTodayModel> getTodayHydration() async {
+  Future<HydrationTodayModel> getTodayHydration(String targetDate) async {
     try {
-      final res = await _provider.getTodayHydration();
+      final res = await _provider.getTodayHydration(targetDate);
       return HydrationTodayModel.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw _handleError(e);
@@ -32,9 +32,9 @@ class HydrationRepositoryImpl implements HydrationRepository {
   }
 
   @override
-  Future<HydrationLogModel> addLog(double amountMl) async {
+  Future<HydrationLogModel> addLog(double amountMl, String targetDate) async {
     try {
-      final res = await _provider.addLog(amountMl);
+      final res = await _provider.addLog(amountMl, targetDate);
       return HydrationLogModel.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw _handleError(e);

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/services/notification_service.dart';
 import '../../../data/repositories/pomodoro_repository.dart';
+import '../../home/controllers/home_controller.dart';
 
 enum PomodoroMode { klasik, deepWork, extended }
 
@@ -88,6 +89,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       if (data == 'pause_resume') togglePause();
       if (data == 'stop') stopSession();
     });
+
+    // Bersihkan notifikasi yang nyangkut jika aplikasi sebelumnya tertutup paksa (Force Close)
+    _notificationService.cancelPomodoroNotification();
+    _notificationService.cancelPhaseEndNotification();
   }
 
   @override
@@ -128,8 +133,15 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       if (secondsToAdvance >= remainingSeconds.value) {
         secondsToAdvance -= remainingSeconds.value;
         remainingSeconds.value = 0;
+        
+        _recordSessionEnd(status: 'completed');
+        
         currentPhaseIndex.value++;
         _setupNextPhase();
+        
+        if (pomodoroState.value != PomodoroState.idle) {
+          _recordSessionStart();
+        }
       } else {
         remainingSeconds.value -= secondsToAdvance;
         secondsToAdvance = 0;
@@ -163,6 +175,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
         // Semua sesi selesai
         pomodoroState.value = PomodoroState.idle;
         selectedMode.value = null;
+        
+        // Hapus notifikasi karena seluruh sesi sudah beres
+        _notificationService.cancelPomodoroNotification();
+        _notificationService.cancelPhaseEndNotification();
         
         // Kembali ke halaman pemilihan sesi (pop timer view)
         Get.back();
@@ -233,6 +249,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
     print('[Pomodoro] Session ended (status=$status, actual=${actualSecs}s) → success=$success');
     _currentSessionId = null;
     _sessionStartTime = null;
+
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().fetchDashboardSummary();
+    }
   }
 
   String _modeToString(PomodoroMode mode) {
