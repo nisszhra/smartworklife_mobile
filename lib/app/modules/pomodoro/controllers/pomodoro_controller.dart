@@ -163,6 +163,9 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
         // Semua sesi selesai
         pomodoroState.value = PomodoroState.idle;
         selectedMode.value = null;
+        
+        // Kembali ke halaman pemilihan sesi (pop timer view)
+        Get.back();
       }
       return;
     }
