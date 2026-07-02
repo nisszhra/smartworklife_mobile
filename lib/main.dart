@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 import 'package:worklife_mobile/app/bindings/initial_binding.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
@@ -13,10 +11,6 @@ import 'package:worklife_mobile/app/data/services/berita_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   // 1. Init DioService dulu (tidak butuh dependency lain)
   await Get.putAsync<DioService>(() async => DioService());
