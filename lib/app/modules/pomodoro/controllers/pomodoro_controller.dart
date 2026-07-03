@@ -236,9 +236,8 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
   Future<void> _recordSessionEnd({required String status}) async {
     if (_currentSessionId == null) return;
 
-    final actualSecs = _sessionStartTime != null
-        ? DateTime.now().difference(_sessionStartTime!).inSeconds
-        : (totalSeconds.value - remainingSeconds.value);
+    // Selalu gunakan selisih timer, bukan waktu real-time agar tidak rusak saat fast-forward
+    final actualSecs = totalSeconds.value - remainingSeconds.value;
 
     final success = await _repository.endSession(
       sessionId: _currentSessionId!,
@@ -365,6 +364,7 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
 
     String title;
     String body;
+    int? nextPhaseSeconds;
 
     if (isLastPhaseInSession && isLastSession) {
       title = 'Sesi Pomodoro Selesai!';
@@ -373,8 +373,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       PomodoroState nextState;
       if (isLastPhaseInSession) {
         nextState = phases[0]['state'];
+        nextPhaseSeconds = phases[0]['minutes'] * 60;
       } else {
         nextState = phases[currentPhaseIndex.value + 1]['state'];
+        nextPhaseSeconds = phases[currentPhaseIndex.value + 1]['minutes'] * 60;
       }
 
       if (nextState == PomodoroState.breaking) {
@@ -390,6 +392,7 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       remainingSeconds: remainingSeconds.value,
       title: title,
       body: body,
+      nextPhaseSeconds: nextPhaseSeconds,
     );
   }
 }

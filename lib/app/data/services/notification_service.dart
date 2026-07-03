@@ -152,25 +152,46 @@ class NotificationService extends GetxService {
     required int remainingSeconds,
     required String title,
     required String body,
+    int? nextPhaseSeconds,
   }) async {
     final scheduledDate = tz.TZDateTime.now(tz.local).add(Duration(seconds: remainingSeconds));
     
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'pomodoro_alert_channel',
-      'Pomodoro Alerts',
-      channelDescription: 'Peringatan perpindahan fase Pomodoro',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-    );
+    AndroidNotificationDetails androidPlatformChannelSpecifics;
     
-    const NotificationDetails platformChannelSpecifics =
+    if (nextPhaseSeconds != null) {
+      final targetTimeForChronometer = scheduledDate.add(Duration(seconds: nextPhaseSeconds));
+      androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'pomodoro_channel',
+        'Pomodoro Timer',
+        channelDescription: 'Ongoing Pomodoro session timer',
+        importance: Importance.max,
+        priority: Priority.high,
+        ongoing: true,
+        autoCancel: false,
+        showWhen: true,
+        usesChronometer: true,
+        chronometerCountDown: true,
+        when: targetTimeForChronometer.millisecondsSinceEpoch,
+        playSound: true,
+        enableVibration: true,
+      );
+    } else {
+      androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+        'pomodoro_alert_channel',
+        'Pomodoro Alerts',
+        channelDescription: 'Peringatan perpindahan fase Pomodoro',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+      );
+    }
+    
+    final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      id: 889,
+      id: 888, // Menggunakan ID yang SAMA dengan PomodoroTimer agar menimpa hitung mundur yang jadi minus
       title: title,
       body: body,
       scheduledDate: scheduledDate,
@@ -180,6 +201,7 @@ class NotificationService extends GetxService {
   }
 
   Future<void> cancelPhaseEndNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(id: 889);
+    // Karena sekarang id-nya gabung dengan 888, ini bisa dibiarkan kosong
+    // atau memanggil cancel(888) (tapi nanti akan dimatikan lewat cancelPomodoroNotification)
   }
 }
