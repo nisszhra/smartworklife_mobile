@@ -113,7 +113,7 @@ class HealthController extends GetxController {
       intakeLiters.value = double.parse(data.consumedLiters.toStringAsFixed(2));
       hydrationPercentage.value = data.progressPercent.round().clamp(0, 100);
       hydrationLogs.assignAll(data.logs);
-      
+
       hydrationSettings.value = settings;
       _generateSchedule(settings, data.logs.length);
     } catch (e) {
@@ -149,11 +149,9 @@ class HealthController extends GetxController {
     for (int t = startMinutes; t <= endMinutes; t += interval) {
       int h = (t ~/ 60) % 24;
       int m = t % 60;
-      final timeStr = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
-      items.add({
-        'time': timeStr,
-        'completed': false,
-      });
+      final timeStr =
+          '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+      items.add({'time': timeStr, 'completed': false});
     }
 
     // Mark completed items based on log count (as an approximation for UI)
@@ -165,14 +163,13 @@ class HealthController extends GetxController {
 
     // --- Schedule Notifications ---
     final notificationService = Get.find<NotificationService>();
-    notificationService.cancelAllHydrationNotifications().then((_) {
-      if (settings.reminderEnabled) {
-        for (int i = 0; i < items.length; i++) {
-          final timeStr = items[i]['time'];
-          notificationService.scheduleHydrationNotification(i, timeStr);
-        }
-      }
-    });
+    if (settings.reminderEnabled) {
+      final List<String> times = items.map((e) => e['time'] as String).toList();
+      final remaining = (targetLiters.value - intakeLiters.value).clamp(0.0, double.infinity);
+      notificationService.scheduleHydrationNotifications(times, remainingLiters: remaining);
+    } else {
+      notificationService.cancelAllHydrationNotifications();
+    }
   }
 
   // ── Log minum air ke backend ──────────────────────────────────────────
@@ -183,8 +180,10 @@ class HealthController extends GetxController {
     // Optimistic UI update
     final prevIntake = intakeLiters.value;
     final prevPercent = hydrationPercentage.value;
-    intakeLiters.value = (intakeLiters.value + ml / 1000)
-        .clamp(0, targetLiters.value);
+    intakeLiters.value = (intakeLiters.value + ml / 1000).clamp(
+      0,
+      targetLiters.value,
+    );
     hydrationPercentage.value =
         ((intakeLiters.value / targetLiters.value) * 100).round().clamp(0, 100);
 
@@ -193,7 +192,7 @@ class HealthController extends GetxController {
       final newLog = await _hydrationRepository.addLog(ml, dateStr);
       if (!isClosed) {
         hydrationLogs.insert(0, newLog);
-        
+
         // Tandai UI scheduleItems juga (jika ada yang false)
         for (int i = 0; i < scheduleItems.length; i++) {
           if (!scheduleItems[i]['completed']) {
@@ -231,8 +230,10 @@ class HealthController extends GetxController {
 
     // Optimistic remove
     hydrationLogs.removeAt(index);
-    intakeLiters.value =
-        (intakeLiters.value - removed.amountMl / 1000).clamp(0, double.infinity);
+    intakeLiters.value = (intakeLiters.value - removed.amountMl / 1000).clamp(
+      0,
+      double.infinity,
+    );
     hydrationPercentage.value =
         ((intakeLiters.value / targetLiters.value) * 100).round().clamp(0, 100);
 
@@ -243,7 +244,10 @@ class HealthController extends GetxController {
       hydrationLogs.insert(index, removed);
       intakeLiters.value += removed.amountMl / 1000;
       hydrationPercentage.value =
-          ((intakeLiters.value / targetLiters.value) * 100).round().clamp(0, 100);
+          ((intakeLiters.value / targetLiters.value) * 100).round().clamp(
+            0,
+            100,
+          );
       Get.snackbar(
         'Gagal',
         e.toString().replaceFirst('Exception: ', ''),
@@ -278,7 +282,10 @@ class HealthController extends GetxController {
     final w = double.tryParse(weightTextController.text) ?? weight.value;
 
     if (h <= 0 || w <= 0) {
-      Get.snackbar('Input Tidak Valid', 'Tinggi dan berat badan harus lebih dari 0.');
+      Get.snackbar(
+        'Input Tidak Valid',
+        'Tinggi dan berat badan harus lebih dari 0.',
+      );
       return;
     }
 
@@ -330,11 +337,14 @@ class HealthController extends GetxController {
       );
       if (isClosed) return;
       hydrationSettings.value = updated;
-      
+
       // Reload & regenerate schedule
       await fetchTodayHydration();
-      
-      Get.snackbar('Berhasil', 'Pengaturan pengingat hidrasi telah diperbarui.');
+
+      Get.snackbar(
+        'Berhasil',
+        'Pengaturan pengingat hidrasi telah diperbarui.',
+      );
     } catch (e) {
       if (!isClosed) {
         Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));

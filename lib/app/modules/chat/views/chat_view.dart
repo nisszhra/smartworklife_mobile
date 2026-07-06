@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/chat_controller.dart';
+import 'add_friend_view.dart';
 import '../../../data/models/chat_model.dart';
 
 class ChatView extends GetView<ChatController> {
@@ -186,107 +187,7 @@ class ChatView extends GetView<ChatController> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.dialog(
-            AlertDialog(
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.transparent,
-              title: const Text('Tambah Teman', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: controller.friendNameController,
-                    decoration: InputDecoration(
-                      hintText: 'Masukkan nama akun user',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFF005AB4), width: 2),
-                      ),
-                      prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF005AB4)),
-                    ),
-                    onChanged: (val) {
-                      if (controller.searchResult.value != null) {
-                        controller.searchResult.value = null;
-                      }
-                    },
-                  ),
-                  Obx(() {
-                    if (controller.searchResult.value == null) return const SizedBox.shrink();
-                    final foundUser = controller.searchResult.value!;
-                    final foundName = foundUser.fullName ?? foundUser.email;
-                    return Container(
-                      margin: const EdgeInsets.only(top: 16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
-                            child: Text(
-                              foundName[0].toUpperCase(),
-                              style: const TextStyle(color: Color(0xFF005AB4), fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              foundName,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: controller.addFriendFromSearch,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF005AB4),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            child: const Text('Tambah', style: TextStyle(color: Colors.white)),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    controller.friendNameController.clear();
-                    controller.searchResult.value = null;
-                    Get.back();
-                  },
-                  child: const Text('Batal', style: TextStyle(color: Colors.grey)),
-                ),
-                Obx(() => ElevatedButton(
-                  onPressed: controller.isSearching.value 
-                      ? null 
-                      : () {
-                          final name = controller.friendNameController.text.trim();
-                          if (name.isNotEmpty) controller.searchUser(name);
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF005AB4),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: controller.isSearching.value
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Text('Cari', style: TextStyle(color: Colors.white)),
-                )),
-              ],
-            ),
-          );
+          Get.to(() => const AddFriendView());
         },
         backgroundColor: const Color(0xFF005AB4),
         child: const Icon(Icons.person_add, color: Colors.white),

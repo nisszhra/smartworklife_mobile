@@ -88,10 +88,12 @@ class ChatController extends GetxController {
   }
 
   final searchResult = Rxn<UserPublic>();
+  final searchError = ''.obs;
 
   Future<void> searchUser(String name) async {
     isSearching.value = true;
     searchResult.value = null; // reset
+    searchError.value = '';
     
     try {
       final response = await _dioService.client.get('/chat/users/search', queryParameters: {'q': name});
@@ -100,23 +102,11 @@ class ChatController extends GetxController {
         if (data.isNotEmpty) {
            searchResult.value = UserPublic.fromJson(data.first);
         } else {
-          Get.snackbar(
-            'Tidak Ditemukan', 
-            'User dengan akun "$name" tidak terdaftar.',
-            snackPosition: SnackPosition.BOTTOM, 
-            backgroundColor: Colors.orange[50],
-            colorText: Colors.orange[900],
-          );
+           searchError.value = 'User dengan akun "$name" tidak terdaftar.';
         }
       }
     } catch (e) {
-        Get.snackbar(
-          'Error', 
-          'Terjadi kesalahan saat mencari user.',
-          snackPosition: SnackPosition.BOTTOM, 
-          backgroundColor: Colors.red[50],
-          colorText: Colors.red[900],
-        );
+        searchError.value = 'Terjadi kesalahan saat mencari user.';
     } finally {
         isSearching.value = false;
     }
