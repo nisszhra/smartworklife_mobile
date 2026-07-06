@@ -163,7 +163,9 @@ class LeaderboardView extends GetView<LeaderboardController> {
                           radius: 20,
                           backgroundColor: Colors.grey[200],
                           backgroundImage: user.avatarUrl != null
-                              ? NetworkImage('${DioService.baseStorageUrl}${user.avatarUrl}')
+                              ? NetworkImage(user.avatarUrl!.startsWith('http')
+                                  ? user.avatarUrl!
+                                  : '${DioService.baseStorageUrl}${user.avatarUrl}')
                               : null,
                           child: user.avatarUrl == null
                               ? Text(user.name[0].toUpperCase(), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
@@ -216,7 +218,9 @@ class LeaderboardView extends GetView<LeaderboardController> {
                 radius: rank == 1 ? 32 : 25,
                 backgroundColor: Colors.grey[200],
                 backgroundImage: user.avatarUrl != null
-                    ? NetworkImage('${DioService.baseStorageUrl}${user.avatarUrl}')
+                    ? NetworkImage(user.avatarUrl!.startsWith('http')
+                        ? user.avatarUrl!
+                        : '${DioService.baseStorageUrl}${user.avatarUrl}')
                     : null,
                 child: user.avatarUrl == null
                     ? Text(user.name[0].toUpperCase(), style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: rank == 1 ? 24 : 18))

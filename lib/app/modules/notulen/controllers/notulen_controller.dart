@@ -62,6 +62,7 @@ class NotulenController extends GetxController {
 
   final isEditingTranscription = false.obs;
   final transcriptionController = TextEditingController();
+  final scrollController = ScrollController();
 
   final keyInsights = <KeyInsight>[].obs;
   final actionItems = <ActionItem>[].obs;
@@ -90,6 +91,7 @@ class NotulenController extends GetxController {
   bool _speechAvailable = false;
   String _committedText = '';
   String _liveWords = '';
+  String _lastCommittedWords = '';
   String _previousTranscript = '';
   String _currentLocaleId = 'id_ID';
   bool _isRestarting = false; // Mencegah double call listen() saat timeout/reconnect
@@ -121,12 +123,19 @@ class NotulenController extends GetxController {
       _speechAvailable = await _speechToText.initialize(
         onError: (e) {
           print('❌ STT Error: ${e.errorMsg}');
-          // Biarkan onStatus doneStatus yang mengurus restart secara terpusat
+          if (isRecording.value && _liveWords.trim().isNotEmpty) {
+            _lastCommittedWords = _liveWords;
+            _committedText += '$_liveWords ';
+            _liveWords = '';
+            liveText.value = _committedText;
+          }
         },
         onStatus: (status) {
           print('🎤 STT Status: $status');
-          if (status == stt.SpeechToText.doneStatus && isRecording.value) {
+          // HANYA restart dan commit pada status 'done', hindari 'notListening' untuk mencegah duplikasi
+          if (status == 'done' && isRecording.value) {
             if (_liveWords.trim().isNotEmpty) {
+              _lastCommittedWords = _liveWords;
               _committedText += '$_liveWords ';
               _liveWords = '';
               liveText.value = _committedText;
@@ -212,21 +221,50 @@ class NotulenController extends GetxController {
     _speechToText.listen(
       localeId: _currentLocaleId,
       listenMode: stt.ListenMode.dictation,
-      pauseFor: const Duration(seconds: 8),
+      pauseFor: const Duration(seconds: 5),
+      cancelOnError: false,
       listenFor: const Duration(minutes: 30),
       partialResults: true,
       onResult: (result) {
+        print('🎤 STT onResult: final=${result.finalResult}, words="${result.recognizedWords}"');
         if (result.finalResult) {
           if (result.recognizedWords.trim().isNotEmpty) {
-            _committedText += '${result.recognizedWords} ';
+            if (result.recognizedWords != _lastCommittedWords) {
+              _committedText += '${result.recognizedWords} ';
+            }
           }
           _liveWords = '';
+          _lastCommittedWords = '';
         } else {
-          _liveWords = result.recognizedWords;
+          // Tangani kasus di mana STT mereset buffer internalnya menjadi kosong (chunk baru)
+          if (result.recognizedWords.isEmpty && _liveWords.trim().isNotEmpty) {
+             _lastCommittedWords = _liveWords;
+             _committedText += '$_liveWords ';
+             _liveWords = '';
+          } else if (result.recognizedWords.isNotEmpty) {
+             _liveWords = result.recognizedWords;
+          }
         }
         liveText.value = '$_committedText$_liveWords';
+        print('🎤 STT liveText updated: "${liveText.value}"');
+        _scrollToBottom();
       },
     );
+  }
+
+  void _scrollToBottom() {
+    if (scrollController.hasClients) {
+      // Tunggu frame di-render agar ukuran content terupdate
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   Future<String> _refineText(String rawText) async {

@@ -7,28 +7,29 @@ import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/data/services/dio_service.dart';
 import 'package:worklife_mobile/app/data/services/user_service.dart';
 import 'package:worklife_mobile/app/data/services/notification_service.dart';
+import 'package:worklife_mobile/app/data/services/in_app_notification_service.dart';
 import 'package:worklife_mobile/app/data/services/berita_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Init DioService dulu (tidak butuh dependency lain)
   await Get.putAsync<DioService>(() async => DioService());
   Get.put(BeritaService());
-
-  // 2. Init AuthService (restore token dari secure storage)
-  // 2. Init AuthService dan tunggu sampai sesi pulih
-  final authService = await Get.putAsync<AuthService>(() => AuthService().init());
-
-  // 3. Init UserService (state form onboarding — tidak berubah)
+  final authService = await Get.putAsync<AuthService>(
+    () => AuthService().init(),
+  );
   Get.put(UserService());
-
-  // 3.5 Init NotificationService
   await Get.putAsync<NotificationService>(() => NotificationService().init());
+
+  // Register InAppNotificationService sebagai singleton global secara async
+  await Get.putAsync<InAppNotificationService>(
+    () => InAppNotificationService().init(),
+    permanent: true,
+  );
 
   // 4. Tentukan halaman awal berdasarkan sesi dan status onboarding
   String initialRoute = AppPages.INITIAL; // Default: Login
-  
+
   if (authService.isLoggedIn) {
     if (authService.isOnboarded) {
       initialRoute = Routes.MAIN; // Dahsboard jika sudah lengkap
@@ -40,7 +41,7 @@ Future<void> main() async {
   print("DEBUG: Status Login: ${authService.isLoggedIn}");
   print("DEBUG: Status Onboarded: ${authService.isOnboarded}");
   print("DEBUG: Navigasi Awal ke: $initialRoute");
-  
+
   runApp(
     GetMaterialApp(
       title: "Smart-WorkLife",
@@ -51,4 +52,3 @@ Future<void> main() async {
     ),
   );
 }
-

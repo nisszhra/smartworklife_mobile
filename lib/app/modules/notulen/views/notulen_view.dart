@@ -13,6 +13,7 @@ class NotulenView extends GetView<NotulenController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       body: SingleChildScrollView(
+        controller: controller.scrollController,
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,31 +314,7 @@ class NotulenView extends GetView<NotulenController> {
               if (controller.isRecording.value || controller.hasStopped.value) {
                 final live = controller.liveText.value;
                 if (live.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFDC2626),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Sedang merekam... mulai bicara',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFFDC2626),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+                  return const SizedBox.shrink();
                 }
                 return Text(
                   live,

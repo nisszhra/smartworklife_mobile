@@ -9,6 +9,7 @@ import '../../notulen/views/notulen_view.dart';
 import '../../stretching/views/stretching_view.dart';
 import '../../chat/controllers/chat_controller.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../data/services/in_app_notification_service.dart';
 
 class MainView extends GetView<MainController> {
   const MainView({super.key});
@@ -125,10 +126,46 @@ class MainView extends GetView<MainController> {
               ],
             );
           }),
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Color(0xFF005AB4)),
-            onPressed: () => Get.toNamed('/notifikasi'),
-          ),
+          Obx(() {
+            final notifService = Get.find<InAppNotificationService>();
+            final unreadNotifCount = notifService.unreadCount;
+            
+            return Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_none, color: Color(0xFF005AB4)),
+                  onPressed: () => Get.toNamed('/notifikasi'),
+                ),
+                if (unreadNotifCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        unreadNotifCount > 99 ? '99+' : unreadNotifCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
           const SizedBox(width: 8),
         ],
       ),

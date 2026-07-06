@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:worklife_mobile/app/data/models/todo_model.dart';
 import 'package:worklife_mobile/app/data/repositories/todo_repository.dart';
 import 'package:worklife_mobile/app/modules/home/controllers/home_controller.dart';
+import 'package:worklife_mobile/app/data/services/notification_service.dart';
 
 // Re-export TodoModel agar view bisa import dari sini (backward compat)
 export 'package:worklife_mobile/app/data/models/todo_model.dart';
@@ -26,6 +27,28 @@ class TodolistController extends GetxController {
     fetchTodos();
   }
 
+  // ── Sinkronisasi Notifikasi HP dengan Daftar Tugas ─────────────────────────
+  Future<void> _syncTodoNotifications() async {
+    try {
+      if (!Get.isRegistered<NotificationService>()) return;
+      final notifService = Get.find<NotificationService>();
+      
+      for (final todo in tasks) {
+        if (todo.deadline != null && !todo.isCompleted) {
+          await notifService.scheduleTodoDeadlineNotification(
+            todoId: todo.id,
+            todoTitle: todo.title,
+            deadline: todo.deadline!,
+          );
+        } else {
+          await notifService.cancelTodoDeadlineNotification(todo.id);
+        }
+      }
+    } catch (e) {
+      print('[TodolistController] Gagal sinkronisasi notifikasi: $e');
+    }
+  }
+
   // ── Ambil semua tugas dari backend ─────────────────────────────────────────
   Future<void> fetchTodos() async {
     isLoading.value = true;
@@ -33,6 +56,7 @@ class TodolistController extends GetxController {
     try {
       final result = await _repository.getTodos();
       tasks.assignAll(result);
+      await _syncTodoNotifications();
     } catch (e) {
       errorMessage.value = e.toString().replaceFirst('Exception: ', '');
     } finally {
@@ -58,6 +82,7 @@ class TodolistController extends GetxController {
       );
       tasks.insert(0, newTask);
       tasks.refresh();
+      await _syncTodoNotifications();
       
       // Auto-refresh dashboard if HomeController is active
       if (Get.isRegistered<HomeController>()) {
@@ -96,6 +121,7 @@ class TodolistController extends GetxController {
       if (index != -1) {
         tasks[index] = updated;
         tasks.refresh();
+        await _syncTodoNotifications();
       }
     } catch (e) {
       Get.snackbar(
@@ -134,13 +160,22 @@ class TodolistController extends GetxController {
     if (index != -1) {
       removed = tasks[index];
       tasks.removeAt(index);
+      // Batalkan notifikasi HP jika dihapus
+      try {
+        if (Get.isRegistered<NotificationService>()) {
+          Get.find<NotificationService>().cancelTodoDeadlineNotification(id);
+        }
+      } catch (_) {}
     }
 
     try {
       await _repository.deleteTodo(id);
     } catch (e) {
       // Rollback jika gagal
-      if (removed != null) tasks.insert(index, removed);
+      if (removed != null) {
+        tasks.insert(index, removed);
+        await _syncTodoNotifications();
+      }
       Get.snackbar(
         'Gagal menghapus',
         e.toString().replaceFirst('Exception: ', ''),
@@ -160,11 +195,13 @@ class TodolistController extends GetxController {
     // Optimistic update
     tasks[index] = currentTask.copyWith(status: newStatus);
     tasks.refresh();
+    await _syncTodoNotifications();
 
     try {
       final updated = await _repository.updateTodo(id, status: newStatus);
       tasks[index] = updated;
       tasks.refresh();
+      await _syncTodoNotifications();
       
       // Auto-refresh dashboard if HomeController is active
       if (Get.isRegistered<HomeController>()) {
@@ -174,6 +211,7 @@ class TodolistController extends GetxController {
       // Rollback
       tasks[index] = currentTask;
       tasks.refresh();
+      await _syncTodoNotifications();
       Get.snackbar(
         'Gagal',
         e.toString().replaceFirst('Exception: ', ''),

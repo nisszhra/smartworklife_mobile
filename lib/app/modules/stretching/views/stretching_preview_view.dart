@@ -41,7 +41,7 @@ class StretchingPreviewView extends GetView<StretchingController> {
             'Duduk tegak di kursi, lalu putar tubuh bagian atas ke sisi kanan sambil memegang sandaran kursi. Tahan selama 8 detik, kemudian ulangi ke sisi kiri. Pastikan pinggul tetap menghadap ke depan selama gerakan.',
       },
       'Wrist Circle': {
-        'gif': 'assets/gif/pergelangan.gif',
+        'gif': 'assets/gif/wrist circle.gif',
         'subtitle': 'Peregangan Pergelangan Tangan',
         'instruction':
             'Rentangkan salah satu tangan ke depan, lalu putar pergelangan tangan membentuk lingkaran penuh searah jarum jam sebanyak 4 kali, kemudian ulangi berlawanan arah jarum jam. Lakukan pada kedua tangan secara bergantian untuk merilekskan sendi pergelangan.',
@@ -54,11 +54,13 @@ class StretchingPreviewView extends GetView<StretchingController> {
       },
     };
 
-    final data = stretchingData[title] ??
+    final data =
+        stretchingData[title] ??
         {
           'gif': 'assets/gif/neck.gif',
           'subtitle': 'Peregangan',
-          'instruction': 'Ikuti gerakan peregangan dengan perlahan dan penuh kontrol.',
+          'instruction':
+              'Ikuti gerakan peregangan dengan perlahan dan penuh kontrol.',
         };
 
     return Scaffold(
@@ -171,7 +173,11 @@ class StretchingPreviewView extends GetView<StretchingController> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue[700],
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'INSTRUKSI',
@@ -226,8 +232,13 @@ class StretchingPreviewView extends GetView<StretchingController> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => Get.toNamed(Routes.STRETCHING_DETAIL, arguments: title),
-                icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+                onPressed: () =>
+                    Get.toNamed(Routes.STRETCHING_DETAIL, arguments: title),
+                icon: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
                 label: const Text(
                   'Mulai Peregangan',
                   style: TextStyle(
@@ -270,13 +281,7 @@ class StretchingPreviewView extends GetView<StretchingController> {
         children: [
           Icon(icon, color: iconColor, size: 24),
           const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
           const SizedBox(height: 2),
           Text(
             value,
