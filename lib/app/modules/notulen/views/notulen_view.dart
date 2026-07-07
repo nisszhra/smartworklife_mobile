@@ -214,21 +214,21 @@ class NotulenView extends GetView<NotulenController> {
             final isProc = controller.isProcessing.value;
             final hasText = controller.transcriptionText.value.isNotEmpty;
 
-            String status = 'Siap Merekam';
+            String status = 'ready_to_record'.tr;
             Color color = const Color(0xFF717785);
 
             if (isRec) {
-              status = 'Merekam • ${controller.formattedDuration.value}';
+              status = '${'recording'.tr} • ${controller.formattedDuration.value}';
               color = const Color(0xFFDC2626);
             } else if (isPaused) {
               status =
-                  'Merekam Ditangguhkan • ${controller.formattedDuration.value}';
+                  '${'recording_paused'.tr} • ${controller.formattedDuration.value}';
               color = Colors.orange.shade700;
             } else if (isProc) {
-              status = 'Memproses dengan AI...';
+              status = 'processing_ai'.tr;
               color = const Color(0xFF005AB4);
             } else if (hasText) {
-              status = 'Siap Melanjutkan Rekaman';
+              status = 'ready_resume_record'.tr;
               color = const Color(0xFF16A34A);
             }
 
@@ -267,15 +267,18 @@ class NotulenView extends GetView<NotulenController> {
                   color: Color(0xFF005AB4),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Hasil Transkripsi (Groq AI)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF005AB4),
+                Expanded(
+                  child: Text(
+                    'transcription_result'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF005AB4),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
                 Obx(
                   () => IconButton(
                     onPressed: controller.toggleEditTranscription,
@@ -299,9 +302,9 @@ class NotulenView extends GetView<NotulenController> {
                 return TextField(
                   controller: controller.transcriptionController,
                   maxLines: null,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Edit transcription...',
+                    hintText: 'edit_transcription_hint'.tr,
                   ),
                   style: const TextStyle(
                     fontSize: 15,
@@ -348,11 +351,11 @@ class NotulenView extends GetView<NotulenController> {
               }
               // Belum ada transkrip
               if (controller.transcriptionText.value.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
-                    'Tekan tombol mikrofon untuk mulai merekam. Transkripsi AI akan muncul di sini setelah rekaman selesai.',
-                    style: TextStyle(
+                    'press_mic_to_record'.tr,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF94A3B8),
                       fontStyle: FontStyle.italic,
@@ -412,9 +415,9 @@ class NotulenView extends GetView<NotulenController> {
                       strokeWidth: 2,
                     ),
                   )
-                : const Text(
-                    'Analisis AI Summary',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                : Text(
+                    'analyze_ai_summary'.tr,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
           ),
         ),
@@ -459,9 +462,9 @@ class NotulenView extends GetView<NotulenController> {
             ],
           ),
           const SizedBox(height: 24),
-          const Text(
-            'KEY INSIGHTS',
-            style: TextStyle(
+          Text(
+            'key_insights'.tr,
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
               color: Color(0xFF717785),
@@ -496,9 +499,9 @@ class NotulenView extends GetView<NotulenController> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'REKOMENDASI TUGAS',
-            style: TextStyle(
+          Text(
+            'task_recommendations'.tr,
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
               color: Color(0xFF717785),
@@ -557,7 +560,7 @@ class NotulenView extends GetView<NotulenController> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             Text(
-                              'Tenggat: ${action.dueDate}',
+                              '${'due_date'.tr}: ${action.dueDate}',
                               style: const TextStyle(
                                 fontSize: 11,
                                 color: Color(0xFF717785),
@@ -573,7 +576,7 @@ class NotulenView extends GetView<NotulenController> {
                           size: 20,
                           color: Color(0xFF717785),
                         ),
-                        tooltip: 'Edit Rekomendasi',
+                        tooltip: 'edit_recommendation'.tr,
                         onPressed: () => _showEditRecommendationBottomSheet(
                           context: Get.context!,
                           index: idx,
@@ -595,8 +598,8 @@ class NotulenView extends GetView<NotulenController> {
                                 : const Color(0xFF005AB4),
                           ),
                           tooltip: isAdded
-                              ? 'Sudah ditambahkan'
-                              : 'Tambah ke To-Do',
+                              ? 'already_added'.tr
+                              : 'add_to_todo'.tr,
                           onPressed: isAdded
                               ? null
                               : () => _showAddTodoBottomSheet(
@@ -640,9 +643,9 @@ class NotulenView extends GetView<NotulenController> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Batal / Hapus',
-                  style: TextStyle(
+                child: Text(
+                  'cancel_delete'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFDC2626),
@@ -663,9 +666,9 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Simpan Notulen',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  'save_notulen'.tr,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -701,19 +704,19 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Batal Simpan Notulen?',
-                style: TextStyle(
+              Text(
+                'cancel_save_notulen'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF181C22),
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Tindakan ini akan membatalkan penyimpanan dan menghapus draft rekaman saat ini secara permanen.',
+              Text(
+                'cancel_save_notulen_desc'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF717785),
                   height: 1.5,
@@ -728,9 +731,9 @@ class NotulenView extends GetView<NotulenController> {
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text(
-                        'Kembali',
-                        style: TextStyle(
+                      child: Text(
+                        'back'.tr,
+                        style: const TextStyle(
                           color: Color(0xFF717785),
                           fontWeight: FontWeight.bold,
                         ),
@@ -753,9 +756,9 @@ class NotulenView extends GetView<NotulenController> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Ya, Hapus',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Text(
+                        'yes_delete'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -801,9 +804,9 @@ class NotulenView extends GetView<NotulenController> {
                     child: const Icon(Icons.save_as, color: Color(0xFF005AB4)),
                   ),
                   const SizedBox(width: 16),
-                  const Text(
-                    'Simpan Notulen',
-                    style: TextStyle(
+                  Text(
+                    'save_notulen'.tr,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF181C22),
@@ -812,9 +815,9 @@ class NotulenView extends GetView<NotulenController> {
                 ],
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Judul',
-                style: TextStyle(
+              Text(
+                'meeting_title_label'.tr,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF717785),
@@ -824,7 +827,7 @@ class NotulenView extends GetView<NotulenController> {
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan judul',
+                  hintText: 'enter_title'.tr,
                   filled: true,
                   fillColor: const Color(0xFFF1F5F9),
                   border: OutlineInputBorder(
@@ -841,9 +844,9 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Tanggal',
-                style: TextStyle(
+              Text(
+                'date_label'.tr,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF717785),
@@ -890,9 +893,9 @@ class NotulenView extends GetView<NotulenController> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(
+                      child: Text(
+                        'cancel'.tr,
+                        style: const TextStyle(
                           color: Color(0xFF717785),
                           fontWeight: FontWeight.bold,
                         ),
@@ -919,9 +922,9 @@ class NotulenView extends GetView<NotulenController> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Simpan',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Text(
+                        'save'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -945,9 +948,9 @@ class NotulenView extends GetView<NotulenController> {
               children: [
                 const Icon(Icons.folder, size: 20, color: Color(0xFF94A3B8)),
                 const SizedBox(width: 8),
-                const Text(
-                  'Arsip Notulen',
-                  style: TextStyle(
+                Text(
+                  'minutes_archive'.tr,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF181C22),
@@ -957,9 +960,9 @@ class NotulenView extends GetView<NotulenController> {
             ),
             TextButton(
               onPressed: () => Get.to(() => const NotulenArchiveView()),
-              child: const Text(
-                'Lihat Semua',
-                style: TextStyle(
+              child: Text(
+                'see_all'.tr,
+                style: const TextStyle(
                   color: Color(0xFF005AB4),
                   fontWeight: FontWeight.w600,
                 ),
@@ -1205,7 +1208,7 @@ class NotulenView extends GetView<NotulenController> {
     Get.bottomSheet(
       _buildTodoFormBottomSheet(
         context: context,
-        title: 'Tambah Tugas dari AI',
+        title: 'add_task_from_ai'.tr,
         titleController: titleController,
         descController: descController,
         selectedDate: selectedDate,
@@ -1229,8 +1232,8 @@ class NotulenView extends GetView<NotulenController> {
 
           Get.back();
           Get.snackbar(
-            'Tugas Ditambahkan',
-            'Tugas berhasil ditambahkan ke Smart To-Do.',
+            'task_added'.tr,
+            'task_added_desc'.tr,
             backgroundColor: const Color(0xFFEFF6FF),
             colorText: const Color(0xFF005AB4),
             snackPosition: SnackPosition.BOTTOM,
@@ -1305,9 +1308,9 @@ class NotulenView extends GetView<NotulenController> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Judul Tugas',
-              style: TextStyle(
+            Text(
+              'task_title'.tr,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black54,
@@ -1317,7 +1320,7 @@ class NotulenView extends GetView<NotulenController> {
             TextField(
               controller: titleController,
               decoration: InputDecoration(
-                hintText: 'Apa yang ingin Anda kerjakan?',
+                hintText: 'task_what_to_do'.tr,
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -1338,9 +1341,9 @@ class NotulenView extends GetView<NotulenController> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Deskripsi',
-              style: TextStyle(
+            Text(
+              'description_label'.tr,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black54,
@@ -1351,7 +1354,7 @@ class NotulenView extends GetView<NotulenController> {
               controller: descController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText: 'Tambahkan catatan detail...',
+                hintText: 'task_add_note'.tr,
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -1372,9 +1375,9 @@ class NotulenView extends GetView<NotulenController> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Tenggat Waktu',
-              style: TextStyle(
+            Text(
+              'due_date_label'.tr,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black54,
@@ -1465,9 +1468,9 @@ class NotulenView extends GetView<NotulenController> {
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Prioritas',
-              style: TextStyle(
+            Text(
+              'priority_label'.tr,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black54,
@@ -1494,7 +1497,7 @@ class NotulenView extends GetView<NotulenController> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Tandai sebagai Penting',
+                        'mark_as_important'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           color: isPriority.value
@@ -1529,9 +1532,9 @@ class NotulenView extends GetView<NotulenController> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Simpan Tugas',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Text(
+                  'save_task'.tr,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -1578,9 +1581,9 @@ class NotulenView extends GetView<NotulenController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Edit Rekomendasi Tugas',
-                    style: TextStyle(
+                  Text(
+                    'edit_recommendation'.tr,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -1593,9 +1596,9 @@ class NotulenView extends GetView<NotulenController> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Judul Tugas',
-                style: TextStyle(
+              Text(
+                'task_title'.tr,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black54,
@@ -1605,7 +1608,7 @@ class NotulenView extends GetView<NotulenController> {
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
-                  hintText: 'Judul tugas...',
+                  hintText: 'task_title_hint'.tr,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -1616,9 +1619,9 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Deskripsi Tugas',
-                style: TextStyle(
+              Text(
+                'task_desc'.tr,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black54,
@@ -1628,7 +1631,7 @@ class NotulenView extends GetView<NotulenController> {
               TextField(
                 controller: descController,
                 decoration: InputDecoration(
-                  hintText: 'Deskripsi/detail tugas...',
+                  hintText: 'task_desc_hint'.tr,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -1639,9 +1642,9 @@ class NotulenView extends GetView<NotulenController> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Tenggat Waktu',
-                style: TextStyle(
+              Text(
+                'due_date_label'.tr,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black54,
@@ -1651,7 +1654,7 @@ class NotulenView extends GetView<NotulenController> {
               TextField(
                 controller: dueDateController,
                 decoration: InputDecoration(
-                  hintText: 'Tenggat waktu...',
+                  hintText: 'due_date_hint'.tr,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -1685,9 +1688,9 @@ class NotulenView extends GetView<NotulenController> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Simpan Rekomendasi',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Text(
+                    'save_recommendation'.tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

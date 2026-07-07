@@ -11,9 +11,9 @@ class PomodoroTimerView extends GetView<PomodoroController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
-        title: const Text(
-          'Pomodoro Timer',
-          style: TextStyle(
+        title: Text(
+          'pomodoro_timer'.tr,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Color(0xFF005AB4),
@@ -53,8 +53,14 @@ class PomodoroTimerView extends GetView<PomodoroController> {
                 // Session Info
                 Text(
                   isWorking 
-                      ? 'Focus Session ${controller.completedSessions.value + 1} of ${controller.totalTargetSessions.value}'
-                      : 'Rest Time ${controller.completedSessions.value + 1} of ${controller.totalTargetSessions.value}',
+                      ? 'focus_session'.trParams({
+                          'current': (controller.completedSessions.value + 1).toString(),
+                          'total': controller.totalTargetSessions.value.toString(),
+                        })
+                      : 'rest_time'.trParams({
+                          'current': (controller.completedSessions.value + 1).toString(),
+                          'total': controller.totalTargetSessions.value.toString(),
+                        }),
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -137,11 +143,11 @@ class PomodoroTimerView extends GetView<PomodoroController> {
               ),
               const SizedBox(height: 4),
               Text(
-                isWorking ? 'FOCUS' : 'REST',
-                style: TextStyle(
+                isWorking ? 'focus'.tr : 'rest'.tr,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF717785),
+                  color: Color(0xFF717785),
                   letterSpacing: 4,
                 ),
               ),
@@ -246,9 +252,9 @@ class PomodoroTimerView extends GetView<PomodoroController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Waktunya Istirahat!',
-                      style: TextStyle(
+                    Text(
+                      'time_for_break'.tr,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF181C22),
@@ -256,7 +262,7 @@ class PomodoroTimerView extends GetView<PomodoroController> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Fokus selesai, segarkan diri sejenak.',
+                      'focus_finished_refresh'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -274,9 +280,9 @@ class PomodoroTimerView extends GetView<PomodoroController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSmallActivityItem(Icons.local_drink_rounded, 'MINUM'),
-              _buildSmallActivityItem(Icons.restaurant_rounded, 'MAKAN'),
-              _buildSmallActivityItem(Icons.visibility_rounded, 'PANDANG'),
+              _buildSmallActivityItem(Icons.local_drink_rounded, 'drink'.tr),
+              _buildSmallActivityItem(Icons.restaurant_rounded, 'eat'.tr),
+              _buildSmallActivityItem(Icons.visibility_rounded, 'look_away'.tr),
             ],
           ),
           const SizedBox(height: 24),
@@ -287,9 +293,9 @@ class PomodoroTimerView extends GetView<PomodoroController> {
             child: ElevatedButton.icon(
               onPressed: () => Get.toNamed(Routes.STRETCHING, arguments: {'fromPomodoro': true}),
               icon: const Icon(Icons.fitness_center_rounded, color: Colors.white),
-              label: const Text(
-                'Mulai Stretching',
-                style: TextStyle(
+              label: Text(
+                'start_stretching'.tr,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,

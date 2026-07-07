@@ -17,9 +17,9 @@ class BeritaView extends GetView<BeritaController> {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Semua Berita',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        title: Text(
+          'all_news'.tr,
+          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
@@ -64,7 +64,7 @@ class BeritaView extends GetView<BeritaController> {
                 return const Center(child: CircularProgressIndicator());
               }
               if (controller.beritaList.isEmpty) {
-                return const Center(child: Text("Tidak ada berita di kategori ini."));
+                return Center(child: Text('no_news_category'.tr));
               }
               
               return ListView.builder(
@@ -74,7 +74,7 @@ class BeritaView extends GetView<BeritaController> {
                   final berita = controller.beritaList[index];
                   // Menampilkan waktu rilis berita (publish time) sesuai permintaan
                   String publishTime = berita.publishedDate ?? '';
-                  if (publishTime.isEmpty) publishTime = 'Baru saja';
+                  if (publishTime.isEmpty) publishTime = 'just_now'.tr;
                   
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
@@ -153,7 +153,7 @@ class BeritaView extends GetView<BeritaController> {
                             }
                           },
                           child: Text(
-                            'Selengkapnya...',
+                            'read_more'.tr,
                             style: TextStyle(color: Colors.blue[600], fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                         ),

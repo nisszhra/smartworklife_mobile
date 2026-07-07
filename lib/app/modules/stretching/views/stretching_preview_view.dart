@@ -18,39 +18,33 @@ class StretchingPreviewView extends GetView<StretchingController> {
     final Map<String, Map<String, String>> stretchingData = {
       'Neck Tilt': {
         'gif': 'assets/gif/neck.gif',
-        'subtitle': 'Peregangan Leher',
-        'instruction':
-            'Miringkan kepala ke sisi kanan hingga telinga mendekati bahu. Tahan selama 8 detik, lalu ulangi ke sisi kiri. Pastikan bahu tetap rileks dan tidak terangkat selama gerakan.',
+        'subtitle': 'neck_tilt_sub'.tr,
+        'instruction': 'neck_tilt_inst'.tr,
       },
       'Shoulder Rolls': {
         'gif': 'assets/gif/bahu rolls.gif',
-        'subtitle': 'Peregangan Bahu',
-        'instruction':
-            'Putar kedua bahu ke depan secara bersamaan membentuk lingkaran penuh, lakukan 4 kali. Kemudian ulangi gerakan ke arah belakang sebanyak 4 kali. Lakukan dengan lambat dan penuh kontrol untuk merilekskan otot bahu.',
+        'subtitle': 'shoulder_rolls_sub'.tr,
+        'instruction': 'shoulder_rolls_inst'.tr,
       },
       'Upper Back': {
         'gif': 'assets/gif/punggung atas.gif',
-        'subtitle': 'Peregangan Punggung Atas',
-        'instruction':
-            'Satukan kedua tangan di depan dada, lalu dorong tangan ke depan sambil membungkukkan punggung atas. Tahan posisi ini selama 8 detik sambil merasakan regangan di antara tulang belikat. Ulangi 2–3 kali.',
+        'subtitle': 'upper_back_sub'.tr,
+        'instruction': 'upper_back_inst'.tr,
       },
       'Seated Twist': {
         'gif': 'assets/gif/putar duduk.gif',
-        'subtitle': 'Peregangan Pinggang Duduk',
-        'instruction':
-            'Duduk tegak di kursi, lalu putar tubuh bagian atas ke sisi kanan sambil memegang sandaran kursi. Tahan selama 8 detik, kemudian ulangi ke sisi kiri. Pastikan pinggul tetap menghadap ke depan selama gerakan.',
+        'subtitle': 'seated_twist_sub'.tr,
+        'instruction': 'seated_twist_inst'.tr,
       },
       'Wrist Circle': {
         'gif': 'assets/gif/wrist circle.gif',
-        'subtitle': 'Peregangan Pergelangan Tangan',
-        'instruction':
-            'Rentangkan salah satu tangan ke depan, lalu putar pergelangan tangan membentuk lingkaran penuh searah jarum jam sebanyak 4 kali, kemudian ulangi berlawanan arah jarum jam. Lakukan pada kedua tangan secara bergantian untuk merilekskan sendi pergelangan.',
+        'subtitle': 'wrist_circle_sub'.tr,
+        'instruction': 'wrist_circle_inst'.tr,
       },
       'Hamstring': {
         'gif': 'assets/gif/paha.gif',
-        'subtitle': 'Peregangan Otot Paha Belakang',
-        'instruction':
-            'Berdiri tegak dengan kaki selebar bahu. Bungkukkan tubuh ke depan perlahan dengan menjaga lutut tetap lurus, lalu raih ujung kaki atau lantai. Tahan posisi ini 8 detik sambil merasakan regangan di bagian belakang paha, kemudian tegakkan kembali.',
+        'subtitle': 'hamstring_sub'.tr,
+        'instruction': 'hamstring_inst'.tr,
       },
     };
 
@@ -58,9 +52,8 @@ class StretchingPreviewView extends GetView<StretchingController> {
         stretchingData[title] ??
         {
           'gif': 'assets/gif/neck.gif',
-          'subtitle': 'Peregangan',
-          'instruction':
-              'Ikuti gerakan peregangan dengan perlahan dan penuh kontrol.',
+          'subtitle': 'neck_tilt_sub'.tr,
+          'instruction': 'neck_tilt_inst'.tr,
         };
 
     return Scaffold(
@@ -180,7 +173,7 @@ class StretchingPreviewView extends GetView<StretchingController> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'INSTRUKSI',
+                        'instruction'.tr,
                         style: TextStyle(
                           color: Colors.blue[700],
                           fontWeight: FontWeight.bold,
@@ -210,8 +203,8 @@ class StretchingPreviewView extends GetView<StretchingController> {
                 Expanded(
                   child: _buildInfoCard(
                     icon: Icons.fitness_center,
-                    label: 'Intensitas',
-                    value: 'Rendah',
+                    label: 'intensity'.tr,
+                    value: 'low'.tr,
                     iconColor: Colors.orange[700]!,
                   ),
                 ),
@@ -219,8 +212,8 @@ class StretchingPreviewView extends GetView<StretchingController> {
                 Expanded(
                   child: _buildInfoCard(
                     icon: Icons.flash_on,
-                    label: 'Fokus',
-                    value: 'Fleksibilitas',
+                    label: 'focus_label'.tr,
+                    value: 'flexibility'.tr,
                     iconColor: Colors.blue[400]!,
                   ),
                 ),
@@ -239,9 +232,9 @@ class StretchingPreviewView extends GetView<StretchingController> {
                   color: Colors.white,
                   size: 28,
                 ),
-                label: const Text(
-                  'Mulai Peregangan',
-                  style: TextStyle(
+                label: Text(
+                  'start_stretching_btn'.tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

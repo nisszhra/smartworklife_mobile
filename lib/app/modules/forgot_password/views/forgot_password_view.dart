@@ -46,7 +46,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
                         // Title
                         Text(
-                          isEmailStep ? 'Lupa Password' : 'Reset Password',
+                          isEmailStep ? 'forgot_password_title'.tr : 'reset_password_title'.tr,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 24,
@@ -60,8 +60,8 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                         // Subtitle
                         Text(
                           isEmailStep
-                              ? 'Masukkan email Anda.\nKami akan mengirimkan kode OTP.'
-                              : 'Masukkan kode OTP dan password baru Anda.',
+                              ? 'forgot_password_desc'.tr
+                              : 'reset_password_desc'.tr,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 14,
@@ -75,14 +75,14 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                         if (isEmailStep) ...[
                           _buildTextField(
                             controller: controller.emailController,
-                            hintText: 'Masukkan email',
+                            hintText: 'enter_email'.tr,
                             prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                           ),
                         ] else ...[
                           _buildTextField(
                             controller: controller.otpController,
-                            hintText: 'Kode OTP',
+                            hintText: 'otp_code'.tr,
                             prefixIcon: Icons.pin_outlined,
                             keyboardType: TextInputType.number,
                             maxLength: 6,
@@ -90,7 +90,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                           const SizedBox(height: 16),
                           Obx(() => _buildTextField(
                             controller: controller.newPasswordController,
-                            hintText: 'Password Baru',
+                            hintText: 'new_password_hint'.tr,
                             prefixIcon: Icons.lock_outline,
                             obscureText: !controller.isPasswordVisible.value,
                             suffixIcon: IconButton(
@@ -106,7 +106,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                           const SizedBox(height: 16),
                           Obx(() => _buildTextField(
                             controller: controller.confirmNewPasswordController,
-                            hintText: 'Konfirmasi Password Baru',
+                            hintText: 'confirm_new_password_hint'.tr,
                             prefixIcon: Icons.lock_outline,
                             obscureText: !controller.isConfirmPasswordVisible.value,
                             suffixIcon: IconButton(
@@ -165,7 +165,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                                     ),
                                   )
                                 : Text(
-                                    isEmailStep ? 'Kirim OTP' : 'Reset Password',
+                                    isEmailStep ? 'send_otp'.tr : 'reset_password_title'.tr,
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -179,14 +179,14 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                         // Back Button
                         GestureDetector(
                           onTap: controller.kembali,
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.arrow_back, size: 16, color: onSurfaceVariant),
-                              SizedBox(width: 8),
+                              const Icon(Icons.arrow_back, size: 16, color: onSurfaceVariant),
+                              const SizedBox(width: 8),
                               Text(
-                                'Kembali ke halaman Login',
-                                style: TextStyle(
+                                'back_to_login'.tr,
+                                style: const TextStyle(
                                   color: onSurfaceVariant,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,

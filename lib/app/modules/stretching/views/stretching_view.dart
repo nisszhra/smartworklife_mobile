@@ -62,32 +62,32 @@ class StretchingView extends GetView<StretchingController> {
               children: [
                 _buildExerciseCard(
                   title: 'Neck Tilt',
-                  subtitle: 'Miring Leher',
+                  subtitle: 'neck_tilt_sub'.tr,
                   imagePath: 'assets/images/Neck Tilt.png',
                 ),
                 _buildExerciseCard(
                   title: 'Shoulder Rolls',
-                  subtitle: 'Putar Bahu',
+                  subtitle: 'shoulder_rolls_sub'.tr,
                   imagePath: 'assets/images/Shoulder rolls.png',
                 ),
                 _buildExerciseCard(
                   title: 'Upper Back',
-                  subtitle: 'Punggung Atas',
+                  subtitle: 'upper_back_sub'.tr,
                   imagePath: 'assets/images/PUNGGUNG ATAS.png',
                 ),
                 _buildExerciseCard(
                   title: 'Seated Twist',
-                  subtitle: 'Putar Duduk',
+                  subtitle: 'seated_twist_sub'.tr,
                   imagePath: 'assets/images/PUTAR DUDUK.png',
                 ),
                 _buildExerciseCard(
                   title: 'Wrist Circle',
-                  subtitle: 'Putar Pergelangan',
+                  subtitle: 'wrist_circle_sub'.tr,
                   imagePath: 'assets/images/PERGELANGAN.png',
                 ),
                 _buildExerciseCard(
                   title: 'Hamstring',
-                  subtitle: 'Otot Paha',
+                  subtitle: 'hamstring_sub'.tr,
                   imagePath: 'assets/images/OTOT PAHA.png',
                 ),
               ],
@@ -100,21 +100,21 @@ class StretchingView extends GetView<StretchingController> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Stretching Recommendations',
-          style: TextStyle(
+          'stretching_recommendations'.tr,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
             color: Color(0xFF181C22),
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
-          'Tingkatkan produktivitas dengan peregangan singkat.',
-          style: TextStyle(
+          'stretching_desc'.tr,
+          style: const TextStyle(
             fontSize: 14,
             color: Color(0xFF717785),
           ),

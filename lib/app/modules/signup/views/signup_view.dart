@@ -35,10 +35,10 @@ class SignupView extends GetView<SignupController> {
                     children: [
 
                       // Welcome text
-                      const Text(
-                        'Create Account',
+                      Text(
+                        'create_account'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w700,
                           color: onSurface,
@@ -46,10 +46,10 @@ class SignupView extends GetView<SignupController> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Join Smart-WorkLife Assistant',
+                      Text(
+                        'join_assistant'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: onSurfaceVariant,
                           fontFamily: 'Inter',
@@ -58,11 +58,11 @@ class SignupView extends GetView<SignupController> {
                       const SizedBox(height: 32),
                       
                       // Full Name Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Full Name',
-                          style: TextStyle(
+                          'full_name'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: onSurfaceVariant,
@@ -73,7 +73,7 @@ class SignupView extends GetView<SignupController> {
                       TextFormField(
                         controller: ctrl.fullNameController,
                         decoration: InputDecoration(
-                          hintText: 'full name',
+                          hintText: 'full_name_hint'.tr,
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -95,11 +95,11 @@ class SignupView extends GetView<SignupController> {
                       const SizedBox(height: 16),
 
                       // Email Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Email Address',
-                          style: TextStyle(
+                          'email_address'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: onSurfaceVariant,
@@ -111,7 +111,7 @@ class SignupView extends GetView<SignupController> {
                         controller: ctrl.emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'email address',
+                          hintText: 'email_hint'.tr,
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -133,11 +133,11 @@ class SignupView extends GetView<SignupController> {
                       const SizedBox(height: 16),
 
                       // Password Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Password',
-                          style: TextStyle(
+                          'password_label'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: onSurfaceVariant,
@@ -149,7 +149,7 @@ class SignupView extends GetView<SignupController> {
                         controller: ctrl.passwordController,
                         obscureText: !ctrl.isPasswordVisible.value,
                         decoration: InputDecoration(
-                          hintText: 'password',
+                          hintText: 'password_hint'.tr,
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -180,11 +180,11 @@ class SignupView extends GetView<SignupController> {
                       const SizedBox(height: 16),
                       
                       // Confirm Password Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Confirm Password',
-                          style: TextStyle(
+                          'confirm_password'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: onSurfaceVariant,
@@ -196,7 +196,7 @@ class SignupView extends GetView<SignupController> {
                         controller: ctrl.confirmPasswordController,
                         obscureText: !ctrl.isConfirmPasswordVisible.value,
                         decoration: InputDecoration(
-                          hintText: 'confirm password',
+                          hintText: 'confirm_password_hint'.tr,
                           hintStyle: const TextStyle(color: outlineVariant),
                           filled: true,
                           fillColor: surfaceContainerLowest,
@@ -261,9 +261,9 @@ class SignupView extends GetView<SignupController> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Sign Up',
-                                style: TextStyle(
+                            : Text(
+                                'sign_up'.tr,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   fontFamily: 'Inter',
@@ -276,9 +276,9 @@ class SignupView extends GetView<SignupController> {
                       Obx(() => OutlinedButton.icon(
                         onPressed: ctrl.isLoading.value ? null : ctrl.signInWithGoogle,
                         icon: const Icon(Icons.g_mobiledata, size: 24, color: onSurface),
-                        label: const Text(
-                          'Sign up with Google',
-                          style: TextStyle(
+                        label: Text(
+                          'sign_up_google'.tr,
+                          style: const TextStyle(
                             color: onSurface,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -300,9 +300,9 @@ class SignupView extends GetView<SignupController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Already have an account?",
-                            style: TextStyle(
+                          Text(
+                            'already_have_account'.tr,
+                            style: const TextStyle(
                               color: onSurfaceVariant,
                               fontSize: 16,
                               fontFamily: 'Inter',
@@ -310,9 +310,9 @@ class SignupView extends GetView<SignupController> {
                           ),
                           TextButton(
                             onPressed: ctrl.goToLogin,
-                            child: const Text(
-                              'Log in',
-                              style: TextStyle(
+                            child: Text(
+                              'log_in'.tr,
+                              style: const TextStyle(
                                 color: primary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

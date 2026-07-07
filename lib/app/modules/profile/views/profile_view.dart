@@ -21,9 +21,9 @@ class ProfileView extends GetView<ProfileController> {
           onPressed: () => Get.back(),
         ),
         actions: const [],
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(
+        title: Text(
+          'edit_profile'.tr,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Color(0xFF005AB4),
@@ -71,9 +71,9 @@ class ProfileView extends GetView<ProfileController> {
       child: TextButton.icon(
         onPressed: controller.logout,
         icon: const Icon(Icons.logout_rounded, color: Color(0xFFDC2626), size: 20),
-        label: const Text(
-          'Logout',
-          style: TextStyle(
+        label: Text(
+          'logout'.tr,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Color(0xFFDC2626),
@@ -191,9 +191,9 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 12),
           GestureDetector(
             onTap: controller.changeProfilePhoto,
-            child: const Text(
-              'Change Profile Photo',
-              style: TextStyle(
+            child: Text(
+              'change_profile_photo'.tr,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF005AB4),
@@ -230,9 +230,9 @@ class ProfileView extends GetView<ProfileController> {
                 const Icon(Icons.person_outline,
                     size: 20, color: Color(0xFF005AB4)),
                 const SizedBox(width: 8),
-                const Text(
-                  'Personal Info',
-                  style: TextStyle(
+                Text(
+                  'personal_info'.tr,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF181C22),
@@ -242,14 +242,14 @@ class ProfileView extends GetView<ProfileController> {
             ),
             const SizedBox(height: 20),
             _buildTextField(
-              label: 'Full Name',
+              label: 'full_name'.tr,
               controller: controller.fullNameController,
               icon: Icons.badge_outlined,
               enabled: true,
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Email',
+              label: 'email'.tr,
               controller: controller.emailController,
               icon: Icons.email_outlined,
               enabled: false,
@@ -283,13 +283,13 @@ class ProfileView extends GetView<ProfileController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.settings, size: 20, color: Color(0xFF005AB4)),
-                SizedBox(width: 8),
+                const Icon(Icons.settings, size: 20, color: Color(0xFF005AB4)),
+                const SizedBox(width: 8),
                 Text(
-                  'Pengaturan',
-                  style: TextStyle(
+                  'settings'.tr,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF181C22),
@@ -301,22 +301,32 @@ class ProfileView extends GetView<ProfileController> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.tune_outlined, color: Color(0xFF64748B)),
-              title: const Text('Preferensi User', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              subtitle: const Text('Atur data kesehatan dan jadwal kerja Anda', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+              title: Text('user_preferences'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              subtitle: Text('set_health_work_schedule'.tr, style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
               onTap: () {
                 Get.to(() => const PreferensiUserView());
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.language, color: Color(0xFF64748B)),
+              title: Text('language_menu'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              subtitle: Text(Get.locale?.languageCode == 'en' ? 'English' : 'Bahasa Indonesia', style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+              trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Get.toNamed('/language', arguments: {'fromSettings': true});
               },
             ),
             const Divider(color: Color(0xFFF1F5F9)),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.lock_person_outlined, color: Color(0xFF64748B)),
-              title: const Text('Akun & Keamanan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              title: Text('account_security'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               subtitle: Obx(() => Text(
                 controller.hasPassword 
-                    ? 'Ubah password atau hapus akun Anda' 
-                    : 'Buat password untuk mengamankan akun', 
+                    ? 'change_pass_del_account'.tr 
+                    : 'create_pass_secure_account'.tr, 
                 style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))
               )),
               trailing: Obx(() {
@@ -382,13 +392,13 @@ class ProfileView extends GetView<ProfileController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.info_outline, size: 20, color: Color(0xFF005AB4)),
-                SizedBox(width: 8),
+                const Icon(Icons.info_outline, size: 20, color: Color(0xFF005AB4)),
+                const SizedBox(width: 8),
                 Text(
-                  'Informasi & Bantuan',
-                  style: TextStyle(
+                  'info_help'.tr,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF181C22),
@@ -400,7 +410,7 @@ class ProfileView extends GetView<ProfileController> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.help_center_outlined, color: Color(0xFF64748B)),
-              title: const Text('Panduan Penggunaan & FAQ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              title: Text('usage_guide_faq'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
               onTap: () {
                 Get.to(() => const FaqView());
@@ -410,7 +420,7 @@ class ProfileView extends GetView<ProfileController> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.star_outline, color: Color(0xFF64748B)),
-              title: const Text('Feedback & Penilaian', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              title: Text('feedback_rating'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
               onTap: () {
                 Get.to(() => const RatingView());
@@ -420,7 +430,7 @@ class ProfileView extends GetView<ProfileController> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.privacy_tip_outlined, color: Color(0xFF64748B)),
-              title: const Text('Kebijakan Privasi & Ketentuan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              title: Text('privacy_policy_terms'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8)),
               onTap: () {
                 Get.to(() => const PrivacyPolicyView());
@@ -430,7 +440,7 @@ class ProfileView extends GetView<ProfileController> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.phone_android_outlined, color: Color(0xFF64748B)),
-              title: const Text('Versi Aplikasi', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              title: Text('app_version'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600, fontSize: 14)),
               onTap: null,
             ),
@@ -467,9 +477,9 @@ class ProfileView extends GetView<ProfileController> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Save Changes',
-                    style: TextStyle(
+                : Text(
+                    'save_changes'.tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),

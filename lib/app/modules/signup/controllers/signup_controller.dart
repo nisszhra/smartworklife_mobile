@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
+import 'package:worklife_mobile/app/data/services/translation_service.dart';
 
 class SignupController extends GetxController {
   final AuthRepository _repository;
@@ -107,12 +108,13 @@ class SignupController extends GetxController {
         await _authService.saveUser(response.user!);
       }
 
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () async {
         if (!isClosed) {
           if (_authService.isOnboarded) {
             Get.offAllNamed(Routes.MAIN);
           } else {
-            Get.offAllNamed(Routes.ONBOARDING);
+            final hasSelected = await TranslationService.hasSelectedLanguage();
+            Get.offAllNamed(hasSelected ? Routes.ONBOARDING : Routes.LANGUAGE);
           }
         }
       });

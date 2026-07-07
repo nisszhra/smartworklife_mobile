@@ -47,7 +47,10 @@ class OnboardingView extends GetView<OnboardingController> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Obx(() => Text(
-                            'Step ${ctrl.currentPage.value + 1} of 2',
+                            'step_x_of_y'.trParams({
+                              'current': (ctrl.currentPage.value + 1).toString(),
+                              'total': '2'
+                            }),
                             style: TextStyle(color: onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w600),
                           )),
                           const SizedBox(height: 8),
@@ -110,25 +113,25 @@ class OnboardingView extends GetView<OnboardingController> {
 
             // Title
             Text(
-              'Halo! Mari atur profil kesehatanmu.',
+              'health_profile_title'.tr,
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: onSurface, height: 1.2),
             ),
             const SizedBox(height: 12),
             Text(
-              'Informasi ini akan membantu kami mempersonalisasi rencana kesehatan Anda.',
+              'health_profile_desc'.tr,
               style: TextStyle(fontSize: 16, color: onSurfaceVariant),
             ),
             const SizedBox(height: 32),
 
             // Name
-            Text('Nama Pengguna', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+            Text('username'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
             const SizedBox(height: 8),
             Obx(() => TextFormField(
               controller: ctrl.nameController,
               focusNode: ctrl.nameFocusNode,
               readOnly: !ctrl.isEditingName.value,
               decoration: InputDecoration(
-                hintText: 'Masukkan nama pengguna',
+                hintText: 'enter_username'.tr,
                 suffixIcon: IconButton(
                   icon: Icon(Icons.edit, color: ctrl.isEditingName.value ? primary : outline),
                   onPressed: () {
@@ -142,13 +145,13 @@ class OnboardingView extends GetView<OnboardingController> {
             const SizedBox(height: 24),
 
             // Gender
-            Text('Jenis Kelamin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+            Text('gender'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: Obx(() => _GenderCard(
-                    label: 'Laki-laki',
+                    label: 'male'.tr,
                     icon: Icons.male,
                     isSelected: ctrl.selectedGender.value == 'Laki-laki',
                     onTap: () => ctrl.selectedGender.value = 'Laki-laki',
@@ -159,7 +162,7 @@ class OnboardingView extends GetView<OnboardingController> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Obx(() => _GenderCard(
-                    label: 'Perempuan',
+                    label: 'female'.tr,
                     icon: Icons.female,
                     isSelected: ctrl.selectedGender.value == 'Perempuan',
                     onTap: () => ctrl.selectedGender.value = 'Perempuan',
@@ -172,16 +175,16 @@ class OnboardingView extends GetView<OnboardingController> {
             const SizedBox(height: 24),
 
             // Age
-            Text('Usia', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+            Text('age'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
             const SizedBox(height: 8),
             TextFormField(
               controller: ctrl.ageController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Masukkan usia',
+                hintText: 'enter_age'.tr,
                 suffixIcon: Container(
                   padding: const EdgeInsets.all(12),
-                  child: Text('Tahun', style: TextStyle(color: onSurfaceVariant)),
+                  child: Text('years'.tr, style: TextStyle(color: onSurfaceVariant)),
                 ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -195,7 +198,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Berat Badan', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+                      Text('weight'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: ctrl.weightController,
@@ -214,7 +217,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Tinggi Badan', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+                      Text('height'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: ctrl.heightController,
@@ -245,7 +248,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Data Anda dienkripsi secara aman dan hanya digunakan untuk menghitung metrik kesehatan dasar.',
+                      'health_info_box'.tr,
                       style: TextStyle(fontSize: 12, color: onSurfaceVariant),
                     ),
                   ),
@@ -265,10 +268,10 @@ class OnboardingView extends GetView<OnboardingController> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Lanjutkan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('continue_btn'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -288,18 +291,18 @@ class OnboardingView extends GetView<OnboardingController> {
 
             // Title
             Text(
-              'Berapa jam biasanya kamu bekerja?',
+              'work_profile_title'.tr,
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: onSurface, height: 1.2),
             ),
             const SizedBox(height: 12),
             Text(
-              'Informasi ini membantu kami menyesuaikan jadwal kesehatan dan produktivitas harianmu.',
+              'work_profile_desc'.tr,
               style: TextStyle(fontSize: 16, color: onSurfaceVariant),
             ),
             const SizedBox(height: 40),
 
             // Work Hours
-            Text('JAM KERJA', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
+            Text('work_hours'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(20),
@@ -316,7 +319,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Mulai', style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
+                          Text('start_time'.tr, style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
                           const SizedBox(height: 8),
                           Obx(() => Text(
                             ctrl.startTime.value,
@@ -334,7 +337,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Selesai', style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
+                          Text('end_time'.tr, style: TextStyle(fontSize: 12, color: onSurfaceVariant)),
                           const SizedBox(height: 8),
                           Obx(() => Text(
                             ctrl.endTime.value,
@@ -351,12 +354,12 @@ class OnboardingView extends GetView<OnboardingController> {
             const SizedBox(height: 32),
 
             // Industry
-            Text('DI BIDANG APA KAMU BEKERJA?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
+            Text('industry'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
             const SizedBox(height: 16),
             Obx(() => DropdownButtonFormField<String>(
               value: ctrl.selectedIndustry.value.isEmpty ? null : ctrl.selectedIndustry.value,
               decoration: InputDecoration(
-                hintText: 'Pilih Bidang Pekerjaan',
+                hintText: 'select_industry'.tr,
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: outline.withOpacity(0.5))),
@@ -373,7 +376,7 @@ class OnboardingView extends GetView<OnboardingController> {
                     TextFormField(
                       controller: ctrl.otherIndustryController,
                       decoration: InputDecoration(
-                        hintText: 'Masukkan bidang pekerjaan',
+                        hintText: 'enter_industry'.tr,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: outline.withOpacity(0.5))),
@@ -400,7 +403,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      'Tahukah kamu? Orang yang bekerja di bidang kreatif cenderung lebih produktif dengan istirahat 15 menit setiap 2 jam.',
+                      'work_tip_box'.tr,
                       style: TextStyle(fontSize: 14, color: onSurfaceVariant, height: 1.4),
                     ),
                   ),
@@ -420,10 +423,10 @@ class OnboardingView extends GetView<OnboardingController> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Selesai', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('done'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -431,7 +434,7 @@ class OnboardingView extends GetView<OnboardingController> {
             const SizedBox(height: 24),
             Center(
               child: Text(
-                'Dengan menekan Selesai, kamu menyetujui pengaturan profil kerja ini.',
+                'work_agreement'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: onSurfaceVariant),
               ),

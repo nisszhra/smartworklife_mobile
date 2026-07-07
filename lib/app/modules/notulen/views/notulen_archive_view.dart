@@ -21,16 +21,16 @@ class NotulenArchiveView extends GetView<NotulenController> {
         appBar: AppBar(
           title: inSelection
               ? Text(
-                  '$selectedCount dipilih',
+                  'selected'.trParams({'count': selectedCount.toString()}),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     color: Color(0xFF005AB4),
                   ),
                 )
-              : const Text(
-                  'Arsip Notulen',
-                  style: TextStyle(
+              : Text(
+                  'notulen_archive'.tr,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                     color: Color(0xFF005AB4),
@@ -56,14 +56,14 @@ class NotulenArchiveView extends GetView<NotulenController> {
                   IconButton(
                     icon: const Icon(Icons.delete_outline,
                         color: Color(0xFFDC2626)),
-                    tooltip: 'Hapus dipilih',
+                    tooltip: 'delete_selected_tooltip'.tr,
                     onPressed: () => _confirmDeleteSelected(context),
                   ),
                   // Hapus semua
                   IconButton(
                     icon: const Icon(Icons.delete_sweep_outlined,
                         color: Color(0xFFDC2626)),
-                    tooltip: 'Hapus semua',
+                    tooltip: 'delete_all_tooltip'.tr,
                     onPressed: () => _confirmDeleteAll(context),
                   ),
                 ]
@@ -73,7 +73,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                     IconButton(
                       icon: const Icon(Icons.delete_sweep_outlined,
                           color: Color(0xFFDC2626)),
-                      tooltip: 'Hapus semua',
+                      tooltip: 'delete_all_tooltip'.tr,
                       onPressed: () => _confirmDeleteAll(context),
                     ),
                 ],
@@ -100,7 +100,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                           controller.isSelectionMode.value = true;
                         },
                         icon: const Icon(Icons.select_all, size: 18),
-                        label: const Text('Pilih Semua'),
+                        label: Text('select_all'.tr),
                         style: TextButton.styleFrom(
                           foregroundColor: const Color(0xFF005AB4),
                         ),
@@ -108,8 +108,8 @@ class NotulenArchiveView extends GetView<NotulenController> {
                       const Spacer(),
                       TextButton(
                         onPressed: controller.exitSelectionMode,
-                        child: const Text('Batal',
-                            style: TextStyle(color: Color(0xFF717785))),
+                        child: Text('cancel'.tr,
+                            style: const TextStyle(color: Color(0xFF717785))),
                       ),
                     ],
                   ),
@@ -124,9 +124,9 @@ class NotulenArchiveView extends GetView<NotulenController> {
                 //   ),
                 // ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Tekan lama untuk memilih beberapa notulen.',
-                  style: TextStyle(
+                Text(
+                  'long_press_select'.tr,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF717785),
                     height: 1.5,
@@ -141,31 +141,31 @@ class NotulenArchiveView extends GetView<NotulenController> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const TextField(
+                  child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Search meetings...',
+                      hintText: 'search_meetings'.tr,
                       hintStyle:
-                          TextStyle(color: Color(0xFF5F6368), fontSize: 15),
+                          const TextStyle(color: Color(0xFF5F6368), fontSize: 15),
                       prefixIcon:
-                          Icon(Icons.search, color: Color(0xFF5F6368)),
+                          const Icon(Icons.search, color: Color(0xFF5F6368)),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
               ],
               const SizedBox(height: 24),
               Obx(() => controller.archivedMeetings.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 48),
+                        padding: const EdgeInsets.symmetric(vertical: 48),
                         child: Column(
                           children: [
-                            Icon(Icons.folder_open,
+                            const Icon(Icons.folder_open,
                                 size: 64, color: Color(0xFFCBD5E1)),
-                            SizedBox(height: 16),
-                            Text('Belum ada notulen tersimpan',
-                                style: TextStyle(
+                            const SizedBox(height: 16),
+                            Text('no_saved_notulen'.tr,
+                                style: const TextStyle(
                                     color: Color(0xFF94A3B8), fontSize: 15)),
                           ],
                         ),
@@ -205,7 +205,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                           icon: const Icon(Icons.delete_outline,
                               color: Color(0xFFDC2626)),
                           label: Text(
-                            'Hapus ($selectedCount)',
+                            'delete_count'.trParams({'count': selectedCount.toString()}),
                             style:
                                 const TextStyle(color: Color(0xFFDC2626)),
                           ),
@@ -225,7 +225,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                         child: ElevatedButton.icon(
                           onPressed: () => _confirmDeleteAll(context),
                           icon: const Icon(Icons.delete_sweep_outlined),
-                          label: const Text('Hapus Semua'),
+                          label: Text('delete_all'.tr),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFDC2626),
                             foregroundColor: Colors.white,
@@ -254,17 +254,17 @@ class NotulenArchiveView extends GetView<NotulenController> {
       AlertDialog(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus yang Dipilih?',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('delete_selected_title'.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Text(
-          '$count notulen yang dipilih akan dihapus permanen.',
+          'delete_selected_desc'.trParams({'count': count.toString()}),
           style: const TextStyle(color: Color(0xFF717785)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Batal',
-                style: TextStyle(color: Color(0xFF717785))),
+            child: Text('cancel'.tr,
+                style: const TextStyle(color: Color(0xFF717785))),
           ),
           ElevatedButton(
             onPressed: () => Get.back(result: true),
@@ -287,18 +287,18 @@ class NotulenArchiveView extends GetView<NotulenController> {
       AlertDialog(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Semua Notulen?',
-            style: TextStyle(
+        title: Text('delete_all_title'.tr,
+            style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
-        content: const Text(
-          'Semua notulen akan dihapus permanen dan tidak dapat dikembalikan!',
-          style: TextStyle(color: Color(0xFF717785)),
+        content: Text(
+          'delete_all_desc'.tr,
+          style: const TextStyle(color: Color(0xFF717785)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Batal',
-                style: TextStyle(color: Color(0xFF717785))),
+            child: Text('cancel'.tr,
+                style: const TextStyle(color: Color(0xFF717785))),
           ),
           ElevatedButton(
             onPressed: () => Get.back(result: true),
@@ -308,7 +308,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
-            child: const Text('Hapus Semua'),
+            child: Text('delete_all_btn'.tr),
           ),
         ],
       ),
@@ -360,7 +360,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                 // Opsi Share
                 ListTile(
                   leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
-                  title: const Text('Share ke Rekan', style: TextStyle(fontSize: 15)),
+                  title: Text('share_to_friend'.tr, style: const TextStyle(fontSize: 15)),
                   onTap: () async {
                     Navigator.of(ctx).pop();
                     _showShareToFriendBottomSheet(context, archive);
@@ -369,22 +369,22 @@ class NotulenArchiveView extends GetView<NotulenController> {
                 // Opsi Hapus
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
-                  title: const Text('Hapus', style: TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
+                  title: Text('delete'.tr, style: const TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
                   onTap: () async {
                     Navigator.of(ctx).pop();
                     final confirm = await Get.dialog<bool>(
                       AlertDialog(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        title: const Text('Hapus Notulen?',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text('delete_notulen_title'.tr,
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
                         content: Text(
-                          'Notulen "$title" akan dihapus permanen.',
+                          'delete_notulen_desc'.trParams({'title': title}),
                           style: const TextStyle(color: Color(0xFF717785)),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Get.back(result: false),
-                            child: const Text('Batal', style: TextStyle(color: Color(0xFF717785))),
+                            child: Text('cancel'.tr, style: const TextStyle(color: Color(0xFF717785))),
                           ),
                           ElevatedButton(
                             onPressed: () => Get.back(result: true),
@@ -393,7 +393,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
-                            child: const Text('Hapus'),
+                            child: Text('delete'.tr),
                           ),
                         ],
                       ),
@@ -554,7 +554,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
           .toList();
 
         if (friends.isEmpty) {
-          Get.snackbar('Share', 'Anda belum memiliki teman chat');
+          Get.snackbar('share_fail'.tr, 'no_friends_chat'.tr);
           return;
         }
 
@@ -568,7 +568,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Bagikan ke Rekan...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('share_to_friend_title'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
@@ -594,14 +594,14 @@ class NotulenArchiveView extends GetView<NotulenController> {
                               'content': text,
                             });
                             Get.snackbar(
-                              'Berhasil', 
-                              'Notulen berhasil dibagikan ke ${friend.fullName ?? friend.email}',
+                              'share_success'.tr, 
+                              'share_success_desc'.trParams({'name': friend.fullName ?? friend.email}),
                               backgroundColor: Colors.green,
                               colorText: Colors.white,
                               snackPosition: SnackPosition.BOTTOM,
                             );
                           } catch (e) {
-                            Get.snackbar('Error', 'Gagal membagikan notulen');
+                            Get.snackbar('share_fail'.tr, 'share_fail_desc'.tr);
                           }
                         },
                       );
@@ -615,7 +615,7 @@ class NotulenArchiveView extends GetView<NotulenController> {
       }
     } catch (e) {
       Get.back(); // close loading
-      Get.snackbar('Error', 'Gagal mengambil daftar rekan');
+      Get.snackbar('share_fail'.tr, 'get_friends_fail'.tr);
     }
   }
 }

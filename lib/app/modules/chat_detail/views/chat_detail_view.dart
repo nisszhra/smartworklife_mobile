@@ -93,8 +93,8 @@ class ChatDetailView extends GetView<ChatDetailController> {
             Expanded(
               child: () {
                 if (controller.messages.isEmpty) {
-                  return const Center(
-                    child: Text('Belum ada pesan', style: TextStyle(color: Colors.grey)),
+                  return Center(
+                    child: Text('no_messages'.tr, style: const TextStyle(color: Colors.grey)),
                   );
                 }
                 return ListView.builder(
@@ -158,7 +158,7 @@ class ChatDetailView extends GetView<ChatDetailController> {
     final timeStr = DateFormat('HH:mm').format(msg.time);
     final isSelected = controller.selectedMessageIds.contains(msg.id);
     final isMe = msg.isMe;
-    final text = msg.deletedForEveryone ? "Anda menghapus pesan ini" : msg.text;
+    final text = msg.deletedForEveryone ? "deleted_message".tr : msg.text;
 
     String displayText = text;
     String? sharedNotulenId;
@@ -248,7 +248,7 @@ class ChatDetailView extends GetView<ChatDetailController> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  isSaved ? 'Tersimpan' : 'Simpan ke Arsip', 
+                                  isSaved ? 'saved'.tr : 'save_to_archive'.tr, 
                                   style: TextStyle(
                                     fontSize: 12, 
                                     color: isSaved ? Colors.green : const Color(0xFF005AB4), 
@@ -379,15 +379,15 @@ class ChatDetailView extends GetView<ChatDetailController> {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(isAlreadySaved ? 'Simpan Lagi?' : 'Simpan ke Arsip?', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(isAlreadySaved ? 'save_again_title'.tr : 'save_archive_title'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               isAlreadySaved
-                  ? 'Notulen ini sudah pernah Anda simpan. Menyimpan lagi akan membuat salinan duplikat di arsip Anda. Yakin ingin melanjutkan?'
-                  : 'Notulen ini akan disalin ke arsip Anda secara utuh beserta AI summary dan detail lainnya.',
+                  ? 'save_again_desc'.tr
+                  : 'save_archive_desc'.tr,
               style: const TextStyle(color: Color(0xFF717785), fontSize: 13),
             ),
             const SizedBox(height: 8),
@@ -407,7 +407,7 @@ class ChatDetailView extends GetView<ChatDetailController> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Batal', style: TextStyle(color: Color(0xFF717785))),
+            child: Text('cancel'.tr, style: const TextStyle(color: Color(0xFF717785))),
           ),
           ElevatedButton.icon(
             onPressed: () async {
@@ -431,8 +431,8 @@ class ChatDetailView extends GetView<ChatDetailController> {
                 }
 
                 Get.snackbar(
-                  'Tersimpan! 🎉',
-                  '"$title" telah disalin ke arsip notulen Anda.',
+                  'saved_success'.tr,
+                  'saved_success_desc'.trParams({'title': title}),
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: const Color(0xFF005AB4),
                   colorText: Colors.white,
@@ -440,12 +440,12 @@ class ChatDetailView extends GetView<ChatDetailController> {
                   duration: const Duration(seconds: 3),
                 );
               } catch (e) {
-                Get.snackbar('Gagal', 'Tidak dapat menyimpan notulen. Coba lagi.',
+                Get.snackbar('share_fail'.tr, 'save_fail'.tr,
                     snackPosition: SnackPosition.BOTTOM);
               }
             },
             icon: const Icon(Icons.bookmark_add),
-            label: const Text('Simpan'),
+            label: Text('save'.tr),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF005AB4),
               foregroundColor: Colors.white,
@@ -467,9 +467,9 @@ class ChatDetailView extends GetView<ChatDetailController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Hapus pesan?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                'delete_msg_title'.tr,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Align(
@@ -482,21 +482,21 @@ class ChatDetailView extends GetView<ChatDetailController> {
                         Get.back();
                         controller.deleteSelectedMessages('everyone');
                       },
-                      child: const Text('Hapus untuk semua orang', style: TextStyle(color: Colors.black87)),
+                      child: Text('delete_for_everyone'.tr, style: const TextStyle(color: Colors.black87)),
                     ),
                     TextButton(
                       onPressed: () {
                         Get.back();
                         controller.deleteSelectedMessages('me');
                       },
-                      child: const Text('Hapus untuk saya', style: TextStyle(color: Colors.black87)),
+                      child: Text('delete_for_me'.tr, style: const TextStyle(color: Colors.black87)),
                     ),
                     TextButton(
                       onPressed: () {
                         Get.back();
                         controller.clearSelection();
                       },
-                      child: const Text('Batal', style: TextStyle(color: Color(0xFF005AB4))),
+                      child: Text('cancel'.tr, style: const TextStyle(color: Color(0xFF005AB4))),
                     ),
                   ],
                 ),
@@ -540,9 +540,9 @@ class ChatDetailView extends GetView<ChatDetailController> {
                 child: TextField(
                   controller: controller.textController,
                   style: const TextStyle(color: Colors.black87),
-                  decoration: const InputDecoration(
-                    hintText: 'Tulis pesan...',
-                    hintStyle: TextStyle(color: Colors.grey),
+                  decoration: InputDecoration(
+                    hintText: 'write_message'.tr,
+                    hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
@@ -602,24 +602,24 @@ class ChatDetailView extends GetView<ChatDetailController> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
                   child: Text(
-                    'Pilih Notulen',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    'choose_notulen'.tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
                 const Divider(height: 1),
                 if (archives.isEmpty)
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.folder_open, size: 48, color: Color(0xFFCBD5E1)),
-                          SizedBox(height: 8),
-                          Text('Belum ada notulen tersimpan.',
-                              style: TextStyle(color: Color(0xFF94A3B8))),
+                          const Icon(Icons.folder_open, size: 48, color: Color(0xFFCBD5E1)),
+                          const SizedBox(height: 8),
+                          Text('no_saved_notulen'.tr,
+                              style: const TextStyle(color: Color(0xFF94A3B8))),
                         ],
                       ),
                     ),

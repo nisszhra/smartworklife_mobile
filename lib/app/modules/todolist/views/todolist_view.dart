@@ -22,7 +22,7 @@ class TodolistView extends GetView<TodolistController> {
 
     Get.bottomSheet(
       _buildBottomSheetWrapper(
-        title: 'Tambah Tugas',
+        title: 'add_task'.tr,
         titleController: titleController,
         descController: descController,
         selectedDate: selectedDate,
@@ -62,7 +62,7 @@ class TodolistView extends GetView<TodolistController> {
 
     Get.bottomSheet(
       _buildBottomSheetWrapper(
-        title: 'Edit Tugas',
+        title: 'edit_task'.tr,
         titleController: titleController,
         descController: descController,
         selectedDate: selectedDate,
@@ -127,9 +127,9 @@ class TodolistView extends GetView<TodolistController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Perpanjang Tenggat Waktu',
-                    style: TextStyle(
+                  Text(
+                    'extend_deadline'.tr,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -155,7 +155,7 @@ class TodolistView extends GetView<TodolistController> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Tugas "${task.title}" telah melewati tenggat waktu. Perpanjangan tenggat waktu akan otomatis mengubah prioritas tugas ini menjadi Penting.',
+                        'overdue_desc'.trParams({'title': task.title}),
                         style: TextStyle(fontSize: 13, color: Colors.red[900]),
                       ),
                     ),
@@ -163,7 +163,7 @@ class TodolistView extends GetView<TodolistController> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildLabel('Pilih Tenggat Baru'),
+              _buildLabel('choose_new_deadline'.tr),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -214,8 +214,8 @@ class TodolistView extends GetView<TodolistController> {
                     await controller.extendOverdueTask(task: task, newDeadline: deadline);
                     Get.back();
                     Get.snackbar(
-                      'Sukses',
-                      'Tenggat waktu berhasil diperpanjang & ditandai Penting!',
+                      'success'.tr,
+                      'deadline_extended_desc'.tr,
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.green,
                       colorText: Colors.white,
@@ -229,9 +229,9 @@ class TodolistView extends GetView<TodolistController> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Simpan Perpanjangan',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    'save_extension'.tr,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -304,23 +304,23 @@ class TodolistView extends GetView<TodolistController> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildLabel('Judul Tugas'),
+                _buildLabel('task_title'.tr),
                 const SizedBox(height: 8),
                 TextField(
                   controller: titleController,
-                  autofocus: title == 'Tambah Tugas',
-                  decoration: _getInputDecoration('Apa yang ingin Anda kerjakan?'),
+                  autofocus: title == 'add_task'.tr,
+                  decoration: _getInputDecoration('task_what_to_do'.tr),
                 ),
                 const SizedBox(height: 20),
-                _buildLabel('Deskripsi'),
+                _buildLabel('description_label'.tr),
                 const SizedBox(height: 8),
                 TextField(
                   controller: descController,
                   maxLines: 2,
-                  decoration: _getInputDecoration('Tambahkan catatan detail...'),
+                  decoration: _getInputDecoration('task_add_note'.tr),
                 ),
                 const SizedBox(height: 20),
-                _buildLabel('Tenggat Waktu'),
+                _buildLabel('due_date_label'.tr),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -360,7 +360,7 @@ class TodolistView extends GetView<TodolistController> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                _buildLabel('Prioritas'),
+                _buildLabel('priority_label'.tr),
                 const SizedBox(height: 8),
                 Obx(() => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -376,7 +376,7 @@ class TodolistView extends GetView<TodolistController> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Tandai sebagai Penting',
+                          'mark_as_important'.tr,
                           style: TextStyle(
                             fontSize: 14,
                             color: isPriority.value ? Colors.black87 : Colors.grey[600],
@@ -406,9 +406,9 @@ class TodolistView extends GetView<TodolistController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Simpan Tugas',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    child: Text(
+                      'save_task'.tr,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -540,7 +540,7 @@ class TodolistView extends GetView<TodolistController> {
                       ElevatedButton.icon(
                         onPressed: controller.fetchTodos,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Coba Lagi'),
+                        label: Text('try_again'.tr),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1A73E8),
                           foregroundColor: Colors.white,
@@ -593,9 +593,9 @@ class TodolistView extends GetView<TodolistController> {
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   children: [
-                    const Text(
-                      'TUGAS AKTIF',
-                      style: TextStyle(
+                    Text(
+                      'active_tasks'.tr,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: textGrey,
@@ -608,7 +608,7 @@ class TodolistView extends GetView<TodolistController> {
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Center(
                           child: Text(
-                            'Tidak ada tugas aktif 🎉',
+                            'no_active_tasks'.tr,
                             style: TextStyle(color: Colors.grey[400], fontSize: 14),
                           ),
                         ),
@@ -641,28 +641,31 @@ class TodolistView extends GetView<TodolistController> {
       ),
       child: TextField(
         onChanged: (val) => controller.searchQuery.value = val,
-        decoration: const InputDecoration(
-          hintText: 'Cari tugas...',
-          hintStyle: TextStyle(color: Color(0xFF5F6368), fontSize: 15),
-          prefixIcon: Icon(Icons.search, color: Color(0xFF5F6368)),
+        decoration: InputDecoration(
+          hintText: 'search_task'.tr,
+          hintStyle: const TextStyle(color: Color(0xFF5F6368), fontSize: 15),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFF5F6368)),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
     );
   }
 
   Widget _buildFilterChips() {
-    final filters = ['Semua', 'Penting', 'Hari Ini', 'Besok', 'Terlambat'];
+    final filters = ['filter_all'.tr, 'filter_important'.tr, 'filter_today'.tr, 'filter_tomorrow'.tr, 'filter_overdue'.tr];
+    final filterKeys = ['Semua', 'Penting', 'Hari Ini', 'Besok', 'Terlambat'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Obx(() => Row(
-            children: filters.map((filter) {
-              bool isActive = controller.selectedFilter.value == filter;
+            children: List.generate(filters.length, (index) {
+              String filterLabel = filters[index];
+              String filterKey = filterKeys[index];
+              bool isActive = controller.selectedFilter.value == filterKey;
               return Container(
                 margin: const EdgeInsets.only(right: 12),
                 child: FilterChip(
-                  label: Text(filter),
+                  label: Text(filterLabel),
                   labelStyle: TextStyle(
                     color: isActive ? Colors.white : const Color(0xFF5F6368),
                     fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
@@ -670,7 +673,7 @@ class TodolistView extends GetView<TodolistController> {
                   selected: isActive,
                   onSelected: (selected) {
                     if (selected) {
-                      controller.selectedFilter.value = filter;
+                      controller.selectedFilter.value = filterKey;
                     }
                   },
                   backgroundColor: const Color(0xFFF1F3F4),
@@ -687,7 +690,7 @@ class TodolistView extends GetView<TodolistController> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
               );
-            }).toList(),
+            }),
           )),
     );
   }
@@ -826,7 +829,7 @@ class TodolistView extends GetView<TodolistController> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Terlambat',
+                              'overdue_badge'.tr,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.red[900],
@@ -843,7 +846,7 @@ class TodolistView extends GetView<TodolistController> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Perpanjangan',
+                              'extension_badge'.tr,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.orange[900],
@@ -876,18 +879,18 @@ class TodolistView extends GetView<TodolistController> {
               },
               itemBuilder: (context) => [
                 if (task.isOverdue)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'extend',
                     child: Row(
                       children: [
-                        Icon(Icons.history, size: 18, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text('Perpanjang Tenggat'),
+                        const Icon(Icons.history, size: 18, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        Text('extend_deadline_short'.tr),
                       ],
                     ),
                   ),
-                const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                const PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                PopupMenuItem(value: 'edit', child: Text('edit'.tr)),
+                PopupMenuItem(value: 'delete', child: Text('delete'.tr)),
               ],
             ),
           ],
@@ -911,7 +914,7 @@ class TodolistView extends GetView<TodolistController> {
                 )),
             const SizedBox(width: 8),
             Text(
-              'SELESAI ($count)',
+              'completed_count'.trParams({'count': count.toString()}),
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,

@@ -52,7 +52,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
               }
 
               if (controller.users.isEmpty) {
-                return const Center(child: Text('Leaderboard masih kosong.', style: TextStyle(color: Colors.grey)));
+                return Center(child: Text('leaderboard_empty'.tr, style: const TextStyle(color: Colors.grey)));
               }
 
               final currentUserRank = controller.currentUserRank;
@@ -115,7 +115,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Peringkat Anda', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          Text('your_rank'.tr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                           Text(
                             currentUserRank.name,
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

@@ -27,9 +27,9 @@ class PomodoroView extends GetView<PomodoroController> {
             children: [
               const Icon(Icons.schedule, color: Color(0xFF005AB4), size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Choose Focus Mode',
-                style: TextStyle(
+              Text(
+                'choose_focus_mode'.tr,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF181C22),
@@ -38,9 +38,9 @@ class PomodoroView extends GetView<PomodoroController> {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Customize your work rhythm to meet your needs.',
-            style: TextStyle(
+          Text(
+            'customize_work_rhythm'.tr,
+            style: const TextStyle(
               fontSize: 16,
               color: Color(0xFF414753),
             ),
@@ -50,14 +50,13 @@ class PomodoroView extends GetView<PomodoroController> {
           // Mode Cards
           _buildModeCard(
             mode: PomodoroMode.klasik,
-            badgeLabel: 'Klasik',
+            badgeLabel: 'classic'.tr,
             badgeIcon: Icons.coffee,
             badgeBgColor: const Color(0xFFD6E3FF),
             badgeTextColor: const Color(0xFF00458D),
             title: '25 mins Work • 5 mins Rest',
-            description:
-                'Ideal untuk mengelola tugas harian yang dinamis dengan jeda singkat untuk menjaga kesegaran pikiran.',
-            buttonLabel: 'Start Session',
+            description: 'classic_desc'.tr,
+            buttonLabel: 'start_session'.tr,
             buttonColor: const Color(0xFF005AB4),
             bgIcon: Icons.timer,
           ),
@@ -65,14 +64,13 @@ class PomodoroView extends GetView<PomodoroController> {
 
           _buildModeCard(
             mode: PomodoroMode.deepWork,
-            badgeLabel: 'Deep Work',
+            badgeLabel: 'deep_work'.tr,
             badgeIcon: Icons.bolt,
             badgeBgColor: const Color(0xFFEADDFF),
             badgeTextColor: const Color(0xFF21005D),
             title: '50 mins Work • 10 mins Rest',
-            description:
-                'Dirancang untuk pekerjaan yang membutuhkan konsentrasi tinggi tanpa gangguan untuk hasil yang mendalam.',
-            buttonLabel: 'Start Session',
+            description: 'deep_work_desc'.tr,
+            buttonLabel: 'start_session'.tr,
             buttonColor: const Color(0xFF6750A4),
             bgIcon: Icons.psychology,
           ),
@@ -80,14 +78,13 @@ class PomodoroView extends GetView<PomodoroController> {
 
           _buildModeCard(
             mode: PomodoroMode.extended,
-            badgeLabel: 'Extended',
+            badgeLabel: 'extended'.tr,
             badgeIcon: Icons.trending_up,
             badgeBgColor: const Color(0xFFFFDBC9),
             badgeTextColor: const Color(0xFF321200),
             title: '90 mins Work • 30 mins Rest',
-            description:
-                'Sesi maraton untuk produktivitas maksimal pada proyek besar yang membutuhkan alur kerja yang panjang.',
-            buttonLabel: 'Start Session',
+            description: 'extended_desc'.tr,
+            buttonLabel: 'start_session'.tr,
             buttonColor: const Color(0xFF964400),
             bgIcon: Icons.directions_run,
           ),
@@ -205,8 +202,8 @@ class PomodoroView extends GetView<PomodoroController> {
                           Get.to(() => const PomodoroTimerView());
                         } else if (isAnotherActive) {
                           Get.snackbar(
-                            'Sesi Aktif',
-                            'Harap hentikan sesi yang sedang berjalan terlebih dahulu jika ingin memulai mode baru.',
+                            'active_session_title'.tr,
+                            'active_session_desc'.tr,
                             backgroundColor: Colors.red[50],
                             colorText: Colors.red[900],
                             snackPosition: SnackPosition.BOTTOM,
@@ -227,7 +224,7 @@ class PomodoroView extends GetView<PomodoroController> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(
-                        isActive ? 'Lanjutkan Sesi' : buttonLabel,
+                        isActive ? 'resume_session'.tr : buttonLabel,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -254,20 +251,20 @@ class PomodoroView extends GetView<PomodoroController> {
 
     switch (mode) {
       case PomodoroMode.klasik:
-        title = 'Atur Sesi Klasik';
-        description = '1 Sesi Klasik terdiri dari 25 menit fokus dan 5 menit istirahat.';
+        title = 'set_classic_session'.tr;
+        description = 'classic_session_info'.tr;
         workMins = 25;
         breakMins = 5;
         break;
       case PomodoroMode.deepWork:
-        title = 'Atur Sesi Deep Work';
-        description = '1 Sesi Deep Work terdiri dari 50 menit fokus dan 10 menit istirahat.';
+        title = 'set_deep_work_session'.tr;
+        description = 'deep_work_session_info'.tr;
         workMins = 50;
         breakMins = 10;
         break;
       case PomodoroMode.extended:
-        title = 'Atur Sesi Extended';
-        description = '1 Sesi Extended terdiri dari 90 menit fokus dan 30 menit istirahat.';
+        title = 'set_extended_session'.tr;
+        description = 'extended_session_info'.tr;
         workMins = 90;
         breakMins = 30;
         break;
@@ -322,9 +319,9 @@ class PomodoroView extends GetView<PomodoroController> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Jumlah Sesi',
-                    style: TextStyle(
+                  Text(
+                    'session_count'.tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF181C22),
@@ -381,8 +378,8 @@ class PomodoroView extends GetView<PomodoroController> {
               final hours = totalMinutes ~/ 60;
               final mins = totalMinutes % 60;
               final timeString = hours > 0
-                  ? (mins > 0 ? '$hours jam $mins menit' : '$hours jam')
-                  : '$mins menit';
+                  ? (mins > 0 ? '${hours}h ${mins}m' : '${hours}h')
+                  : '${mins}m';
                   
               return Container(
                 padding: const EdgeInsets.all(16),
@@ -397,7 +394,10 @@ class PomodoroView extends GetView<PomodoroController> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Total waktu: $timeString\n(${sessions.value} sesi kerja & ${sessions.value} istirahat)',
+                        'total_time_info'.trParams({
+                          'time': timeString,
+                          'sessions': sessions.value.toString()
+                        }),
                         style: const TextStyle(
                           fontSize: 13,
                           color: Color(0xFF00458D),
@@ -428,9 +428,9 @@ class PomodoroView extends GetView<PomodoroController> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Mulai Sekarang',
-                  style: TextStyle(
+                child: Text(
+                  'start_now'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
