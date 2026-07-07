@@ -43,10 +43,10 @@ class VerifikasiView extends GetView<VerifikasiController> {
                       const SizedBox(height: 32),
 
                       // Title
-                      const Text(
-                        'Verifikasi Email Anda',
+                      Text(
+                        'verify_email'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: onSurface,
@@ -56,10 +56,10 @@ class VerifikasiView extends GetView<VerifikasiController> {
                       const SizedBox(height: 8),
 
                       // Subtitle
-                      const Text(
-                        'Silakan masukkan kode 4 digit yang telah dikirimkan ke alamat email Anda.',
+                      Text(
+                        'verify_email_desc'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: onSurfaceVariant,
                           fontFamily: 'Inter',
@@ -116,8 +116,8 @@ class VerifikasiView extends GetView<VerifikasiController> {
                         children: [
                           Text(
                             controller.canResend.value 
-                              ? "Tidak menerima kode? " 
-                              : "Kirim ulang tersedia dalam ",
+                              ? 'did_not_receive_code'.tr
+                              : 'resend_code_in'.tr,
                             style: const TextStyle(
                               color: onSurfaceVariant,
                               fontSize: 14,
@@ -127,9 +127,9 @@ class VerifikasiView extends GetView<VerifikasiController> {
                           controller.canResend.value
                             ? GestureDetector(
                                 onTap: controller.kirimUlang,
-                                child: const Text(
-                                  'Kirim Ulang',
-                                  style: TextStyle(
+                                child: Text(
+                                  'resend_code'.tr,
+                                  style: const TextStyle(
                                     color: primary,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -138,7 +138,7 @@ class VerifikasiView extends GetView<VerifikasiController> {
                                 ),
                               )
                             : Text(
-                                '${controller.timerSeconds.value} detik',
+                                'timer_seconds'.trParams({'count': controller.timerSeconds.value.toString()}),
                                 style: const TextStyle(
                                   color: primary,
                                   fontSize: 14,
@@ -188,9 +188,9 @@ class VerifikasiView extends GetView<VerifikasiController> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  'Verifikasi',
-                                  style: TextStyle(
+                              : Text(
+                                  'verify'.tr,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: 'Inter',
@@ -203,14 +203,14 @@ class VerifikasiView extends GetView<VerifikasiController> {
                       // Back to Register
                       GestureDetector(
                         onTap: controller.kembali,
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.arrow_back, size: 16, color: onSurfaceVariant),
-                            SizedBox(width: 8),
+                            const Icon(Icons.arrow_back, size: 16, color: onSurfaceVariant),
+                            const SizedBox(width: 8),
                             Text(
-                              'Kembali ke halaman Daftar',
-                              style: TextStyle(
+                              'back_to_register'.tr,
+                              style: const TextStyle(
                                 color: onSurfaceVariant,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,

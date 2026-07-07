@@ -211,7 +211,7 @@ class HealthController extends GetxController {
         intakeLiters.value = prevIntake;
         hydrationPercentage.value = prevPercent;
         Get.snackbar(
-          'Gagal',
+          'fail'.tr,
           e.toString().replaceFirst('Exception: ', ''),
           snackPosition: SnackPosition.BOTTOM,
         );
@@ -249,7 +249,7 @@ class HealthController extends GetxController {
             100,
           );
       Get.snackbar(
-        'Gagal',
+        'fail'.tr,
         e.toString().replaceFirst('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -264,13 +264,13 @@ class HealthController extends GetxController {
       bmiResult.value = double.parse(bmiResult.value.toStringAsFixed(1));
 
       if (bmiResult.value < 18.5) {
-        bmiCategory.value = 'Underweight';
+        bmiCategory.value = 'underweight_cat';
       } else if (bmiResult.value < 25.0) {
-        bmiCategory.value = 'Healthy Weight';
+        bmiCategory.value = 'healthy_weight_cat';
       } else if (bmiResult.value < 30.0) {
-        bmiCategory.value = 'Overweight';
+        bmiCategory.value = 'overweight_cat';
       } else {
-        bmiCategory.value = 'Obese';
+        bmiCategory.value = 'obese_cat';
       }
     }
   }
@@ -283,8 +283,8 @@ class HealthController extends GetxController {
 
     if (h <= 0 || w <= 0) {
       Get.snackbar(
-        'Input Tidak Valid',
-        'Tinggi dan berat badan harus lebih dari 0.',
+        'invalid_input'.tr,
+        'height_weight_greater_0'.tr,
       );
       return;
     }
@@ -303,10 +303,10 @@ class HealthController extends GetxController {
       // Refresh hydration target karena berat badan berubah
       await fetchTodayHydration();
 
-      Get.snackbar('Berhasil', 'Data kesehatan Anda telah diperbarui.');
+      Get.snackbar('success'.tr, 'health_data_updated'.tr);
     } catch (e) {
       if (!isClosed) {
-        Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+        Get.snackbar('error'.tr, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (!isClosed) isUpdating.value = false;
@@ -342,12 +342,12 @@ class HealthController extends GetxController {
       await fetchTodayHydration();
 
       Get.snackbar(
-        'Berhasil',
-        'Pengaturan pengingat hidrasi telah diperbarui.',
+        'success'.tr,
+        'hydration_settings_updated'.tr,
       );
     } catch (e) {
       if (!isClosed) {
-        Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+        Get.snackbar('error'.tr, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (!isClosed) isUpdatingSettings.value = false;

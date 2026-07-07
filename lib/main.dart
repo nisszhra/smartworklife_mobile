@@ -9,6 +9,7 @@ import 'package:worklife_mobile/app/data/services/user_service.dart';
 import 'package:worklife_mobile/app/data/services/notification_service.dart';
 import 'package:worklife_mobile/app/data/services/in_app_notification_service.dart';
 import 'package:worklife_mobile/app/data/services/berita_service.dart';
+import 'package:worklife_mobile/app/data/services/translation_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,14 +28,19 @@ Future<void> main() async {
     permanent: true,
   );
 
+  // Initialize locale and language check
+  final savedLocale = await TranslationService.getSavedLocale();
+  final hasSelectedLang = await TranslationService.hasSelectedLanguage();
+
   // 4. Tentukan halaman awal berdasarkan sesi dan status onboarding
   String initialRoute = AppPages.INITIAL; // Default: Login
 
   if (authService.isLoggedIn) {
     if (authService.isOnboarded) {
-      initialRoute = Routes.MAIN; // Dahsboard jika sudah lengkap
+      initialRoute = Routes.MAIN; // Dashboard jika sudah lengkap
     } else {
-      initialRoute = Routes.ONBOARDING; // Onboarding jika data masih kosong
+      // Jika belum onboarded, cek apakah sudah pilih bahasa
+      initialRoute = hasSelectedLang ? Routes.ONBOARDING : Routes.LANGUAGE;
     }
   }
 
@@ -49,6 +55,9 @@ Future<void> main() async {
       initialRoute: initialRoute,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
+      translations: TranslationService(),
+      locale: savedLocale,
+      fallbackLocale: TranslationService.fallbackLocale,
     ),
   );
 }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
+import 'package:worklife_mobile/app/data/services/translation_service.dart';
 
 class VerifikasiController extends GetxController {
   final AuthRepository _repository;
@@ -99,9 +100,10 @@ class VerifikasiController extends GetxController {
       );
 
       // Beri sedikit delay agar snackbar sempat muncul dan UI tidak kaget saat dispose
-      Future.delayed(const Duration(milliseconds: 800), () {
+      Future.delayed(const Duration(milliseconds: 800), () async {
         if (!isClosed) {
-          Get.offAllNamed(Routes.ONBOARDING);
+          final hasSelected = await TranslationService.hasSelectedLanguage();
+          Get.offAllNamed(hasSelected ? Routes.ONBOARDING : Routes.LANGUAGE);
         }
       });
     } catch (e) {

@@ -52,9 +52,9 @@ class HealthView extends GetView<HealthController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'BMI Calculator',
-                      style: TextStyle(
+                    Text(
+                      'bmi_calculator'.tr,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF181C22),
@@ -65,12 +65,12 @@ class HealthView extends GetView<HealthController> {
                     Obx(() => Row(
                           children: [
                             _buildMeasurementColumn(
-                                'HEIGHT', '${controller.height.value.toStringAsFixed(0)} cm'),
+                                'height_label'.tr, '${controller.height.value.toStringAsFixed(0)} cm'),
                             const SizedBox(width: 24),
                             Container(width: 1, height: 32, color: const Color(0xFFC1C6D5)),
                             const SizedBox(width: 24),
                             _buildMeasurementColumn(
-                                'WEIGHT', '${controller.weight.value.toStringAsFixed(0)} kg'),
+                                'weight_label'.tr, '${controller.weight.value.toStringAsFixed(0)} kg'),
                           ],
                         )),
                   ],
@@ -87,9 +87,9 @@ class HealthView extends GetView<HealthController> {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 ),
-                child: const Text(
-                  'Edit',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                child: Text(
+                  'edit_btn'.tr,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
@@ -140,9 +140,9 @@ class HealthView extends GetView<HealthController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Your Result',
-            style: TextStyle(
+          Text(
+            'your_result'.tr,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Color(0xFF717785),
@@ -168,12 +168,12 @@ class HealthView extends GetView<HealthController> {
           ),
           const SizedBox(height: 20),
           // BMI scale labels
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'UNDERWEIGHT',
-                style: TextStyle(
+                'underweight'.tr,
+                style: const TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF717785),
@@ -181,8 +181,8 @@ class HealthView extends GetView<HealthController> {
                 ),
               ),
               Text(
-                'NORMAL',
-                style: TextStyle(
+                'normal'.tr,
+                style: const TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF717785),
@@ -190,8 +190,8 @@ class HealthView extends GetView<HealthController> {
                 ),
               ),
               Text(
-                'OBESE',
-                style: TextStyle(
+                'obese'.tr,
+                style: const TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF717785),
@@ -229,7 +229,7 @@ class HealthView extends GetView<HealthController> {
           ),
           const SizedBox(width: 8),
           Text(
-            controller.bmiCategory.value,
+            controller.bmiCategory.value.tr,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -294,9 +294,9 @@ class HealthView extends GetView<HealthController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Hydration',
-                style: TextStyle(
+              Text(
+                'hydration_title'.tr,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF181C22),
@@ -338,9 +338,9 @@ class HealthView extends GetView<HealthController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Target
-                    const Text(
-                      'TARGET',
-                      style: TextStyle(
+                    Text(
+                      'target_label'.tr,
+                      style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF717785),
@@ -349,7 +349,7 @@ class HealthView extends GetView<HealthController> {
                     ),
                     const SizedBox(height: 2),
                     Obx(() => Text(
-                          '${controller.targetLiters.value} Liters',
+                          '${controller.targetLiters.value} ${'liters'.tr}',
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
@@ -358,9 +358,9 @@ class HealthView extends GetView<HealthController> {
                         )),
                     const SizedBox(height: 12),
                     // Intake
-                    const Text(
-                      'INTAKE',
-                      style: TextStyle(
+                    Text(
+                      'intake_label'.tr,
+                      style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF717785),
@@ -369,7 +369,7 @@ class HealthView extends GetView<HealthController> {
                     ),
                     const SizedBox(height: 2),
                     Obx(() => Text(
-                          '${controller.intakeLiters.value.toStringAsFixed(1)} Liters',
+                          '${controller.intakeLiters.value.toStringAsFixed(1)} ${'liters'.tr}',
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
@@ -392,9 +392,9 @@ class HealthView extends GetView<HealthController> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
-                          'Log 250ml',
-                          style: TextStyle(
+                        child: Text(
+                          'log_250ml'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -470,9 +470,9 @@ class HealthView extends GetView<HealthController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Today's Schedule",
-          style: TextStyle(
+        Text(
+          'today_schedule'.tr,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Color(0xFF181C22),
@@ -559,9 +559,9 @@ class HealthView extends GetView<HealthController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Pengatur Hidrasi',
-                        style: TextStyle(
+                      Text(
+                        'hydration_settings'.tr,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF181C22),
@@ -586,21 +586,21 @@ class HealthView extends GetView<HealthController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Aktifkan Pengingat',
-                            style: TextStyle(
+                            'enable_reminder'.tr,
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF181C22),
                             ),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
-                            'Kirim notifikasi sesuai jadwal',
-                            style: TextStyle(
+                            'send_notification_schedule'.tr,
+                            style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF717785),
                             ),
@@ -632,9 +632,9 @@ class HealthView extends GetView<HealthController> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text(
-                            'Batal',
-                            style: TextStyle(
+                          child: Text(
+                            'cancel'.tr,
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF181C22),
                             ),
@@ -659,9 +659,9 @@ class HealthView extends GetView<HealthController> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text(
-                            'Simpan',
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                          child: Text(
+                            'save'.tr,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -697,9 +697,9 @@ class HealthView extends GetView<HealthController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Update Measurements',
-                    style: TextStyle(
+                  Text(
+                    'update_measurements'.tr,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF181C22),
@@ -725,14 +725,14 @@ class HealthView extends GetView<HealthController> {
               const SizedBox(height: 24),
               // Height input
               _buildInputField(
-                label: 'Height (cm)',
+                label: 'height_cm'.tr,
                 controller: controller.heightTextController,
                 hint: '178',
               ),
               const SizedBox(height: 16),
               // Weight input
               _buildInputField(
-                label: 'Weight (kg)',
+                label: 'weight_kg'.tr,
                 controller: controller.weightTextController,
                 hint: '71',
               ),
@@ -750,9 +750,9 @@ class HealthView extends GetView<HealthController> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
+                      child: Text(
+                        'cancel'.tr,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF181C22),
                         ),
@@ -776,9 +776,9 @@ class HealthView extends GetView<HealthController> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text(
-                        'Save Changes',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                      child: Text(
+                        'save_changes'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),

@@ -16,9 +16,9 @@ class NotifikasiView extends GetView<NotifikasiController> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text(
-          'Notifikasi',
-          style: TextStyle(
+        title: Text(
+          'notifications_title'.tr,
+          style: const TextStyle(
             color: textDark,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -43,23 +43,23 @@ class NotifikasiView extends GetView<NotifikasiController> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'read_all',
                   child: Row(
                     children: [
-                      Icon(Icons.done_all, size: 18, color: Colors.blue),
-                      SizedBox(width: 8),
-                      Text('Tandai Semua Dibaca'),
+                      const Icon(Icons.done_all, size: 18, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text('mark_all_read'.tr),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'clear_all',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline, size: 18, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Hapus Semua', style: TextStyle(color: Colors.red)),
+                      const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text('delete_all'.tr, style: const TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
@@ -105,11 +105,11 @@ class NotifikasiView extends GetView<NotifikasiController> {
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: [
-              _buildTabChip('Semua', 'semua', primary),
+              _buildTabChip('filter_all'.tr, 'semua', primary),
               const SizedBox(width: 8),
-              _buildTabChip('Kesehatan 🩺', 'health', primary),
+              _buildTabChip('filter_health'.tr, 'health', primary),
               const SizedBox(width: 8),
-              _buildTabChip('Produktivitas 💼', 'productivity', primary),
+              _buildTabChip('filter_productivity'.tr, 'productivity', primary),
             ],
           ),
         );
@@ -299,7 +299,7 @@ class NotifikasiView extends GetView<NotifikasiController> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Belum Ada Notifikasi',
+              'no_notifications'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -308,7 +308,7 @@ class NotifikasiView extends GetView<NotifikasiController> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Semua pemberitahuan baru mengenai aktivitas kesehatan dan tugas Anda akan muncul di sini.',
+              'no_notifications_desc'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -327,12 +327,12 @@ class NotifikasiView extends GetView<NotifikasiController> {
     final diff = now.difference(dt);
 
     if (diff.inMinutes < 60) {
-      if (diff.inMinutes <= 0) return 'Baru saja';
-      return '${diff.inMinutes} menit yang lalu';
+      if (diff.inMinutes <= 0) return 'just_now'.tr;
+      return 'minutes_ago'.trParams({'count': diff.inMinutes.toString()});
     } else if (diff.inHours < 24) {
-      return '${diff.inHours} jam yang lalu';
+      return 'hours_ago'.trParams({'count': diff.inHours.toString()});
     } else if (diff.inDays == 1) {
-      return 'Kemarin';
+      return 'yesterday'.tr;
     } else {
       return '${dt.day}/${dt.month}/${dt.year}';
     }

@@ -12,8 +12,8 @@ class PrivacyPolicyView extends StatelessWidget {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text(
-          'Kebijakan Privasi & Ketentuan',
+        title: Text(
+          'privacy_policy_terms'.tr,
           style: TextStyle(
             color: textDark,
             fontSize: 18,
@@ -32,8 +32,8 @@ class PrivacyPolicyView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Kebijakan Privasi Smart WorkLife',
+            Text(
+              'privacy_policy_title'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -41,8 +41,8 @@ class PrivacyPolicyView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Terakhir diperbarui: Juni 2026',
+            Text(
+              'last_updated'.tr,
               style: TextStyle(
                 fontSize: 12,
                 color: Color(0xFF94A3B8),
@@ -50,33 +50,28 @@ class PrivacyPolicyView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _buildSection(
-              title: '1. Pengumpulan Informasi',
-              content:
-                  'Kami mengumpulkan informasi profil dasar Anda (seperti nama, usia, jenis kelamin, berat, dan tinggi badan) serta data preferensi kerja (seperti jam mulai & selesai kerja) untuk mempersonalisasi fitur asisten kerja dan rekomendasi kesehatan Anda.',
+              title: 'privacy_section1_title'.tr,
+              content: 'privacy_section1_desc'.tr,
             ),
             const SizedBox(height: 20),
             _buildSection(
-              title: '2. Pemrosesan Data Suara & Transkrip',
-              content:
-                  'Untuk fitur Smart Notulen, rekaman audio dan transkripsi teks Anda diproses secara aman. Kami berkomitmen untuk menjaga data audio dan transkrip hasil rekaman tetap privat dan hanya dapat diakses oleh pemilik akun.',
+              title: 'privacy_section2_title'.tr,
+              content: 'privacy_section2_desc'.tr,
             ),
             const SizedBox(height: 20),
             _buildSection(
-              title: '3. Data Kesehatan & Aktivitas fisik',
-              content:
-                  'Data mengenai sesi Pomodoro, aktivitas peregangan tubuh (Stretching), dan jumlah asupan air harian disimpan untuk menyajikan laporan analitik performa kerja Anda dari hari ke hari.',
+              title: 'privacy_section3_title'.tr,
+              content: 'privacy_section3_desc'.tr,
             ),
             const SizedBox(height: 20),
             _buildSection(
-              title: '4. Keamanan Informasi',
-              content:
-                  'Kami menerapkan standar keamanan enkripsi data guna melindungi kredensial akun dan data pribadi Anda dari akses yang tidak sah, penyalahgunaan, atau kebocoran data.',
+              title: 'privacy_section4_title'.tr,
+              content: 'privacy_section4_desc'.tr,
             ),
             const SizedBox(height: 20),
             _buildSection(
-              title: '5. Penghapusan Akun',
-              content:
-                  'Apabila Anda memilih untuk menghapus akun melalui menu Akun & Keamanan, seluruh data personal, transkrip rekaman, serta histori aktivitas Anda akan dihapus secara permanen dari basis data kami dan tidak dapat dikembalikan.',
+              title: 'privacy_section5_title'.tr,
+              content: 'privacy_section5_desc'.tr,
             ),
           ],
         ),

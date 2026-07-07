@@ -17,14 +17,14 @@ class AddFriendView extends GetView<ChatController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.person_add_alt_1, color: Color(0xFF005AB4)),
-            SizedBox(width: 8),
+            const Icon(Icons.person_add_alt_1, color: Color(0xFF005AB4)),
+            const SizedBox(width: 8),
             Text(
-              'Tambah Rekan',
-              style: TextStyle(
+              'add_friend_title'.tr,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF005AB4),
               ),
@@ -54,18 +54,18 @@ class AddFriendView extends GetView<ChatController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Temukan Rekan Kerja',
-              style: TextStyle(
+            Text(
+              'find_colleagues'.tr,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Cari berdasarkan nama akun untuk mulai berkolaborasi.',
-              style: TextStyle(
+            Text(
+              'search_by_username_desc'.tr,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black54,
               ),
@@ -84,10 +84,10 @@ class AddFriendView extends GetView<ChatController> {
                     child: TextField(
                       controller: controller.friendNameController,
                       style: const TextStyle(fontSize: 15),
-                      decoration: const InputDecoration(
-                        hintText: 'Masukkan nama pengguna...',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                        prefixIcon: Icon(Icons.search, color: Color(0xFF005AB4), size: 20),
+                      decoration: InputDecoration(
+                        hintText: 'enter_username_hint'.tr,
+                        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                        prefixIcon: const Icon(Icons.search, color: Color(0xFF005AB4), size: 20),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                       ),
@@ -130,7 +130,7 @@ class AddFriendView extends GetView<ChatController> {
                                   height: 16,
                                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                 )
-                              : const Text('Cari', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              : Text('search'.tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                         )),
                   ),
                 ],
@@ -160,9 +160,9 @@ class AddFriendView extends GetView<ChatController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Tidak Ditemukan',
-                        style: TextStyle(
+                      Text(
+                        'not_found'.tr,
+                        style: const TextStyle(
                           color: Color(0xFFC2410C),
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
@@ -223,7 +223,7 @@ class AddFriendView extends GetView<ChatController> {
                        controller.addFriendFromSearch();
                     },
                     icon: const Icon(Icons.add, size: 16),
-                    label: const Text('Tambah', style: TextStyle(fontSize: 13)),
+                    label: Text('add'.tr, style: const TextStyle(fontSize: 13)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF005AB4),
                       foregroundColor: Colors.white,

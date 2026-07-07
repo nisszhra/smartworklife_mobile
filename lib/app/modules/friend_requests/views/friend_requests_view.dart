@@ -17,9 +17,9 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF005AB4)),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Konfirmasi Pertemanan',
-          style: TextStyle(
+        title: Text(
+          'friend_requests_title'.tr,
+          style: const TextStyle(
             color: Color(0xFF005AB4),
             fontWeight: FontWeight.bold,
           ),
@@ -29,7 +29,7 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
             if (!controller.requests.any((req) => req.status == 'accepted')) return const SizedBox.shrink();
             return IconButton(
               icon: const Icon(Icons.delete_sweep, color: Colors.grey),
-              tooltip: 'Hapus Riwayat',
+              tooltip: 'clear_history_tooltip'.tr,
               onPressed: () => controller.clearHistory(),
             );
           }),
@@ -41,10 +41,10 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
       ),
       body: Obx(() {
         if (controller.requests.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Tidak ada permintaan baru',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              'no_new_requests'.tr,
+              style: const TextStyle(color: Colors.grey, fontSize: 16),
             ),
           );
         }
@@ -91,7 +91,7 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            req.status == 'accepted' ? 'Anda sekarang rekan.' : 'Ingin terhubung dengan Anda',
+                            req.status == 'accepted' ? 'now_friends'.tr : 'wants_to_connect'.tr,
                             style: TextStyle(
                               color: req.status == 'accepted' ? const Color(0xFF005AB4) : Colors.grey,
                               fontSize: 13,

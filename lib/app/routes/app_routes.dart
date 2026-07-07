@@ -16,6 +16,7 @@ abstract class Routes {
   static const STRETCHING_PREVIEW = _Paths.STRETCHING_PREVIEW;
   static const VERIFIKASI = _Paths.VERIFIKASI;
   static const ONBOARDING = _Paths.ONBOARDING;
+  static const LANGUAGE = _Paths.LANGUAGE;
   static const NOTIFIKASI = _Paths.NOTIFIKASI;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const CHAT = _Paths.CHAT;
@@ -40,6 +41,7 @@ abstract class _Paths {
   static const STRETCHING_PREVIEW = '/stretching/preview';
   static const VERIFIKASI = '/verifikasi';
   static const ONBOARDING = '/onboarding';
+  static const LANGUAGE = '/language';
   static const NOTIFIKASI = '/notifikasi';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const CHAT = '/chat';

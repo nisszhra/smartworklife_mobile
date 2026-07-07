@@ -1107,7 +1107,7 @@ class NotulenDetailView extends GetView<NotulenController> {
                           Get.back(); // close sheet
                           
                           // Kirim pesan
-                          final archiveId = controller.currentNotulenId.value;
+                          final archiveId = controller.detailNotulenId.value;
                           final archive = controller.archivedMeetings.firstWhereOrNull((a) => a.id == archiveId);
                           final title = controller.detailTitle.value;
                           final date = archive?.date ?? 'Hari ini';

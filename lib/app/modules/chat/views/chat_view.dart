@@ -15,8 +15,8 @@ class ChatView extends GetView<ChatController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       appBar: AppBar(
-        title: const Text(
-          'Chats',
+        title: Text(
+          'chats_title'.tr,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color(0xFF005AB4),
@@ -33,12 +33,12 @@ class ChatView extends GetView<ChatController> {
               Get.toNamed(Routes.FRIEND_REQUESTS);
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.search, color: Color(0xFF005AB4)),
-            onPressed: () {
-              // Search action
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search, color: Color(0xFF005AB4)),
+          //   onPressed: () {
+          //     // Search action
+          //   },
+          // ),
           const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
@@ -54,9 +54,9 @@ class ChatView extends GetView<ChatController> {
           return const Center(child: CircularProgressIndicator(color: Color(0xFF005AB4)));
         }
         if (controller.chatList.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Belum ada obrolan',
+              'no_chats'.tr,
               style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
           );
@@ -72,9 +72,9 @@ class ChatView extends GetView<ChatController> {
             final unreadCount = item.unreadCount;
             final timeStr = item.lastMessageTime != null ? DateFormat('HH:mm').format(item.lastMessageTime!) : '';
 
-            String subtitleText = 'Mulai obrolan baru...';
+            String subtitleText = 'start_new_chat'.tr;
             if (isPending) {
-              subtitleText = 'Menunggu Konfirmasi Rekan';
+              subtitleText = 'waiting_friend_confirmation'.tr;
             } else if (lastMsg != null) {
               if (lastMsg.startsWith('📋 NOTULEN_SHARE:')) {
                 final parts = lastMsg.split(' | ');
@@ -82,7 +82,7 @@ class ChatView extends GetView<ChatController> {
                   final titleLine = parts[1].split('\n')[0].replaceAll('*', '').trim();
                   subtitleText = '📋 $titleLine';
                 } else {
-                  subtitleText = '📋 Mengirim Notulen';
+                  subtitleText = 'sending_minutes'.tr;
                 }
               } else {
                 subtitleText = lastMsg;
@@ -106,7 +106,7 @@ class ChatView extends GetView<ChatController> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
-                        label: 'Hapus',
+                        label: 'delete'.tr,
                       ),
                     ],
                   ),
@@ -205,9 +205,9 @@ class ChatView extends GetView<ChatController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Hapus obrolan ini?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                'delete_chat_confirm'.tr,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Align(
@@ -219,7 +219,7 @@ class ChatView extends GetView<ChatController> {
                       onPressed: () {
                         Get.back();
                       },
-                      child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+                      child: Text('cancel'.tr, style: const TextStyle(color: Colors.grey)),
                     ),
                     const SizedBox(width: 8),
                     TextButton(
@@ -227,7 +227,7 @@ class ChatView extends GetView<ChatController> {
                         Get.back();
                         controller.deleteChatHistory(item);
                       },
-                      child: const Text('Hapus', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      child: Text('delete'.tr, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),

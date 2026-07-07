@@ -14,8 +14,8 @@ class SecurityView extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text(
-          'Akun & Keamanan',
+        title: Text(
+          'account_security'.tr,
           style: TextStyle(
             color: Color(0xFF181C22),
             fontSize: 18,
@@ -57,7 +57,7 @@ class SecurityView extends GetView<ProfileController> {
                         const Icon(Icons.lock_outline, size: 20, color: primary),
                         const SizedBox(width: 8),
                         Obx(() => Text(
-                          controller.hasPassword ? 'Ubah Password' : 'Buat Password',
+                          controller.hasPassword ? 'change_password'.tr : 'create_password'.tr,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class SecurityView extends GetView<ProfileController> {
                         ? Column(
                             children: [
                               _buildPasswordField(
-                                label: 'Current Password',
+                                label: 'current_password'.tr,
                                 controller: controller.currentPasswordController,
                                 isVisible: controller.showCurrentPassword.value,
                                 onToggle: controller.toggleCurrentPassword,
@@ -81,14 +81,14 @@ class SecurityView extends GetView<ProfileController> {
                           )
                         : const SizedBox.shrink()),
                     Obx(() => _buildPasswordField(
-                          label: 'New Password',
+                          label: 'new_password'.tr,
                           controller: controller.newPasswordController,
                           isVisible: controller.showNewPassword.value,
                           onToggle: controller.toggleNewPassword,
                         )),
                     const SizedBox(height: 16),
                     Obx(() => _buildPasswordField(
-                          label: 'Confirm New Password',
+                          label: 'confirm_new_password'.tr,
                           controller: controller.confirmPasswordController,
                           isVisible: controller.showConfirmPassword.value,
                           onToggle: controller.toggleConfirmPassword,
@@ -121,7 +121,7 @@ class SecurityView extends GetView<ProfileController> {
                                 ),
                               )
                             : Text(
-                                controller.hasPassword ? 'Ubah Password' : 'Buat Password',
+                                controller.hasPassword ? 'change_password'.tr : 'create_password'.tr,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -139,9 +139,9 @@ class SecurityView extends GetView<ProfileController> {
                                     onPressed: () {
                                       Get.toNamed(Routes.FORGOT_PASSWORD);
                                     },
-                                    child: const Text(
-                                      'Lupa Password?',
-                                      style: TextStyle(
+                                    child: Text(
+                                      'forgot_password_link'.tr,
+                                      style: const TextStyle(
                                         color: primary,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -162,14 +162,14 @@ class SecurityView extends GetView<ProfileController> {
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(color: const Color(0xFFFBC02D)),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       children: [
-                                        Icon(Icons.info_outline, color: Color(0xFFF57F17), size: 20),
-                                        SizedBox(width: 8),
+                                        const Icon(Icons.info_outline, color: Color(0xFFF57F17), size: 20),
+                                        const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
-                                            'Untuk keamanan maksimal, sebaiknya Anda segera membuat password untuk melindungi akun ini.',
-                                            style: TextStyle(
+                                            'password_security_warning'.tr,
+                                            style: const TextStyle(
                                               fontSize: 12,
                                               color: Color(0xFFF57F17),
                                               height: 1.4,
@@ -187,16 +187,16 @@ class SecurityView extends GetView<ProfileController> {
                                         controller.snoozePasswordReminder();
                                         Get.back();
                                         Get.snackbar(
-                                          'Diingatkan Nanti', 
-                                          'Anda dapat membuat password kapan saja melalui menu ini.', 
+                                          'remind_later_title'.tr, 
+                                          'remind_later_desc'.tr, 
                                           snackPosition: SnackPosition.BOTTOM,
                                           backgroundColor: const Color(0xFFFFF9C4),
                                           colorText: const Color(0xFF181C22),
                                         );
                                       },
-                                      child: const Text(
-                                        'Nanti Saja',
-                                        style: TextStyle(
+                                      child: Text(
+                                        'remind_later_btn'.tr,
+                                        style: const TextStyle(
                                           color: Color(0xFF64748B),
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -229,12 +229,12 @@ class SecurityView extends GetView<ProfileController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.warning_amber_rounded, size: 20, color: Color(0xFFDC2626)),
-                        SizedBox(width: 8),
+                        const Icon(Icons.warning_amber_rounded, size: 20, color: Color(0xFFDC2626)),
+                        const SizedBox(width: 8),
                         Text(
-                          'Zona Bahaya',
+                          'danger_zone'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -244,8 +244,8 @@ class SecurityView extends GetView<ProfileController> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Menghapus akun Anda akan menghapus seluruh data secara permanen dan tidak dapat dipulihkan kembali.',
+                    Text(
+                      'delete_account_warning'.tr,
                       style: TextStyle(
                         fontSize: 13,
                         color: Color(0xFF64748B),
@@ -258,9 +258,9 @@ class SecurityView extends GetView<ProfileController> {
                       child: TextButton.icon(
                         onPressed: controller.deleteAccount,
                         icon: const Icon(Icons.delete_forever, color: Color(0xFFDC2626), size: 20),
-                        label: const Text(
-                          'Hapus Akun Permanen',
-                          style: TextStyle(
+                        label: Text(
+                          'delete_account_permanent'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFFDC2626),

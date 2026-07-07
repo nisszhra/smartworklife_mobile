@@ -18,8 +18,8 @@ class RatingView extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F172A), size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Feedback & Rating',
+        title: Text(
+          'feedback_rating'.tr,
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -61,8 +61,8 @@ class RatingView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Bagaimana Pengalaman Anda?',
+                    Text(
+                      'how_is_experience'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22,
@@ -72,8 +72,8 @@ class RatingView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Bantu kami meningkatkan kualitas aplikasi dengan memberikan penilaian pada fitur yang telah Anda gunakan.',
+                    Text(
+                      'rating_desc'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -175,8 +175,8 @@ class RatingView extends StatelessWidget {
                         color: Color(0xFF059669),
                       ),
                       const SizedBox(width: 4),
-                      const Text(
-                        'Tersimpan',
+                      Text(
+                        'saved'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF059669),

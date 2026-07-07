@@ -14,8 +14,8 @@ class PreferensiUserView extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text(
-          'Preferensi User',
+        title: Text(
+          'user_preferences'.tr,
           style: TextStyle(
             color: textDark,
             fontSize: 18,
@@ -53,12 +53,12 @@ class PreferensiUserView extends GetView<ProfileController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.health_and_safety_outlined, size: 20, color: primary),
-                        SizedBox(width: 8),
+                        const Icon(Icons.health_and_safety_outlined, size: 20, color: primary),
+                        const SizedBox(width: 8),
                         Text(
-                          'Profil Kesehatan',
+                          'health_profile'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class PreferensiUserView extends GetView<ProfileController> {
                       children: [
                         Expanded(
                           child: _buildTextField(
-                            label: 'Usia',
+                            label: 'age'.tr,
                             controller: controller.ageController,
                             icon: Icons.calendar_today_outlined,
                             keyboardType: TextInputType.number,
@@ -83,8 +83,8 @@ class PreferensiUserView extends GetView<ProfileController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Jenis Kelamin',
+                              Text(
+                                'gender'.tr,
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -104,9 +104,10 @@ class PreferensiUserView extends GetView<ProfileController> {
                                     value: controller.gender.value,
                                     isExpanded: true,
                                     items: ['Laki-laki', 'Perempuan'].map((String value) {
+                                      final displayValue = value == 'Laki-laki' ? 'male'.tr : 'female'.tr;
                                       return DropdownMenuItem<String>(
                                         value: value,
-                                        child: Text(value, style: const TextStyle(fontSize: 15)),
+                                        child: Text(displayValue, style: const TextStyle(fontSize: 15)),
                                       );
                                     }).toList(),
                                     onChanged: (val) {
@@ -125,7 +126,7 @@ class PreferensiUserView extends GetView<ProfileController> {
                       children: [
                         Expanded(
                           child: _buildTextField(
-                            label: 'Berat Badan (kg)',
+                            label: 'weight_kg'.tr,
                             controller: controller.weightController,
                             icon: Icons.monitor_weight_outlined,
                             keyboardType: TextInputType.number,
@@ -134,7 +135,7 @@ class PreferensiUserView extends GetView<ProfileController> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: _buildTextField(
-                            label: 'Tinggi Badan (cm)',
+                            label: 'height_cm'.tr,
                             controller: controller.heightController,
                             icon: Icons.height_outlined,
                             keyboardType: TextInputType.number,
@@ -166,12 +167,12 @@ class PreferensiUserView extends GetView<ProfileController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.work_outline, size: 20, color: primary),
-                        SizedBox(width: 8),
+                        const Icon(Icons.work_outline, size: 20, color: primary),
+                        const SizedBox(width: 8),
                         Text(
-                          'Profil Pekerjaan',
+                          'work_profile'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -182,7 +183,7 @@ class PreferensiUserView extends GetView<ProfileController> {
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      label: 'Industri / Bidang Kerja',
+                      label: 'industry'.tr,
                       controller: controller.industryController,
                       icon: Icons.business_outlined,
                     ),
@@ -193,8 +194,8 @@ class PreferensiUserView extends GetView<ProfileController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Mulai Kerja',
+                              Text(
+                                'start_work'.tr,
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -232,8 +233,8 @@ class PreferensiUserView extends GetView<ProfileController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Selesai Kerja',
+                              Text(
+                                'end_work'.tr,
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -299,8 +300,8 @@ class PreferensiUserView extends GetView<ProfileController> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Simpan Preferensi',
+                    : Text(
+                        'save_preferences'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

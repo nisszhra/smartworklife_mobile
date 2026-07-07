@@ -13,8 +13,8 @@ class FaqView extends StatelessWidget {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text(
-          'Panduan & FAQ',
+        title: Text(
+          'faq_title'.tr,
           style: TextStyle(
             color: textDark,
             fontSize: 18,
@@ -33,8 +33,8 @@ class FaqView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Panduan Penggunaan Fitur',
+            Text(
+              'feature_guide'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -44,27 +44,24 @@ class FaqView extends StatelessWidget {
             const SizedBox(height: 16),
             _buildGuideCard(
               icon: Icons.mic_none_outlined,
-              title: 'Smart Notulen',
-              description:
-                  'Gunakan Smart Notulen untuk merekam & mentranskrip percakapan secara otomatis dengan AI. Anda juga dapat menyunting draf notulen dan menyimpannya sebagai arsip digital.',
+              title: 'Smart Notulen', 
+              description: 'guide_notulen_desc'.tr,
             ),
             const SizedBox(height: 12),
             _buildGuideCard(
               icon: Icons.timer_outlined,
               title: 'Pomodoro Timer',
-              description:
-                  'Tingkatkan produktivitas kerja Anda dengan Pomodoro Timer. Atur waktu fokus bekerja/belajar serta waktu istirahat singkat dan panjang secara teratur.',
+              description: 'guide_pomodoro_desc'.tr,
             ),
             const SizedBox(height: 12),
             _buildGuideCard(
               icon: Icons.fitbit_outlined,
               title: 'Stretching & Hidrasi',
-              description:
-                  'Jaga kebugaran fisik Anda selama bekerja dengan mengikuti panduan peregangan otot (Stretching) dan pantau target hidrasi asupan air harian Anda.',
+              description: 'guide_health_desc'.tr,
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Pertanyaan Umum (FAQ)',
+            Text(
+              'general_faq'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -73,21 +70,18 @@ class FaqView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildFaqTile(
-              question: 'Apakah hasil transkripsi percakapan 100% akurat?',
-              answer:
-                  'Akurasi transkripsi otomatis dipengaruhi oleh kualitas rekaman audio dan kejelasan ucapan pembicara. Anda dapat menyunting kembali teks hasil transkrip draf sebelum disimpan.',
+              question: 'faq_q1'.tr,
+              answer: 'faq_a1'.tr,
             ),
             const Divider(height: 24, color: Color(0xFFE2E8F0)),
             _buildFaqTile(
-              question: 'Bagaimana cara mengubah profil personal saya?',
-              answer:
-                  'Buka menu Edit Profil pada halaman profil, isi informasi yang ingin diubah (seperti nama, usia, berat badan, dsb), lalu tekan tombol "Save Changes" di bagian bawah.',
+              question: 'faq_q2'.tr,
+              answer: 'faq_a2'.tr,
             ),
             const Divider(height: 24, color: Color(0xFFE2E8F0)),
             _buildFaqTile(
-              question: 'Bagaimana cara mengganti kata sandi akun saya?',
-              answer:
-                  'Pilih menu "Akun & Keamanan" di halaman pengaturan profil. Anda dapat memasukkan kata sandi lama dan baru, atau menggunakan tautan "Lupa Password?" jika lupa sandi Anda saat ini.',
+              question: 'faq_q3'.tr,
+              answer: 'faq_a3'.tr,
             ),
           ],
         ),

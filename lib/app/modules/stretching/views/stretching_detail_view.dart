@@ -13,15 +13,15 @@ class StretchingDetailView extends GetView<StretchingController> {
   Widget build(BuildContext context) {
     final String title = Get.arguments ?? 'Neck Tilt';
 
-    const Map<String, String> subtitleMap = {
-      'Neck Tilt': 'Peregangan Leher',
-      'Shoulder Rolls': 'Peregangan Bahu',
-      'Upper Back': 'Peregangan Punggung Atas',
-      'Seated Twist': 'Peregangan Pinggang Duduk',
-      'Wrist Circle': 'Peregangan Pergelangan Tangan',
-      'Hamstring': 'Peregangan Otot Paha Belakang',
+    final Map<String, String> subtitleMap = {
+      'Neck Tilt': 'neck_tilt_sub'.tr,
+      'Shoulder Rolls': 'shoulder_rolls_sub'.tr,
+      'Upper Back': 'upper_back_sub'.tr,
+      'Seated Twist': 'seated_twist_sub'.tr,
+      'Wrist Circle': 'wrist_circle_sub'.tr,
+      'Hamstring': 'hamstring_sub'.tr,
     };
-    final String subtitle = subtitleMap[title] ?? 'Peregangan';
+    final String subtitle = subtitleMap[title] ?? 'neck_tilt_sub'.tr;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -80,7 +80,7 @@ class StretchingDetailView extends GetView<StretchingController> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      controller.isPoseDetected.value ? 'Pose Terdeteksi' : 'Pose Belum Terdeteksi',
+                      controller.isPoseDetected.value ? 'pose_detected'.tr : 'pose_not_detected'.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: controller.isPoseDetected.value ? Colors.white : Colors.black87,
@@ -168,7 +168,7 @@ class StretchingDetailView extends GetView<StretchingController> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Durasi Tahan',
+                                        'hold_duration'.tr,
                                         style: TextStyle(
                                           color: Colors.blue[700],
                                           fontWeight: FontWeight.w600,
@@ -292,7 +292,7 @@ class StretchingDetailView extends GetView<StretchingController> {
                                   elevation: isCompleted ? 2 : 0,
                                 ),
                                 child: Text(
-                                  'Selesai',
+                                  'done_btn'.tr,
                                   style: TextStyle(
                                     color: isCompleted ? Colors.white : Colors.white.withOpacity(0.6),
                                     fontSize: 18,

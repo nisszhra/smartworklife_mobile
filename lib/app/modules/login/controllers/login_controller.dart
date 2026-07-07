@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:worklife_mobile/app/data/repositories/auth_repository.dart';
 import 'package:worklife_mobile/app/data/services/auth_service.dart';
+import 'package:worklife_mobile/app/data/services/translation_service.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
 
 class LoginController extends GetxController {
@@ -55,12 +56,13 @@ class LoginController extends GetxController {
       }
 
       // Beri sedikit delay sebelum pindah agar snackbar/proses async lain tenang
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () async {
         if (!isClosed) {
           if (_authService.isOnboarded) {
             Get.offAllNamed(Routes.MAIN);
           } else {
-            Get.offAllNamed(Routes.ONBOARDING);
+            final hasSelected = await TranslationService.hasSelectedLanguage();
+            Get.offAllNamed(hasSelected ? Routes.ONBOARDING : Routes.LANGUAGE);
           }
         }
       });
@@ -132,12 +134,13 @@ class LoginController extends GetxController {
         );
       }
 
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () async {
         if (!isClosed) {
           if (_authService.isOnboarded) {
             Get.offAllNamed(Routes.MAIN);
           } else {
-            Get.offAllNamed(Routes.ONBOARDING);
+            final hasSelected = await TranslationService.hasSelectedLanguage();
+            Get.offAllNamed(hasSelected ? Routes.ONBOARDING : Routes.LANGUAGE);
           }
         }
       });

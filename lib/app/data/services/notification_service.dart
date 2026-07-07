@@ -41,7 +41,7 @@ class NotificationService extends GetxService {
       tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
     }
     const AndroidInitializationSettings initAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
     await flutterLocalNotificationsPlugin.initialize(
       settings: const InitializationSettings(android: initAndroid),
       onDidReceiveNotificationResponse: (NotificationResponse d) {

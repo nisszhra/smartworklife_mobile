@@ -20,7 +20,7 @@ class StretchingController extends GetxController {
   var isCameraInitialized = false.obs;
   var isPoseDetected = false.obs;
   var percentage = 0.0.obs;
-  var warningMessage = "Posisikan tubuh Anda di depan kamera".obs;
+  var warningMessage = "pos_body_camera".tr.obs;
   var currentExercise = "".obs;
   var reps = 0.obs;
   int get targetReps => isTimerBased ? 2 : 8;
@@ -68,19 +68,19 @@ class StretchingController extends GetxController {
 
   String get exerciseInstruction {
     if (currentExercise.value == "Neck Tilt") {
-      return "Miringkan kepala Anda secara perlahan ke kiri dan ke kanan secara bergantian. Tahan di setiap sisi beberapa detik untuk merilekskan otot leher.";
+      return "neck_tilt_inst".tr;
     } else if (currentExercise.value == "Shoulder Rolls") {
-      return "Angkat kedua bahu Anda mendekati telinga, lalu putar perlahan ke arah belakang dan turunkan kembali. Ulangi gerakan secara berirama.";
+      return "shoulder_rolls_inst".tr;
     } else if (currentExercise.value == "Upper Back") {
-      return "Satukan kedua tangan di depan dada, lalu dorong ke depan sambil membungkukkan punggung atas. Tahan beberapa detik lalu kembali tegak.";
+      return "upper_back_inst".tr;
     } else if (currentExercise.value == "Seated Twist") {
-      return "Duduk tegak lalu putar tubuh bagian atas ke kanan dan ke kiri secara bergantian. Gunakan tangan untuk membantu rotasi dan tahan sejenak di setiap sisi.";
+      return "seated_twist_inst".tr;
     } else if (currentExercise.value == "Wrist Circle") {
-      return "Rentangkan tangan ke depan, lalu putar pergelangan membentuk lingkaran penuh. Lakukan searah jarum jam 5 kali, lalu ulangi berlawanan. Kerjakan pada kedua tangan.";
+      return "wrist_circle_inst".tr;
     } else if (currentExercise.value == "Hamstring") {
-      return "Berdiri tegak dengan kaki selebar bahu. Bungkukkan tubuh ke depan perlahan, raih ujung kaki atau lantai sambil menjaga lutut tetap lurus. Tahan posisi 15–20 detik, lalu tegakkan kembali.";
+      return "hamstring_inst".tr;
     }
-    return "Lakukan gerakan peregangan secara perlahan dan teratur sesuai instruksi di layar.";
+    return "";
   }
 
   @override
@@ -122,7 +122,7 @@ class StretchingController extends GetxController {
       holdSeconds.value++;
       final remaining = targetHoldSeconds - holdSeconds.value;
       if (remaining > 0) {
-        warningMessage.value = "Tahan! $remaining detik lagi...";
+        warningMessage.value = "hold_remaining".trParams({'remaining': remaining.toString()});
       }
       if (holdSeconds.value >= targetHoldSeconds) {
         _holdTimer?.cancel();
@@ -133,9 +133,9 @@ class StretchingController extends GetxController {
           reps.value++;
           if (reps.value >= targetReps) {
             _completeStretchingSession();
-            warningMessage.value = "Selesai! Peregangan berhasil diselesaikan";
+            warningMessage.value = "stretch_completed".tr;
           } else {
-            warningMessage.value = "Set ${reps.value} selesai! Kembali ke posisi awal";
+            warningMessage.value = "set_completed".trParams({'rep': reps.value.toString()});
           }
         }
       }
@@ -218,7 +218,7 @@ class StretchingController extends GetxController {
         }
       });
     } else {
-      warningMessage.value = "Izin kamera ditolak";
+      warningMessage.value = "camera_denied".tr;
     }
   }
 
@@ -236,7 +236,7 @@ class StretchingController extends GetxController {
       _analyzePose(poses.first);
     } else {
       isPoseDetected.value = false;
-      warningMessage.value = "Pose tidak terdeteksi";
+      warningMessage.value = "pose_not_found".tr;
       percentage.value = 0.0;
     }
 
@@ -276,7 +276,7 @@ class StretchingController extends GetxController {
       
       if (absAngle > 12) {
         _hasTilted = true;
-        warningMessage.value = "Bagus! Sekarang tegakkan kepala Anda";
+        warningMessage.value = "neck_straighten".tr;
         // Map angle 12-30 to 0.5-1.0
         double p = 0.5 + (((absAngle - 12) / 18) * 0.5).clamp(0.0, 0.5);
         percentage.value = p;
@@ -288,19 +288,19 @@ class StretchingController extends GetxController {
             _completeStretchingSession();
           }
         }
-        warningMessage.value = "Miringkan leher Anda ke samping";
+        warningMessage.value = "neck_tilt_side".tr;
         percentage.value = 0.0;
       } else {
         if (!_hasTilted) {
-          warningMessage.value = "Miringkan leher Anda ke samping";
+          warningMessage.value = "neck_tilt_side".tr;
           percentage.value = 0.0;
         } else {
-          warningMessage.value = "Tahan dan perlahan kembali tegak";
+          warningMessage.value = "neck_hold_return".tr;
           percentage.value = 0.3;
         }
       }
     } else {
-      warningMessage.value = "Pastikan kepala dan bahu terlihat";
+      warningMessage.value = "ensure_head_shoulder".tr;
     }
   }
 
@@ -335,7 +335,7 @@ class StretchingController extends GetxController {
       } else if (rightDist != null) {
         avgDist = rightDist;
       } else {
-        warningMessage.value = "Pastikan kepala terlihat jelas";
+        warningMessage.value = "ensure_head".tr;
         percentage.value = 0.0;
         return;
       }
@@ -360,9 +360,9 @@ class StretchingController extends GetxController {
       if (range < minMovementRange) {
         // Not enough active movement detected yet, prompt the user
         if (_isMovingUp) {
-          warningMessage.value = "Turunkan bahu Anda sepenuhnya";
+          warningMessage.value = "shoulder_lower_fully".tr;
         } else {
-          warningMessage.value = "Angkat bahu Anda ke atas mendekati telinga";
+          warningMessage.value = "shoulder_raise".tr;
         }
         percentage.value = 0.0;
       } else {
@@ -374,7 +374,7 @@ class StretchingController extends GetxController {
         // relativePos > 0.65 means shoulders are down (near the observed maximum distance)
         if (relativePos < 0.35) {
           _isMovingUp = true;
-          warningMessage.value = "Bagus! Sekarang turunkan dan putar bahu";
+          warningMessage.value = "shoulder_lower_rotate".tr;
           
           // Map progress from UP (0.0 to 0.35) to percentage (0.5 to 1.0)
           double p = 0.5 + ((0.35 - relativePos) / 0.35 * 0.5).clamp(0.0, 0.5);
@@ -389,15 +389,15 @@ class StretchingController extends GetxController {
               }
             }
           }
-          warningMessage.value = "Angkat bahu Anda ke atas mendekati telinga";
+          warningMessage.value = "shoulder_raise".tr;
           percentage.value = 0.1;
         } else {
           // Transition / intermediate state
           if (_isMovingUp) {
-            warningMessage.value = "Putar leher/bahu Anda ke belakang dan turunkan";
+            warningMessage.value = "shoulder_rotate_back".tr;
             percentage.value = 0.4;
           } else {
-            warningMessage.value = "Angkat bahu Anda lebih tinggi";
+            warningMessage.value = "shoulder_raise_higher".tr;
             // Map progress from DOWN (0.65 to 1.0) to percentage (0.1 to 0.5)
             double p = 0.1 + ((1.0 - relativePos) / 0.35 * 0.4).clamp(0.0, 0.4);
             percentage.value = p;
@@ -405,7 +405,7 @@ class StretchingController extends GetxController {
         }
       }
     } else {
-      warningMessage.value = "Pastikan bahu terlihat jelas";
+      warningMessage.value = "ensure_shoulder".tr;
     }
   }
 
@@ -419,7 +419,7 @@ class StretchingController extends GetxController {
     final rightHip = pose.landmarks[PoseLandmarkType.rightHip];
 
     if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null) {
-      warningMessage.value = "Pastikan bahu dan pinggang terlihat";
+      warningMessage.value = "ensure_shoulder_waist".tr;
       return;
     }
 
@@ -435,7 +435,7 @@ class StretchingController extends GetxController {
     if (_backRoundHistory.length > 60) _backRoundHistory.removeAt(0);
 
     if (_backRoundHistory.length < 10) {
-      warningMessage.value = "Bersiap... dorong tangan ke depan dan bulatkan punggung";
+      warningMessage.value = "back_ready".tr;
       percentage.value = 0.0;
       return;
     }
@@ -447,8 +447,8 @@ class StretchingController extends GetxController {
     const double minRange = 0.06;
     if (range < minRange) {
       warningMessage.value = _hasRoundedBack
-          ? "Tegakkan punggung kembali"
-          : "Bulatkan punggung Anda ke depan";
+          ? "back_straighten".tr
+          : "back_round_fwd".tr;
       percentage.value = 0.0;
       return;
     }
@@ -466,15 +466,15 @@ class StretchingController extends GetxController {
       // Kembali tegak → reset hold
       _hasRoundedBack = false;
       _stopHoldTimer();
-      warningMessage.value = "Bulatkan punggung Anda ke depan lagi";
+      warningMessage.value = "back_round_fwd_again".tr;
       percentage.value = 0.1;
     } else {
       if (_hasRoundedBack) {
         // Masih membungkuk tapi kurang dalam
-        warningMessage.value = "Tahan posisi, jangan bergerak!";
+        warningMessage.value = "back_hold".tr;
       } else {
         _stopHoldTimer();
-        warningMessage.value = "Bulatkan punggung Anda lebih jauh";
+        warningMessage.value = "back_round_more".tr;
       }
       percentage.value = relativePos * 0.5;
     }
@@ -491,7 +491,7 @@ class StretchingController extends GetxController {
     final rightHip = pose.landmarks[PoseLandmarkType.rightHip];
 
     if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null) {
-      warningMessage.value = "Pastikan bahu dan pinggang terlihat";
+      warningMessage.value = "ensure_shoulder_waist".tr;
       return;
     }
 
@@ -507,7 +507,7 @@ class StretchingController extends GetxController {
     if (_twistHistory.length > 60) _twistHistory.removeAt(0);
 
     if (_twistHistory.length < 10) {
-      warningMessage.value = "Duduk tegak, siap untuk berputar";
+      warningMessage.value = "twist_ready".tr;
       percentage.value = 0.0;
       return;
     }
@@ -519,7 +519,7 @@ class StretchingController extends GetxController {
     const double minRange = 0.05;
     if (range < minRange) {
       _stopHoldTimer();
-      warningMessage.value = "Putar tubuh Anda ke kanan atau ke kiri";
+      warningMessage.value = "twist_body".tr;
       percentage.value = 0.0;
       return;
     }
@@ -537,14 +537,14 @@ class StretchingController extends GetxController {
       _stopHoldTimer();
       if (_hasTwistedLeft) {
         _hasTwistedLeft = false;
-        warningMessage.value = "Putar ke sisi yang lain";
+        warningMessage.value = "twist_other_side".tr;
       } else {
-        warningMessage.value = "Putar tubuh Anda ke kanan atau ke kiri";
+        warningMessage.value = "twist_body".tr;
       }
       percentage.value = 0.1;
     } else {
       _stopHoldTimer();
-      warningMessage.value = "Putar tubuh lebih jauh ke samping";
+      warningMessage.value = "twist_further".tr;
       percentage.value = 0.3;
     }
   }
@@ -558,7 +558,7 @@ class StretchingController extends GetxController {
     final leftIndex = pose.landmarks[PoseLandmarkType.leftIndex];
 
     if (leftElbow == null || leftWrist == null || leftIndex == null) {
-      warningMessage.value = "Pastikan lengan dan tangan terlihat di kamera";
+      warningMessage.value = "ensure_arm_hand".tr;
       percentage.value = 0.0;
       return;
     }
@@ -599,16 +599,16 @@ class StretchingController extends GetxController {
         reps.value++;
         if (reps.value >= targetReps) _completeStretchingSession();
       }
-      warningMessage.value = "Putaran ke-${reps.value} selesai! Lanjutkan";
+      warningMessage.value = "wrist_rep_done".trParams({'rep': reps.value.toString()});
       percentage.value = 0.1;
     } else {
       double progress = (_wristAngleAccum / fullCircleDeg).clamp(0.0, 1.0);
       percentage.value = progress;
       warningMessage.value = progress < 0.4
-          ? "Putar pergelangan membentuk lingkaran penuh"
+          ? "wrist_full_circle".tr
           : progress < 0.8
-              ? "Lanjutkan putaran..."
-              : "Hampir selesai, teruskan!";
+              ? "wrist_continue".tr
+              : "wrist_almost".tr;
     }
   }
 
@@ -626,7 +626,7 @@ class StretchingController extends GetxController {
     if (leftShoulder == null || rightShoulder == null ||
         leftHip == null || rightHip == null ||
         leftKnee == null || rightKnee == null) {
-      warningMessage.value = "Pastikan seluruh tubuh terlihat di kamera";
+      warningMessage.value = "ensure_full_body".tr;
       percentage.value = 0.0;
       return;
     }
@@ -639,7 +639,7 @@ class StretchingController extends GetxController {
     // Jarak pinggul ke lutut sebagai unit referensi
     double hipToKneeDist = kneeY - hipY;
     if (hipToKneeDist < 1.0) {
-      warningMessage.value = "Pastikan kaki terlihat di kamera";
+      warningMessage.value = "ensure_feet".tr;
       return;
     }
 
@@ -654,7 +654,7 @@ class StretchingController extends GetxController {
     if (_hipAngleHistory.length > 60) _hipAngleHistory.removeAt(0);
 
     if (_hipAngleHistory.length < 10) {
-      warningMessage.value = "Berdiri tegak, siap membungkuk ke depan";
+      warningMessage.value = "hamstring_ready".tr;
       percentage.value = 0.0;
       return;
     }
@@ -664,14 +664,14 @@ class StretchingController extends GetxController {
       _startHoldTimer();
       double p = ((bendRatio - 0.7) / 0.5).clamp(0.0, 0.5) + 0.5;
       percentage.value = p.clamp(0.0, 1.0);
-      warningMessage.value = "Bagus! Tahan dan rasakan regangan di paha belakang";
+      warningMessage.value = "hamstring_hold".tr;
     } else if (bendRatio < 0.3) {
       // Kembali tegak → stop hold timer
       _stopHoldTimer();
       if (bendRatio <= 0.0) {
-        warningMessage.value = "Bungkukkan tubuh ke depan, raih ujung kaki";
+        warningMessage.value = "hamstring_bend".tr;
       } else {
-        warningMessage.value = "Bungkukkan lebih dalam";
+        warningMessage.value = "hamstring_bend_deeper".tr;
       }
       percentage.value = 0.0;
     } else {
@@ -680,8 +680,8 @@ class StretchingController extends GetxController {
       double p = (bendRatio / 0.7).clamp(0.0, 1.0) * 0.5;
       percentage.value = p;
       warningMessage.value = bendRatio < 0.5
-          ? "Bungkukkan lebih dalam, raih lutut atau lantai"
-          : "Hampir! Turunkan tangan mendekati lantai";
+          ? "hamstring_bend_floor".tr
+          : "hamstring_almost".tr;
     }
   }
 
