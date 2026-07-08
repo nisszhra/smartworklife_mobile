@@ -132,19 +132,11 @@ class StretchingPreviewView extends GetView<StretchingController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title,
+                        data['subtitle']!,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1A2B4C),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        data['subtitle']!,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF5F6368),
                         ),
                       ),
                     ],

@@ -33,6 +33,13 @@ class SignupView extends GetView<SignupController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Logo
+                      Image.asset(
+                        'assets/images/logo smart-worklife trans.png',
+                        height: 100, // Adjust height as needed
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 24),
 
                       // Welcome text
                       Text(

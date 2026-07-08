@@ -51,6 +51,13 @@ class OnboardingController extends GetxController {
   void next() {
     if (currentPage.value == 0) {
       // Validasi Step 1: Profil Kesehatan
+      final fullNameText = nameController.text.trim();
+      final nameParts = fullNameText.split(RegExp(r'\s+'));
+      if (fullNameText.isEmpty || nameParts.length < 2) {
+        Get.snackbar('Data Belum Lengkap', 'Nama Lengkap harus terdiri dari minimal 2 kata.',
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
+        return;
+      }
       if (selectedGender.value.isEmpty) {
         Get.snackbar('Data Belum Lengkap', 'Silakan pilih Jenis Kelamin Anda.',
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);

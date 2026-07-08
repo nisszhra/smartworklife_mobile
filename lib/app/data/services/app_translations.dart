@@ -14,7 +14,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Create Account',
-      'join_assistant': 'Join Smart-WorkLife Assistant',
+      'join_assistant': 'Join Smart Work-Life Assistant',
       'full_name_hint': 'full name',
       'email_address': 'Email Address',
       'email_hint': 'email address',
@@ -26,6 +26,12 @@ class AppTranslations {
       'sign_up_google': 'Sign up with Google',
       'already_have_account': 'Already have an account?',
       'log_in': 'Log in',
+      'welcome_back': 'Welcome Back',
+      'login_details': 'Enter your details to Login',
+      'forgot_password': 'Forgot Password?',
+      'sign_in': 'Sign In',
+      'sign_in_google': 'Sign in with Google',
+      'dont_have_account': 'Don\'t have an account?',
       'verify_email': 'Verify Your Email',
       'verify_email_desc': 'Please enter the 4-digit code sent to your email address.',
       'did_not_receive_code': 'Didn\'t receive code? ',
@@ -544,7 +550,7 @@ class AppTranslations {
       'save_preferences': 'Save Preferences',
 
       // Privacy Policy
-      'privacy_policy_title': 'Smart WorkLife Privacy Policy',
+      'privacy_policy_title': 'Smart Work-Life Privacy Policy',
       'last_updated': 'Last updated: June 2026',
 
       // News Categories
@@ -587,7 +593,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Buat Akun',
-      'join_assistant': 'Bergabunglah dengan Smart-WorkLife Assistant',
+      'join_assistant': 'Bergabunglah dengan Smart Work-Life Assistant',
       'full_name_hint': 'nama lengkap',
       'email_address': 'Alamat Email',
       'email_hint': 'alamat email',
@@ -599,6 +605,12 @@ class AppTranslations {
       'sign_up_google': 'Daftar dengan Google',
       'already_have_account': 'Sudah punya akun?',
       'log_in': 'Masuk',
+      'welcome_back': 'Selamat Datang Kembali',
+      'login_details': 'Masukkan detail Anda untuk Masuk',
+      'forgot_password': 'Lupa Kata Sandi?',
+      'sign_in': 'Masuk',
+      'sign_in_google': 'Masuk dengan Google',
+      'dont_have_account': 'Belum punya akun?',
       'verify_email': 'Verifikasi Email Anda',
       'verify_email_desc': 'Silakan masukkan kode 4 digit yang telah dikirimkan ke alamat email Anda.',
       'did_not_receive_code': 'Tidak menerima kode? ',
@@ -1116,7 +1128,7 @@ class AppTranslations {
       'save_preferences': 'Simpan Preferensi',
 
       // Privacy Policy
-      'privacy_policy_title': 'Kebijakan Privasi Smart WorkLife',
+      'privacy_policy_title': 'Kebijakan Privasi Smart Work-Life',
       'last_updated': 'Terakhir diperbarui: Juni 2026',
 
       // News Categories

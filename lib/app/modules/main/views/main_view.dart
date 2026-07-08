@@ -199,7 +199,7 @@ class MainView extends GetView<MainController> {
   String _getTitle(int index) {
     switch (index) {
       case 0:
-        return 'Smart WorkLife';
+        return 'Smart Work-Life';
       case 1:
         return 'Smart Pomodoro';
       case 2:
@@ -209,7 +209,7 @@ class MainView extends GetView<MainController> {
       case 4:
         return 'Smart Notes';
       default:
-        return 'Smart WorkLife';
+        return 'Smart Work-Life';
     }
   }
 }

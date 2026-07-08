@@ -13,7 +13,6 @@ class ProfileController extends GetxController {
 
   ProfileController(this._repository);
   late TextEditingController fullNameController;
-  late TextEditingController usernameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
   late TextEditingController bioController;
@@ -38,10 +37,9 @@ class ProfileController extends GetxController {
     return '${DioService.baseStorageUrl}$path';
   }
   final fullName = ''.obs;
-  final username = ''.obs;
   final email = ''.obs;
   final phone = '+62 812 3456 7890'.obs;
-  final bio = 'Product Manager at Smart-WorkLife. Passionate about productivity and team collaboration.'.obs;
+  final bio = 'Product Manager at Smart Work-Life. Passionate about productivity and team collaboration.'.obs;
   
   // Health Profile (from Onboarding)
   final gender = 'Laki-laki'.obs;
@@ -78,7 +76,6 @@ class ProfileController extends GetxController {
     super.onInit();
 
     fullNameController = TextEditingController();
-    usernameController = TextEditingController();
     emailController = TextEditingController();
     phoneController = TextEditingController();
     bioController = TextEditingController();
@@ -133,7 +130,7 @@ class ProfileController extends GetxController {
 
   void _setupChangeListeners() {
     final controllers = [
-      fullNameController, usernameController, emailController, phoneController,
+      fullNameController, emailController, phoneController,
       bioController, industryController, ageController, weightController, heightController,
       currentPasswordController, newPasswordController, confirmPasswordController
     ];
@@ -155,7 +152,6 @@ class ProfileController extends GetxController {
   void onClose() {
     _userWorker?.dispose();
     fullNameController.dispose();
-    usernameController.dispose();
     emailController.dispose();
     phoneController.dispose();
     bioController.dispose();
@@ -290,7 +286,6 @@ class ProfileController extends GetxController {
 
       // Update Local Obs
       fullName.value = fullNameController.text;
-      username.value = usernameController.text;
       phone.value = phoneController.text;
       bio.value = bioController.text;
       

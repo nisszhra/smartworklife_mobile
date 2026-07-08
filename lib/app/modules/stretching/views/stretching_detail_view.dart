@@ -215,19 +215,11 @@ class StretchingDetailView extends GetView<StretchingController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                title,
+                                subtitle,
                                 style: const TextStyle(
                                   color: Color(0xFF0056B3),
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                subtitle,
-                                style: const TextStyle(
-                                  color: Color(0xFF4A5568),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],

@@ -91,13 +91,16 @@ class RatingView extends StatelessWidget {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final feature = controller.features[index];
-                    final currentRating = controller.getRatingFor(feature);
+                    final featureName = feature["name"] as String;
+                    final featureIcon = feature["icon"] as IconData;
+                    final currentRating = controller.getRatingFor(featureName);
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: _buildRatingCard(
                         context,
-                        feature,
+                        featureName,
+                        featureIcon,
                         currentRating,
                         controller,
                       ),
@@ -116,7 +119,8 @@ class RatingView extends StatelessWidget {
 
   Widget _buildRatingCard(
     BuildContext context,
-    String feature,
+    String featureName,
+    IconData featureIcon,
     int currentRating,
     RatingController controller,
   ) {
@@ -150,13 +154,25 @@ class RatingView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  feature,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: hasRated ? const Color(0xFF0F172A) : const Color(0xFF334155),
-                  ),
+                child: Row(
+                  children: [
+                    Icon(
+                      featureIcon,
+                      size: 20,
+                      color: hasRated ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        featureName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: hasRated ? const Color(0xFF0F172A) : const Color(0xFF334155),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (hasRated)
@@ -199,7 +215,7 @@ class RatingView extends StatelessWidget {
                 onTap: () {
                   if (controller.isSubmitting.value) return;
                   HapticFeedback.lightImpact();
-                  controller.submitRating(feature, starValue);
+                  controller.submitRating(featureName, starValue);
                 },
                 behavior: HitTestBehavior.opaque,
                 child: AnimatedScale(

@@ -92,13 +92,19 @@ class NotifikasiController extends GetxController {
         final slotStr =
             '${slotH.toString().padLeft(2, '0')}${slotM.toString().padLeft(2, '0')}';
         final notifId = 'hydration_${_todayDateKey()}_$slotStr';
+        print('[NotifikasiController] Cek Hydration Notif ID: $notifId. isDismissed: ${_store.isDismissed(notifId)}');
         if (_store.notifications.any((n) => n.id == notifId) ||
-            _store.isDismissed(notifId))
+            _store.isDismissed(notifId)) {
+          print('[NotifikasiController] Skipping $notifId (sudah ada atau didismiss)');
           continue; // sudah ada atau didelete
+        }
 
         // Cek apakah ada log minum air DI ATAU SETELAH slot ini
         final hasDrunkAfter = logTimes.any((lt) => lt >= slotMins);
-        if (hasDrunkAfter) continue; // sudah minum, tidak perlu notif
+        if (hasDrunkAfter) {
+          print('[NotifikasiController] Skipping $notifId (sudah minum air)');
+          continue; // sudah minum, tidak perlu notif
+        }
 
         final shortfallMl = (today.targetMl - today.consumedMl).clamp(
           0,
@@ -149,20 +155,25 @@ class NotifikasiController extends GetxController {
       nearDeadline.sort((a, b) => a.deadline!.compareTo(b.deadline!));
 
       for (final todo in nearDeadline) {
-        _store.addTodoDeadlineNotification(
-          todoId: todo.id,
-          todoTitle: todo.title,
-          deadline: todo.deadline!,
-        );
-        try {
-          if (Get.isRegistered<NotificationService>()) {
-            Get.find<NotificationService>().scheduleTodoDeadlineNotification(
-              todoId: todo.id,
-              todoTitle: todo.title,
-              deadline: todo.deadline!,
-            );
-          }
-        } catch (_) {}
+        final notifId = 'deadline_${todo.id}';
+        final isDismissed = _store.isDismissed(notifId);
+
+        if (!isDismissed) {
+          _store.addTodoDeadlineNotification(
+            todoId: todo.id,
+            todoTitle: todo.title,
+            deadline: todo.deadline!,
+          );
+          try {
+            if (Get.isRegistered<NotificationService>()) {
+              Get.find<NotificationService>().scheduleTodoDeadlineNotification(
+                todoId: todo.id,
+                todoTitle: todo.title,
+                deadline: todo.deadline!,
+              );
+            }
+          } catch (_) {}
+        }
       }
     } catch (e) {
       print('[NotifikasiController] Gagal fetch todos: $e');
