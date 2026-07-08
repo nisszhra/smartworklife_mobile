@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 class AppTranslations {
   static Map<String, Map<String, String>> keys = {
     'en_US': {
@@ -12,7 +14,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Create Account',
-      'join_assistant': 'Join Smart-WorkLife Assistant',
+      'join_assistant': 'Join Smart Work-Life Assistant',
       'full_name_hint': 'full name',
       'email_address': 'Email Address',
       'email_hint': 'email address',
@@ -24,6 +26,12 @@ class AppTranslations {
       'sign_up_google': 'Sign up with Google',
       'already_have_account': 'Already have an account?',
       'log_in': 'Log in',
+      'welcome_back': 'Welcome Back',
+      'login_details': 'Enter your details to Login',
+      'forgot_password': 'Forgot Password?',
+      'sign_in': 'Sign In',
+      'sign_in_google': 'Sign in with Google',
+      'dont_have_account': 'Don\'t have an account?',
       'verify_email': 'Verify Your Email',
       'verify_email_desc': 'Please enter the 4-digit code sent to your email address.',
       'did_not_receive_code': 'Didn\'t receive code? ',
@@ -109,7 +117,7 @@ class AppTranslations {
       'tasks_done': 'Tasks Done',
       'work': 'Work',
       'break': 'Break',
-      'exercise': 'Exercise',
+      'exercise': 'Stretching',
       'my_points': 'My Points',
       'points': 'Points',
       'view_leaderboard': 'View Leaderboard &\nRewards',
@@ -133,12 +141,15 @@ class AppTranslations {
       'choose_focus_mode': 'Choose Focus Mode',
       'customize_work_rhythm': 'Customize your work rhythm to meet your needs.',
       'classic': 'Classic',
+      'classic_title': '25 mins Work • 5 mins Rest',
       'classic_desc': 'Ideal for managing dynamic daily tasks with short breaks to keep your mind fresh.',
       'start_session': 'Start Session',
       'resume_session': 'Resume Session',
       'deep_work': 'Deep Work',
+      'deep_work_title': '50 mins Work • 10 mins Rest',
       'deep_work_desc': 'Designed for tasks requiring high concentration without distractions for deep results.',
       'extended': 'Extended',
+      'extended_title': '90 mins Work • 30 mins Rest',
       'extended_desc': 'Marathon session for maximum productivity on large projects requiring long workflows.',
       'active_session_title': 'Active Session',
       'active_session_desc': 'Please stop the currently running session first if you want to start a new mode.',
@@ -434,11 +445,22 @@ class AppTranslations {
       'feature_guide': 'Feature Usage Guide',
       'guide_notulen_desc': 'Use Smart Notes to automatically record & transcribe conversations with AI. You can also edit the draft and save it as a digital archive.',
       'guide_pomodoro_desc': 'Increase your productivity with the Pomodoro Timer. Manage your focus time and take short/long breaks regularly.',
+      'guide_todo_desc': 'Organize your tasks efficiently with Smart To Do. Track your daily activities, set deadlines, and manage task priorities easily.',
       'guide_health_desc': 'Maintain your physical fitness while working by following muscle stretching guides and monitoring your daily water intake.',
       'general_faq': 'General Questions (FAQ)',
+      'faq_q1': 'How accurate is the automatic transcription?',
       'faq_a1': 'Automatic transcription accuracy is affected by audio quality and speaker clarity. You can edit the transcription text before saving.',
 
       // Notulen Archive
+      'already_analyzed': '✓ Already analyzed',
+      'draft': 'Draft',
+      'loading_notulen': 'Loading minutes...',
+      'failed_load_notulen': 'Failed to load minutes.',
+      'meeting_detail': 'Meeting Detail',
+      'recording_duration': 'Recording Duration',
+      'voice_transcription': 'Voice Transcription',
+      'edit_task_recommendation': 'Edit Task Recommendation',
+      'due_date': 'Due: ',
       'selected': '@count selected',
       'notulen_archive': 'Notulen Archive',
       'delete_selected_tooltip': 'Delete selected',
@@ -509,6 +531,13 @@ class AppTranslations {
       'danger_zone': 'Danger Zone',
       'delete_account_warning': 'Deleting your account will permanently remove all data and it cannot be recovered.',
       'delete_account_permanent': 'Permanently Delete Account',
+      'delete_account_title': 'Delete Account',
+      'delete_account_confirm_desc': 'Are you sure you want to permanently delete your account?\n\nYour account will be deactivated (Pending Deletion) for 14 days. During this grace period, you can cancel the deletion by logging back in.',
+      'enter_password_hint': 'Enter your password',
+      'google_login_helper': '*Leave blank if you login using Google',
+      'enter_otp_code': 'Enter OTP Code',
+      'delete_otp_desc': 'Please enter the 4-digit OTP code sent to your email to confirm account deletion.',
+      'verify_delete': 'Verify & Delete',
 
       // User Preferences
       'health_profile': 'Health Profile',
@@ -521,8 +550,26 @@ class AppTranslations {
       'save_preferences': 'Save Preferences',
 
       // Privacy Policy
-      'privacy_policy_title': 'Smart WorkLife Privacy Policy',
+      'privacy_policy_title': 'Smart Work-Life Privacy Policy',
       'last_updated': 'Last updated: June 2026',
+
+      // News Categories
+      'cat_terkini': 'Latest',
+      'cat_populer': 'Popular',
+      'cat_politik': 'Politics',
+      'cat_ekonomi': 'Economy',
+      'cat_pemerintah': 'Government',
+      'cat_teknologi': 'Technology',
+      'cat_viral': 'Viral',
+      'cat_hiburan': 'Entertainment',
+      'cat_wisata': 'Travel',
+      'cat_pendidikan': 'Education',
+      'cat_pekerjaan': 'Jobs',
+      'cat_gaji': 'Salary',
+      'cat_produktif': 'Productive',
+      'cat_hobi': 'Hobby',
+      'cat_kuliner': 'Culinary',
+
       'privacy_section1_title': '1. Information Collection',
       'privacy_section1_desc': 'We collect your basic profile information (such as name, age, gender, weight, and height) as well as work preferences (such as start & end work hours) to personalize your work assistant and health recommendations.',
       'privacy_section2_title': '2. Voice & Transcript Data Processing',
@@ -546,7 +593,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Buat Akun',
-      'join_assistant': 'Bergabunglah dengan Smart-WorkLife Assistant',
+      'join_assistant': 'Bergabunglah dengan Smart Work-Life Assistant',
       'full_name_hint': 'nama lengkap',
       'email_address': 'Alamat Email',
       'email_hint': 'alamat email',
@@ -558,6 +605,12 @@ class AppTranslations {
       'sign_up_google': 'Daftar dengan Google',
       'already_have_account': 'Sudah punya akun?',
       'log_in': 'Masuk',
+      'welcome_back': 'Selamat Datang Kembali',
+      'login_details': 'Masukkan detail Anda untuk Masuk',
+      'forgot_password': 'Lupa Kata Sandi?',
+      'sign_in': 'Masuk',
+      'sign_in_google': 'Masuk dengan Google',
+      'dont_have_account': 'Belum punya akun?',
       'verify_email': 'Verifikasi Email Anda',
       'verify_email_desc': 'Silakan masukkan kode 4 digit yang telah dikirimkan ke alamat email Anda.',
       'did_not_receive_code': 'Tidak menerima kode? ',
@@ -643,7 +696,7 @@ class AppTranslations {
       'tasks_done': 'Tugas Selesai',
       'work': 'Kerja',
       'break': 'Istirahat',
-      'exercise': 'Olahraga',
+      'exercise': 'Peregangan',
       'my_points': 'Poin Saya',
       'points': 'Poin',
       'view_leaderboard': 'Lihat Leaderboard &\nRewards',
@@ -667,12 +720,15 @@ class AppTranslations {
       'choose_focus_mode': 'Pilih Mode Fokus',
       'customize_work_rhythm': 'Sesuaikan ritme kerjamu dengan kebutuhanmu.',
       'classic': 'Klasik',
+      'classic_title': '25 menit Kerja • 5 menit Istirahat',
       'classic_desc': 'Ideal untuk mengelola tugas harian yang dinamis dengan jeda singkat untuk menjaga kesegaran pikiran.',
       'start_session': 'Mulai Sesi',
       'resume_session': 'Lanjutkan Sesi',
       'deep_work': 'Deep Work',
+      'deep_work_title': '50 menit Kerja • 10 menit Istirahat',
       'deep_work_desc': 'Dirancang untuk pekerjaan yang membutuhkan konsentrasi tinggi tanpa gangguan untuk hasil yang mendalam.',
       'extended': 'Extended',
+      'extended_title': '90 menit Kerja • 30 menit Istirahat',
       'extended_desc': 'Sesi maraton untuk produktivitas maksimal pada proyek besar yang membutuhkan alur kerja yang panjang.',
       'active_session_title': 'Sesi Aktif',
       'active_session_desc': 'Harap hentikan sesi yang sedang berjalan terlebih dahulu jika ingin memulai mode baru.',
@@ -924,11 +980,11 @@ class AppTranslations {
       'wants_to_connect': 'Ingin terhubung dengan Anda',
 
       // Profile
-      'edit_profile': 'Edit Profile',
-      'logout': 'Logout',
-      'change_profile_photo': 'Change Profile Photo',
-      'personal_info': 'Personal Info',
-      'full_name': 'Full Name',
+      'edit_profile': 'Ubah Profil',
+      'logout': 'Keluar',
+      'change_profile_photo': 'Ubah Foto Profil',
+      'personal_info': 'Info Personal',
+      'full_name': 'Nama Lengkap',
       'email': 'Email',
       'settings': 'Pengaturan',
       'user_preferences': 'Preferensi User',
@@ -942,7 +998,7 @@ class AppTranslations {
       'feedback_rating': 'Feedback & Penilaian',
       'privacy_policy_terms': 'Kebijakan Privasi & Ketentuan',
       'app_version': 'Versi Aplikasi',
-      'save_changes': 'Save Changes',
+      'save_changes': 'Simpan Perubahan',
 
       // Notifications
       'notifications_title': 'Notifikasi',
@@ -968,11 +1024,22 @@ class AppTranslations {
       'feature_guide': 'Panduan Penggunaan Fitur',
       'guide_notulen_desc': 'Gunakan Smart Notulen untuk merekam & mentranskrip percakapan secara otomatis dengan AI. Anda juga dapat menyunting draf notulen dan menyimpannya sebagai arsip digital.',
       'guide_pomodoro_desc': 'Tingkatkan produktivitas kerja Anda dengan Pomodoro Timer. Atur waktu fokus bekerja/belajar serta waktu istirahat singkat dan panjang secara teratur.',
+      'guide_todo_desc': 'Kelola tugas harian Anda secara efisien dengan Smart To Do. Lacak aktivitas Anda, atur tenggat waktu, dan tentukan prioritas dengan mudah.',
       'guide_health_desc': 'Jaga kebugaran fisik Anda selama bekerja dengan mengikuti panduan peregangan otot (Stretching) dan pantau target hidrasi asupan air harian Anda.',
       'general_faq': 'Pertanyaan Umum (FAQ)',
+      'faq_q1': 'Seberapa akurat hasil transkripsi otomatis?',
       'faq_a1': 'Akurasi transkripsi otomatis dipengaruhi oleh kualitas rekaman audio dan kejelasan ucapan pembicara. Anda dapat menyunting kembali teks hasil transkrip draf sebelum disimpan.',
 
       // Notulen Archive
+      'already_analyzed': '✓ Sudah dianalisis',
+      'draft': 'Draf',
+      'loading_notulen': 'Memuat notulen...',
+      'failed_load_notulen': 'Gagal memuat notulen.',
+      'meeting_detail': 'Detail Pertemuan',
+      'recording_duration': 'Durasi Rekaman',
+      'voice_transcription': 'Transkripsi Suara',
+      'edit_task_recommendation': 'Ubah Rekomendasi Tugas',
+      'due_date': 'Tenggat: ',
       'selected': '@count dipilih',
       'notulen_archive': 'Arsip Notulen',
       'delete_selected_tooltip': 'Hapus dipilih',
@@ -1019,7 +1086,7 @@ class AppTranslations {
       'write_message': 'Tulis pesan...',
       'choose_notulen': 'Pilih Notulen',
       'faq_q2': 'Bagaimana cara mengubah profil personal saya?',
-      'faq_a2': 'Buka menu Edit Profil pada halaman profil, isi informasi yang ingin diubah (seperti nama, usia, berat badan, dsb), lalu tekan tombol "Save Changes" di bagian bawah.',
+      'faq_a2': 'Buka menu Ubah Profil pada halaman profil, isi informasi yang ingin diubah (seperti nama, usia, berat badan, dsb), lalu tekan tombol "Save Changes" di bagian bawah.',
       'faq_q3': 'Bagaimana cara mengganti kata sandi akun saya?',
       'faq_a3': 'Pilih menu "Akun & Keamanan" di halaman pengaturan profil. Anda dapat memasukkan kata sandi lama dan baru, atau menggunakan tautan "Lupa Password?" jika lupa sandi Anda saat ini.',
 
@@ -1042,6 +1109,13 @@ class AppTranslations {
       'danger_zone': 'Zona Bahaya',
       'delete_account_warning': 'Menghapus akun Anda akan menghapus seluruh data secara permanen dan tidak dapat dipulihkan kembali.',
       'delete_account_permanent': 'Hapus Akun Permanen',
+      'delete_account_title': 'Hapus Akun',
+      'delete_account_confirm_desc': 'Apakah Anda yakin ingin menghapus akun Anda secara permanen?\n\nAkun Anda akan dinonaktifkan (Pending Deletion) selama 14 hari. Selama masa tenggang ini, Anda dapat membatalkan penghapusan dengan login kembali.',
+      'enter_password_hint': 'Masukkan password Anda',
+      'google_login_helper': '*Kosongkan jika Anda login menggunakan Google',
+      'enter_otp_code': 'Masukkan Kode OTP',
+      'delete_otp_desc': 'Silakan masukkan 4 digit kode OTP yang telah dikirimkan ke email Anda untuk mengonfirmasi penghapusan akun.',
+      'verify_delete': 'Verifikasi & Hapus',
 
       // User Preferences
       'health_profile': 'Profil Kesehatan',
@@ -1054,8 +1128,26 @@ class AppTranslations {
       'save_preferences': 'Simpan Preferensi',
 
       // Privacy Policy
-      'privacy_policy_title': 'Kebijakan Privasi Smart WorkLife',
+      'privacy_policy_title': 'Kebijakan Privasi Smart Work-Life',
       'last_updated': 'Terakhir diperbarui: Juni 2026',
+
+      // News Categories
+      'cat_terkini': 'Terkini',
+      'cat_populer': 'Populer',
+      'cat_politik': 'Politik',
+      'cat_ekonomi': 'Ekonomi',
+      'cat_pemerintah': 'Pemerintah',
+      'cat_teknologi': 'Teknologi',
+      'cat_viral': 'Viral',
+      'cat_hiburan': 'Hiburan',
+      'cat_wisata': 'Wisata',
+      'cat_pendidikan': 'Pendidikan',
+      'cat_pekerjaan': 'Pekerjaan',
+      'cat_gaji': 'Gaji',
+      'cat_produktif': 'Produktif',
+      'cat_hobi': 'Hobi',
+      'cat_kuliner': 'Kuliner',
+
       'privacy_section1_title': '1. Pengumpulan Informasi',
       'privacy_section1_desc': 'Kami mengumpulkan informasi profil dasar Anda (seperti nama, usia, jenis kelamin, berat, dan tinggi badan) serta data preferensi kerja (seperti jam mulai & selesai kerja) untuk mempersonalisasi fitur asisten kerja dan rekomendasi kesehatan Anda.',
       'privacy_section2_title': '2. Pemrosesan Data Suara & Transkrip',
@@ -1066,6 +1158,22 @@ class AppTranslations {
       'privacy_section4_desc': 'Kami menerapkan standar keamanan enkripsi data guna melindungi kredensial akun dan data pribadi Anda dari akses yang tidak sah, penyalahgunaan, atau kebocoran data.',
       'privacy_section5_title': '5. Penghapusan Akun',
       'privacy_section5_desc': 'Apabila Anda memilih untuk menghapus akun melalui menu Akun & Keamanan, seluruh data personal, transkrip rekaman, serta histori aktivitas Anda akan dihapus secara permanen dari basis data kami dan tidak dapat dikembalikan.',
-    },
+    }
   };
+
+  static String translateIndonesianDate(String date) {
+    if (Get.locale?.languageCode != 'en') return date;
+    return date
+        .replaceAll('Senin', 'Monday')
+        .replaceAll('Selasa', 'Tuesday')
+        .replaceAll('Rabu', 'Wednesday')
+        .replaceAll('Kamis', 'Thursday')
+        .replaceAll('Jumat', 'Friday')
+        .replaceAll('Sabtu', 'Saturday')
+        .replaceAll('Minggu', 'Sunday')
+        .replaceAll('Mei', 'May')
+        .replaceAll('Agt', 'Aug')
+        .replaceAll('Okt', 'Oct')
+        .replaceAll('Des', 'Dec');
+  }
 }

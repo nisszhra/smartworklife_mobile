@@ -50,7 +50,7 @@ Future<void> main() async {
 
   runApp(
     GetMaterialApp(
-      title: "Smart-WorkLife",
+      title: "Smart Work-Life",
       initialBinding: InitialBinding(),
       initialRoute: initialRoute,
       getPages: AppPages.routes,

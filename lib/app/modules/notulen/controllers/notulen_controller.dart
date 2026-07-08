@@ -758,7 +758,7 @@ class NotulenController extends GetxController {
               : _formatDate(item['created_at']),
           duration:
               '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}',
-          preview: item['has_summary'] == true ? '✓ Sudah dianalisis' : 'Draft',
+          preview: item['has_summary'] == true ? 'already_analyzed' : 'draft',
         );
       }).toList();
     } catch (e) {
@@ -769,7 +769,7 @@ class NotulenController extends GetxController {
   Future<void> loadArchive(String id) async {
     try {
       isProcessing.value = true;
-      processingStatusText.value = 'Memuat notulen...';
+      processingStatusText.value = 'loading_notulen'.tr;
       
       final res = await provider.getDetail(id);
       final data = res.data;
@@ -852,7 +852,7 @@ class NotulenController extends GetxController {
       //     backgroundColor: const Color(0xFF005AB4), colorText: Colors.white);
     } catch (e) {
       print('❌ Load archive error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal memuat notulen.',
+      Get.snackbar('fail'.tr, 'failed_load_notulen'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isProcessing.value = false;

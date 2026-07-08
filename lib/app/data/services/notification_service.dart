@@ -22,7 +22,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 class NotificationService extends GetxService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   Future<NotificationService> init() async {
     // Migration: Bersihkan semua "hantu" notifikasi dari versi sebelumnya
@@ -303,54 +305,83 @@ class NotificationService extends GetxService {
     required DateTime deadline,
   }) async {
     final now = DateTime.now();
-    
-    // --- 1. Jadwalkan Notifikasi 24 Jam Sebelum Deadline ---
-    final scheduledTime24h = deadline.subtract(const Duration(hours: 24));
-    final int notifId24h = (todoId + "_24h").hashCode & 0x7FFFFFFF;
-    
-    if (scheduledTime24h.isAfter(now)) {
-      final scheduledTZ24h = tz.TZDateTime.from(scheduledTime24h, tz.local);
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        id: notifId24h,
+    final difference = deadline.difference(now);
+
+    if (difference.isNegative || difference.inSeconds == 0) return;
+
+    if (difference.inHours >= 24) {
+      // Lebih dari 1 hari: H-24 jam dan H-1 jam
+      final scheduledTime24h = deadline.subtract(const Duration(hours: 24));
+      _scheduleExactNotification(
+        id: (todoId + "_first").hashCode & 0x7FFFFFFF,
         title: 'Pengingat H-1 Deadline Tugas',
         body: 'Tugas "$todoTitle" harus selesai besok!',
-        scheduledDate: scheduledTZ24h,
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'todo_channel',
-            'Todo Reminders',
-            channelDescription: 'Pengingat deadline tugas',
-            importance: Importance.max,
-            priority: Priority.high,
-            playSound: true,
-            enableVibration: true,
-          ),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        scheduledTime: scheduledTime24h,
         payload: 'todo_deadline_24h_$todoId',
       );
-    }
 
-    // --- 2. Jadwalkan Notifikasi 1 Jam Sebelum Deadline ---
-    var scheduledTime1h = deadline.subtract(const Duration(hours: 1));
-    final int notifId1h = todoId.hashCode & 0x7FFFFFFF;
+      final scheduledTime1h = deadline.subtract(const Duration(hours: 1));
+      _scheduleExactNotification(
+        id: (todoId + "_second").hashCode & 0x7FFFFFFF,
+        title: 'Tugas Mendekati Deadline 📅',
+        body: '"$todoTitle" harus diselesaikan 1 jam lagi!',
+        scheduledTime: scheduledTime1h,
+        payload: 'todo_deadline_$todoId',
+      );
+    } else {
+      // Kurang dari 1 hari
+      if (difference.inHours >= 1) {
+        // Setengah waktu
+        final halfSeconds = difference.inSeconds ~/ 2;
+        final scheduledTimeHalf = now.add(Duration(seconds: halfSeconds));
+        _scheduleExactNotification(
+          id: (todoId + "_first").hashCode & 0x7FFFFFFF,
+          title: 'Pengingat Tugas 📅',
+          body: 'Jangan lupa, tugas "$todoTitle" harus selesai hari ini!',
+          scheduledTime: scheduledTimeHalf,
+          payload: 'todo_deadline_half_$todoId',
+        );
 
-    if (scheduledTime1h.isBefore(now)) {
-      if (deadline.isAfter(now)) {
-        // Jika sisa waktu kurang dari 1 jam tapi belum lewat deadline, jadwalkan 1 menit dari sekarang
-        scheduledTime1h = now.add(const Duration(minutes: 1));
+        // H-1 jam
+        final scheduledTime1h = deadline.subtract(const Duration(hours: 1));
+        _scheduleExactNotification(
+          id: (todoId + "_second").hashCode & 0x7FFFFFFF,
+          title: 'Tugas Mendekati Deadline 📅',
+          body: '"$todoTitle" harus diselesaikan 1 jam lagi!',
+          scheduledTime: scheduledTime1h,
+          payload: 'todo_deadline_$todoId',
+        );
       } else {
-        // Deadline sudah lewat, jangan jadwalkan yang 1 jam (tapi hapus yang lama jika ada)
-        return;
+        // Kurang dari 1 jam: Setengah waktu saja
+        final halfSeconds = difference.inSeconds ~/ 2;
+        final scheduledTimeHalf = now.add(Duration(seconds: halfSeconds));
+        _scheduleExactNotification(
+          id: (todoId + "_first").hashCode & 0x7FFFFFFF,
+          title: 'Tugas Mendekati Deadline 📅',
+          body: '"$todoTitle" harus diselesaikan sebentar lagi!',
+          scheduledTime: scheduledTimeHalf,
+          payload: 'todo_deadline_$todoId',
+        );
       }
     }
+  }
 
-    final scheduledTZ1h = tz.TZDateTime.from(scheduledTime1h, tz.local);
+  Future<void> _scheduleExactNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledTime,
+    required String payload,
+  }) async {
+    final now = DateTime.now();
+    if (scheduledTime.isBefore(now)) return; // Jangan jadwalkan jika waktu sudah lewat
+
+    final scheduledTZ = tz.TZDateTime.from(scheduledTime, tz.local);
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      id: notifId1h,
-      title: 'Tugas Mendekati Deadline 📅',
-      body: '"$todoTitle" harus diselesaikan segera!',
-      scheduledDate: scheduledTZ1h,
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: scheduledTZ,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'todo_channel',
@@ -363,14 +394,21 @@ class NotificationService extends GetxService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      payload: 'todo_deadline_$todoId',
+      payload: payload,
     );
   }
 
   Future<void> cancelTodoDeadlineNotification(String todoId) async {
+    // Batalkan ID format lama (jika masih ada)
     final int notifId1h = todoId.hashCode & 0x7FFFFFFF;
     final int notifId24h = (todoId + "_24h").hashCode & 0x7FFFFFFF;
     await flutterLocalNotificationsPlugin.cancel(id: notifId1h);
     await flutterLocalNotificationsPlugin.cancel(id: notifId24h);
+
+    // Batalkan ID format baru
+    final int notifIdFirst = (todoId + "_first").hashCode & 0x7FFFFFFF;
+    final int notifIdSecond = (todoId + "_second").hashCode & 0x7FFFFFFF;
+    await flutterLocalNotificationsPlugin.cancel(id: notifIdFirst);
+    await flutterLocalNotificationsPlugin.cancel(id: notifIdSecond);
   }
 }

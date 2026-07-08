@@ -8,7 +8,9 @@ import 'package:worklife_mobile/app/routes/app_pages.dart';
 /// Store global untuk notifikasi in-app.
 /// Dapat diakses dari controller mana pun via Get.find<InAppNotificationService>().
 class InAppNotificationService extends GetxService {
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
   final notifications = <NotifikasiModel>[].obs;
 
   /// ID yang sudah ditambahkan (untuk deduplikasi, misal deadline todo yang sama)
@@ -27,21 +29,39 @@ class InAppNotificationService extends GetxService {
   Future<void> _loadDismissedIds() async {
     try {
       final jsonStr = await _storage.read(key: 'dismissed_notifications_ids');
+      print('[InAppNotificationService] Loaded JSON: $jsonStr');
       if (jsonStr != null) {
         final List<dynamic> decoded = jsonDecode(jsonStr);
         _dismissedIds.addAll(decoded.cast<String>());
+        print('[InAppNotificationService] Loaded ${_dismissedIds.length} dismissed IDs');
       }
     } catch (e) {
       print('[InAppNotificationService] Gagal load dismissed IDs: $e');
     }
   }
 
+  bool _isSaving = false;
+  bool _needsSave = false;
+
   Future<void> _saveDismissedIds() async {
+    if (_isSaving) {
+      _needsSave = true;
+      return;
+    }
+    _isSaving = true;
+    _needsSave = false;
+    
     try {
       final jsonStr = jsonEncode(_dismissedIds.toList());
+      print('[InAppNotificationService] Saving JSON: $jsonStr');
       await _storage.write(key: 'dismissed_notifications_ids', value: jsonStr);
     } catch (e) {
       print('[InAppNotificationService] Gagal save dismissed IDs: $e');
+    } finally {
+      _isSaving = false;
+      if (_needsSave) {
+        _saveDismissedIds(); // Jalankan lagi jika ada perubahan tertunda
+      }
     }
   }
 
@@ -146,6 +166,12 @@ class InAppNotificationService extends GetxService {
           }
         }
       }
+    } else if (id.startsWith('deadline_')) {
+      // Jika notifikasi todo dihapus, batalkan juga notifikasi sistemnya
+      final todoId = id.replaceFirst('deadline_', '');
+      if (Get.isRegistered<NotificationService>()) {
+        Get.find<NotificationService>().cancelTodoDeadlineNotification(todoId);
+      }
     }
   }
 
@@ -169,6 +195,11 @@ class InAppNotificationService extends GetxService {
               }
             }
           }
+        }
+      } else if (notif.id.startsWith('deadline_')) {
+        final todoId = notif.id.replaceFirst('deadline_', '');
+        if (Get.isRegistered<NotificationService>()) {
+          Get.find<NotificationService>().cancelTodoDeadlineNotification(todoId);
         }
       }
     }

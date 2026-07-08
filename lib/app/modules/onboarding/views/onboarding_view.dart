@@ -124,14 +124,14 @@ class OnboardingView extends GetView<OnboardingController> {
             const SizedBox(height: 32),
 
             // Name
-            Text('username'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
+            Text('full_name'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariant)),
             const SizedBox(height: 8),
             Obx(() => TextFormField(
               controller: ctrl.nameController,
               focusNode: ctrl.nameFocusNode,
               readOnly: !ctrl.isEditingName.value,
               decoration: InputDecoration(
-                hintText: 'enter_username'.tr,
+                hintText: 'full_name_hint'.tr,
                 suffixIcon: IconButton(
                   icon: Icon(Icons.edit, color: ctrl.isEditingName.value ? primary : outline),
                   onPressed: () {

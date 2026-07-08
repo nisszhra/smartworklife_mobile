@@ -184,17 +184,11 @@ class StretchingView extends GetView<StretchingController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      title.toUpperCase(),
+                      subtitle.toUpperCase(),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black, letterSpacing: 0.5),
                       textAlign: TextAlign.center,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(color: Color(0xFF717785), fontSize: 11, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

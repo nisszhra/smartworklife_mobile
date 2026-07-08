@@ -11,12 +11,12 @@ class RatingController extends GetxController {
   var myRatings = <dynamic>[].obs;
 
   final features = [
-    "Keseluruhan Aplikasi",
-    "⏱️ Pomodoro",
-    "✅ Smart Todo",
-    "💧 Smart Health (Hydration)",
-    "🎙️ Smart Notulen",
-    "🧘 Smart Stretching",
+    {"name": "Keseluruhan Aplikasi", "icon": Icons.apps_rounded},
+    {"name": "Pomodoro", "icon": Icons.timer_rounded},
+    {"name": "Smart Todo", "icon": Icons.check_circle_rounded},
+    {"name": "Smart Health (Hydration)", "icon": Icons.water_drop_rounded},
+    {"name": "Smart Notulen", "icon": Icons.mic_rounded},
+    {"name": "Smart Stretching", "icon": Icons.self_improvement_rounded},
   ];
 
   @override

@@ -34,10 +34,17 @@ class LoginView extends GetView<LoginController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Logo
+                      Image.asset(
+                        'assets/images/logo smart-worklife trans.png',
+                        height: 100, // Adjust height as needed
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 24),
 
                       // Welcome text
-                      const Text(
-                        'Welcome Back',
+                      Text(
+                        'welcome_back'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 32,
@@ -47,8 +54,8 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Enter your details to Login',
+                      Text(
+                        'login_details'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -58,10 +65,10 @@ class LoginView extends GetView<LoginController> {
                       ),
                       const SizedBox(height: 32),
                       // Email Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Email Address',
+                          'email_address'.tr,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -96,10 +103,10 @@ class LoginView extends GetView<LoginController> {
                       ),
                       const SizedBox(height: 16),
                       // Password Field
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 4),
                         child: Text(
-                          'Password',
+                          'password_label'.tr,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -152,8 +159,8 @@ class LoginView extends GetView<LoginController> {
                             minimumSize: const Size(50, 30),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          child: const Text(
-                            'Forgot Password?',
+                          child: Text(
+                            'forgot_password'.tr,
                             style: TextStyle(
                               color: primary,
                               fontSize: 14,
@@ -200,8 +207,8 @@ class LoginView extends GetView<LoginController> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Sign In',
+                            : Text(
+                                'sign_in'.tr,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -214,8 +221,8 @@ class LoginView extends GetView<LoginController> {
                       Obx(() => OutlinedButton.icon(
                         onPressed: ctrl.isLoading.value ? null : ctrl.signInWithGoogle,
                         icon: const Icon(Icons.g_mobiledata, size: 24, color: onSurface),
-                        label: const Text(
-                          'Sign in with Google',
+                        label: Text(
+                          'sign_in_google'.tr,
                           style: TextStyle(
                             color: onSurface,
                             fontSize: 14,
@@ -237,8 +244,8 @@ class LoginView extends GetView<LoginController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Don't have an account?",
+                          Text(
+                            'dont_have_account'.tr,
                             style: TextStyle(
                               color: onSurfaceVariant,
                               fontSize: 16,
@@ -247,8 +254,8 @@ class LoginView extends GetView<LoginController> {
                           ),
                           TextButton(
                             onPressed: ctrl.goToSignup,
-                            child: const Text(
-                              'Sign up',
+                            child: Text(
+                              'sign_up'.tr,
                               style: TextStyle(
                                 color: primary,
                                 fontSize: 16,
