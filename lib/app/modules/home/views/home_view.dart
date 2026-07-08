@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../data/services/app_translations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -176,10 +177,13 @@ class HomeView extends GetView<HomeController> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              spacing: 8,
+                              runSpacing: 4,
                               children: [
                                 Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
                                       width: 8,
@@ -201,6 +205,7 @@ class HomeView extends GetView<HomeController> {
                                   ],
                                 ),
                                 Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
                                       width: 8,
@@ -222,6 +227,7 @@ class HomeView extends GetView<HomeController> {
                                   ],
                                 ),
                                 Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
                                       width: 8,
@@ -507,7 +513,7 @@ class HomeView extends GetView<HomeController> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Text(
-                                'updated'.trParams({'time': lastUpdate}),
+                                'updated'.trParams({'time': AppTranslations.translateIndonesianDate(lastUpdate)}),
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey[500],
@@ -543,7 +549,7 @@ class HomeView extends GetView<HomeController> {
                           children: controller.listBerita.take(3).map((berita) {
                             // Waktu publikasi berita
                             String publishTime = berita.publishedDate ?? '';
-                            if (publishTime.isEmpty) publishTime = 'Baru saja';
+                            if (publishTime.isEmpty) publishTime = 'just_now'.tr;
 
                             return Container(
                               margin: const EdgeInsets.only(bottom: 12),
@@ -565,7 +571,7 @@ class HomeView extends GetView<HomeController> {
                                         children: [
                                           Flexible(
                                             child: Text(
-                                              (berita.keyword ?? 'TRENDING')
+                                              ('cat_${(berita.keyword ?? 'TRENDING').toLowerCase()}'.tr)
                                                   .toUpperCase(),
                                               style: const TextStyle(
                                                 color: Color(0xFF005AB4),
@@ -613,7 +619,7 @@ class HomeView extends GetView<HomeController> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        publishTime,
+                                        AppTranslations.translateIndonesianDate(publishTime),
                                         style: TextStyle(
                                           color: Colors.grey[500],
                                           fontSize: 10,
@@ -735,11 +741,13 @@ class HomeView extends GetView<HomeController> {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            ),
           ),
         ],
       ),
@@ -1536,7 +1544,7 @@ class HomeView extends GetView<HomeController> {
               ),
               const SizedBox(height: 12),
               const Text(
-                'Presentase Work-Life Balance dihitung berdasarkan proporsi dari total Poin Fokus, Istirahat, dan Olahraga/Hidrasi Anda.',
+                'Presentase Work-Life Balance dihitung berdasarkan proporsi dari total Poin Fokus, Istirahat, dan Peregangan Anda.',
                 style: TextStyle(
                   fontSize: 12,
                   color: Color(0xFF717785),

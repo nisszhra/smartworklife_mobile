@@ -1024,7 +1024,7 @@ class NotulenView extends GetView<NotulenController> {
                         const SizedBox(height: 10),
                         Expanded(
                           child: Text(
-                            archive.preview,
+                            archive.preview.tr,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF414753),

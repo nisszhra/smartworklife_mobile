@@ -359,10 +359,10 @@ class ProfileController extends GetxController {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Hapus Akun',
-                        style: TextStyle(
+                    Expanded(
+                        child: Text(
+                          'delete_account_title'.tr,
+                          style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1E293B),
@@ -372,11 +372,9 @@ class ProfileController extends GetxController {
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Apakah Anda yakin ingin menghapus akun Anda secara permanen?\n\n'
-                  'Akun Anda akan dinonaktifkan (Pending Deletion) selama 14 hari. '
-                  'Selama masa tenggang ini, Anda dapat membatalkan penghapusan dengan login kembali.',
-                  style: TextStyle(
+                Text(
+                  'delete_account_confirm_desc'.tr,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF475569),
                     height: 1.5,
@@ -387,8 +385,12 @@ class ProfileController extends GetxController {
                   controller: deletePasswordController,
                   obscureText: !showDeletePassword.value,
                   decoration: InputDecoration(
-                    labelText: 'Password Konfirmasi',
-                    hintText: 'Masukkan password Anda',
+                    label: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text('confirm_password'.tr),
+                    ),
+                    hintText: 'enter_password_hint'.tr,
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -411,7 +413,7 @@ class ProfileController extends GetxController {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Color(0xFFDC2626), width: 2),
                     ),
-                    helperText: '*Kosongkan jika Anda login menggunakan Google',
+                    helperText: 'google_login_helper'.tr,
                     helperStyle: const TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Color(0xFF64748B),
@@ -431,9 +433,9 @@ class ProfileController extends GetxController {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(
+                      child: Text(
+                        'cancel'.tr,
+                        style: const TextStyle(
                           color: Color(0xFF64748B),
                           fontWeight: FontWeight.w600,
                         ),
@@ -457,7 +459,7 @@ class ProfileController extends GetxController {
                               } catch (e) {
                                 isSaving.value = false;
                                 Get.snackbar(
-                                  'Gagal',
+                                  'fail'.tr,
                                   e.toString().replaceAll('Exception: ', ''),
                                   snackPosition: SnackPosition.BOTTOM,
                                   backgroundColor: const Color(0xFFDC2626),
@@ -484,9 +486,9 @@ class ProfileController extends GetxController {
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Kirim OTP',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                          : Text(
+                              'send_otp'.tr,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                     )),
                   ],
@@ -529,10 +531,10 @@ class ProfileController extends GetxController {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Masukkan Kode OTP',
-                      style: TextStyle(
+                      'enter_otp_code'.tr,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1E293B),
@@ -542,9 +544,9 @@ class ProfileController extends GetxController {
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Silakan masukkan 4 digit kode OTP yang telah dikirimkan ke email Anda untuk mengonfirmasi penghapusan akun.',
-                style: TextStyle(
+              Text(
+                'delete_otp_desc'.tr,
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF475569),
                   height: 1.5,
@@ -592,9 +594,9 @@ class ProfileController extends GetxController {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Batal',
-                      style: TextStyle(
+                    child: Text(
+                      'cancel'.tr,
+                      style: const TextStyle(
                         color: Color(0xFF64748B),
                         fontWeight: FontWeight.w600,
                       ),
@@ -625,7 +627,7 @@ class ProfileController extends GetxController {
                               Get.back(); // Tutup dialog OTP
                               
                               Get.snackbar(
-                                'Pengajuan Berhasil',
+                                'success'.tr,
                                 'Akun Anda masuk ke status Pending Deletion selama 14 hari.',
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: const Color(0xFF4CAF50),
@@ -640,7 +642,7 @@ class ProfileController extends GetxController {
                             } catch (e) {
                               isSaving.value = false;
                               Get.snackbar(
-                                'Gagal',
+                                'fail'.tr,
                                 e.toString().replaceAll('Exception: ', ''),
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: const Color(0xFFDC2626),
@@ -667,9 +669,9 @@ class ProfileController extends GetxController {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Hapus Akun',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                        : Text(
+                            'verify_delete'.tr,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                   )),
                 ],

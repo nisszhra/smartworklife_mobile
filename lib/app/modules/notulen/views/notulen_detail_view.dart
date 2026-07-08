@@ -137,8 +137,8 @@ class NotulenDetailView extends GetView<NotulenController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Detail Pertemuan',
+                Text(
+                  'meeting_detail'.tr,
                   style: TextStyle(
                     fontSize: 13,
                     color: Color(0xFF717785),
@@ -147,7 +147,7 @@ class NotulenDetailView extends GetView<NotulenController> {
                 ),
                 const SizedBox(height: 4),
                 Obx(() => Text(
-                      'Durasi Rekaman: ${controller.detailDuration.value}',
+                      '${'recording_duration'.tr}: ${controller.detailDuration.value}',
                       style: const TextStyle(
                         fontSize: 15,
                         color: Color(0xFF181C22),
@@ -179,8 +179,8 @@ class NotulenDetailView extends GetView<NotulenController> {
               children: [
                 const Icon(Icons.receipt_long, size: 18, color: Color(0xFF005AB4)),
                 const SizedBox(width: 8),
-                const Text(
-                  'Transkripsi Suara',
+                Text(
+                  'voice_transcription'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -389,8 +389,8 @@ class NotulenDetailView extends GetView<NotulenController> {
                     .toList(),
               )),
           const SizedBox(height: 24),
-          const Text(
-            'REKOMENDASI TUGAS',
+          Text(
+            'task_recommendations'.tr,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
@@ -445,7 +445,7 @@ class NotulenDetailView extends GetView<NotulenController> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               Text(
-                                'Tenggat: ${action.dueDate}',
+                                '${'due_date'.tr}${action.dueDate}',
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: Color(0xFF717785),
@@ -493,16 +493,16 @@ class NotulenDetailView extends GetView<NotulenController> {
     final confirm = await Get.dialog<bool>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Notulen?',
+        title: Text('delete_notulen_title'.tr,
             style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text(
-          'Apakah Anda yakin ingin menghapus notulen ini secara permanen?',
+        content: Text(
+          'delete_notulen_desc'.trParams({'title': controller.detailTitle.value}),
           style: TextStyle(color: Color(0xFF717785)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Batal', style: TextStyle(color: Color(0xFF717785))),
+            child: Text('cancel'.tr, style: const TextStyle(color: Color(0xFF717785))),
           ),
           ElevatedButton(
             onPressed: () => Get.back(result: true),
@@ -512,7 +512,7 @@ class NotulenDetailView extends GetView<NotulenController> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
-            child: const Text('Hapus'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -902,8 +902,8 @@ class NotulenDetailView extends GetView<NotulenController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Edit Rekomendasi Tugas',
+                  Text(
+                    'edit_task_recommendation'.tr,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1026,7 +1026,7 @@ class NotulenDetailView extends GetView<NotulenController> {
                 // Opsi Share (copy to clipboard)
                 ListTile(
                   leading: const Icon(Icons.share_outlined, color: Color(0xFF005AB4)),
-                  title: const Text('Share ke Rekan', style: TextStyle(fontSize: 15)),
+                  title: Text('share_to_friend'.tr, style: const TextStyle(fontSize: 15)),
                   onTap: () async {
                     Navigator.of(ctx).pop();
                     _showShareToFriendBottomSheet(context);
@@ -1035,7 +1035,7 @@ class NotulenDetailView extends GetView<NotulenController> {
                 // Opsi Hapus
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
-                  title: const Text('Hapus', style: TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
+                  title: Text('delete'.tr, style: const TextStyle(fontSize: 15, color: Color(0xFFDC2626))),
                   onTap: () {
                     Navigator.of(ctx).pop();
                     _confirmDelete(context);
@@ -1089,7 +1089,7 @@ class NotulenDetailView extends GetView<NotulenController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Bagikan ke Rekan...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('share_to_friend_title'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../data/services/app_translations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/berita_controller.dart';
 
@@ -44,7 +45,7 @@ class BeritaView extends GetView<BeritaController> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        cat,
+                        'cat_${cat.toLowerCase()}'.tr,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.grey[700],
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -98,7 +99,7 @@ class BeritaView extends GetView<BeritaController> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    (berita.keyword ?? 'TRENDING').toUpperCase(),
+                                    ('cat_${(berita.keyword ?? 'TRENDING').toLowerCase()}'.tr).toUpperCase(),
                                     style: const TextStyle(
                                       color: Color(0xFF005AB4),
                                       fontSize: 12,
@@ -132,7 +133,7 @@ class BeritaView extends GetView<BeritaController> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              publishTime,
+                              AppTranslations.translateIndonesianDate(publishTime),
                               style: TextStyle(color: Colors.grey[500], fontSize: 10),
                             ),
                         const SizedBox(height: 12),

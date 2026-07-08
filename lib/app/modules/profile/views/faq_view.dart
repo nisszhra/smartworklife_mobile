@@ -49,6 +49,12 @@ class FaqView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildGuideCard(
+              icon: Icons.task_alt_outlined,
+              title: 'Smart To Do',
+              description: 'guide_todo_desc'.tr,
+            ),
+            const SizedBox(height: 12),
+            _buildGuideCard(
               icon: Icons.timer_outlined,
               title: 'Pomodoro Timer',
               description: 'guide_pomodoro_desc'.tr,
