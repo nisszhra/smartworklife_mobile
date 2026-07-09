@@ -139,7 +139,7 @@ class NotificationService extends GetxService {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id: notifId,
         title: 'Waktunya Minum Air!',
-        body: 'Kamu belum minum air sejak pukul $timeStr. Sisa target hari ini: ${shortfallStr}L.',
+        body: 'Sudah pukul $timeStr. Jangan lupa minum air agar tidak dehidrasi! Sisa target hari ini: ${shortfallStr}L.',
         scheduledDate: scheduled,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(

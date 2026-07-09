@@ -15,6 +15,7 @@ import '../../health/controllers/health_controller.dart';
 import '../../pomodoro/controllers/pomodoro_controller.dart';
 import '../../notulen/controllers/notulen_controller.dart';
 import '../../todolist/controllers/todolist_controller.dart';
+import '../../notifikasi/controllers/notifikasi_controller.dart';
 
 class MainBinding extends Bindings {
   @override
@@ -34,6 +35,13 @@ class MainBinding extends Bindings {
     Get.put<NotulenController>(NotulenController());
     Get.put<TodoRepository>(TodoRepositoryImpl(TodoProvider()));
     Get.put<TodolistController>(TodolistController(Get.find<TodoRepository>()));
+    Get.put<NotifikasiController>(
+      NotifikasiController(
+        Get.find<TodoRepository>(),
+        Get.find<HydrationRepository>(),
+      ),
+      permanent: true,
+    );
   }
 }
 
