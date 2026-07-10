@@ -118,9 +118,8 @@ class NotifikasiController extends GetxController {
             id: notifId,
             title: 'Waktunya Minum Air!',
             body:
-                'Kamu belum minum air sejak pukul '
-                '${slotH.toString().padLeft(2, '0')}:${slotM.toString().padLeft(2, '0')}. '
-                'Sisa target hari ini: ${shortfallL}L.',
+                'Sudah pukul ${slotH.toString().padLeft(2, '0')}:${slotM.toString().padLeft(2, '0')}. '
+                'Jangan lupa minum air agar tidak dehidrasi! Sisa target hari ini: ${shortfallL}L.',
             timestamp: DateTime(now.year, now.month, now.day, slotH, slotM),
             isRead: false,
             category: 'health',

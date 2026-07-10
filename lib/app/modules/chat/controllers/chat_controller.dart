@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/dio_service.dart';
 import '../../../data/models/chat_model.dart';
+import '../../../data/services/notification_service.dart';
+import '../../../routes/app_pages.dart';
 
 class ChatController extends GetxController {
   final chatList = <ChatListItem>[].obs;
@@ -15,6 +17,7 @@ class ChatController extends GetxController {
   final _dioService = Get.find<DioService>();
 
   Timer? _pollingTimer;
+  final _previousUnreadCounts = <String, int>{};
 
   /// Total pesan belum dibaca dari semua percakapan
   int get totalUnreadCount => chatList.fold(0, (sum, item) => sum + (item.unreadCount ?? 0));
@@ -51,6 +54,7 @@ class ChatController extends GetxController {
              lastMessage: f.lastMessage,
              lastMessageTime: f.lastMessageTime,
              unreadCount: f.unreadCount,
+             avatarUrl: otherUser?.avatarUrl,
            );
         }).toList();
         
@@ -62,6 +66,33 @@ class ChatController extends GetxController {
           return b.lastMessageTime!.compareTo(a.lastMessageTime!);
         });
             
+        if (silent && Get.isRegistered<NotificationService>()) {
+          final currentRoute = Get.currentRoute;
+          final currentArgs = Get.arguments as Map<String, dynamic>?;
+          final currentFriendId = currentArgs?['friendId'] as String?;
+
+          for (final item in items) {
+            final oldUnread = _previousUnreadCounts[item.friendId] ?? 0;
+            final newUnread = item.unreadCount ?? 0;
+
+            if (newUnread > oldUnread) {
+              final isViewingThisChat = (currentRoute == Routes.CHAT_DETAIL && currentFriendId == item.friendId);
+              if (!isViewingThisChat) {
+                Get.find<NotificationService>().showChatNotification(
+                  friendId: item.friendId,
+                  friendName: item.friendName,
+                  message: item.lastMessage ?? 'Mengirim pesan baru',
+                );
+              }
+            }
+            _previousUnreadCounts[item.friendId] = newUnread;
+          }
+        } else {
+          for (final item in items) {
+            _previousUnreadCounts[item.friendId] = item.unreadCount ?? 0;
+          }
+        }
+
         chatList.assignAll(items);
       }
     } catch (e) {

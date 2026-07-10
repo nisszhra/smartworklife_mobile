@@ -34,8 +34,14 @@ class SignupController extends GetxController {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       errorMessage.value = 'Semua field wajib diisi.';
+      return;
+    }
+
+    final nameParts = fullName.split(RegExp(r'\s+'));
+    if (nameParts.length < 2) {
+      errorMessage.value = 'Nama lengkap minimal harus 2 kata.';
       return;
     }
 

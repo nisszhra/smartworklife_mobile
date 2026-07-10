@@ -1507,9 +1507,9 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   const Icon(Icons.star, color: Color(0xFF1A73E8)),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Informasi Points',
-                    style: TextStyle(
+                  Text(
+                    'points_info'.tr,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1A73E8),
@@ -1518,34 +1518,34 @@ class HomeView extends GetView<HomeController> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Kumpulkan poin dari aktivitas produktif Anda! Berikut perhitungannya:',
-                style: TextStyle(fontSize: 14, color: Color(0xFF414753)),
+              Text(
+                'points_info_desc'.tr,
+                style: const TextStyle(fontSize: 14, color: Color(0xFF414753)),
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
                 Icons.timer,
-                'Fokus & Pomodoro',
-                '3 Poin / siklus',
-                '1 siklus pomodoro = 2 sesi fokus & 1 istirahat (masing-masing 1 poin).',
+                'focus_pomodoro'.tr,
+                'points_per_cycle'.tr,
+                'pomodoro_cycle_desc'.tr,
               ),
               const SizedBox(height: 12),
               _buildInfoRow(
                 Icons.accessibility,
-                'Smart Stretching',
-                'Maks 6 Poin / hari',
-                '1 poin per jenis gerakan stretching unik per harinya untuk mencegah spam.',
+                'smart_stretching'.tr,
+                'max_points_per_day'.tr,
+                'stretching_points_desc'.tr,
               ),
               const SizedBox(height: 12),
               _buildInfoRow(
                 Icons.check_circle_outline,
-                'Tugas Selesai',
-                '10 Poin / tugas',
+                'tasks_done'.tr,
+                'points_per_task'.tr,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Presentase Work-Life Balance dihitung berdasarkan proporsi dari total Poin Fokus, Istirahat, dan Peregangan Anda.',
-                style: TextStyle(
+              Text(
+                'wlb_calculation_desc'.tr,
+                style: const TextStyle(
                   fontSize: 12,
                   color: Color(0xFF717785),
                   fontStyle: FontStyle.italic,
@@ -1559,19 +1559,19 @@ class HomeView extends GetView<HomeController> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: const Color(0xFFBFDBFE)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.emoji_events,
                       color: Color(0xFF1D4ED8),
                       size: 16,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Leaderboard akan merangking pengguna berdasarkan poin per hari. Raih skor tertinggi Anda setiap harinya!',
-                        style: TextStyle(
+                        'leaderboard_info_desc'.tr,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF1D4ED8),
                           fontWeight: FontWeight.w500,
@@ -1593,7 +1593,7 @@ class HomeView extends GetView<HomeController> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Mengerti'),
+                  child: Text('got_it'.tr),
                 ),
               ),
             ],

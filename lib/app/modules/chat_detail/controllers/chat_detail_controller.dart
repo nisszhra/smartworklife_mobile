@@ -29,6 +29,7 @@ class ChatMessage {
 class ChatDetailController extends GetxController {
   final friendName = ''.obs;
   final friendId = ''.obs;
+  final avatarUrl = RxnString();
   final messages = <ChatMessage>[].obs;
   final selectedMessageIds = <String>[].obs;
   final textController = TextEditingController();
@@ -80,6 +81,7 @@ class ChatDetailController extends GetxController {
     if (Get.arguments != null && Get.arguments is Map) {
       friendName.value = Get.arguments['friendName'] ?? 'User';
       friendId.value = Get.arguments['friendId'] ?? '';
+      avatarUrl.value = Get.arguments['avatarUrl'];
     } else if (Get.arguments != null) {
       friendName.value = Get.arguments.toString();
     }

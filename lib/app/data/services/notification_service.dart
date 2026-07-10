@@ -52,7 +52,35 @@ class NotificationService extends GetxService {
         if (d.notificationResponseType == NotificationResponseType.selectedNotification) {
           final payload = d.payload;
           if (payload != null) {
-            if (payload.startsWith('hydration_time_')) {
+            if (payload == 'pomodoro') {
+              try {
+                if (Get.currentRoute != Routes.MAIN) {
+                  Get.offAllNamed(Routes.MAIN);
+                }
+                if (Get.isRegistered<MainController>()) {
+                  Get.find<MainController>().changePage(1); // Pomodoro
+                }
+              } catch (e) {
+                print('[NotificationService] Error navigating to pomodoro page: $e');
+              }
+            } else if (payload.startsWith('chat_new_')) {
+              try {
+                final parts = payload.split('_');
+                if (parts.length >= 4) {
+                  final friendId = parts[2];
+                  final friendName = parts.sublist(3).join('_');
+                  
+                  if (Get.currentRoute != Routes.CHAT_DETAIL || Get.arguments?['friendId'] != friendId) {
+                    Get.toNamed(Routes.CHAT_DETAIL, arguments: {
+                      'friendId': friendId,
+                      'friendName': friendName,
+                    });
+                  }
+                }
+              } catch (e) {
+                print('[NotificationService] Error navigating to chat detail page: $e');
+              }
+            } else if (payload.startsWith('hydration_time_')) {
               final timeStr = payload.replaceFirst('hydration_time_', '');
               try {
                 final now = DateTime.now();
@@ -139,7 +167,7 @@ class NotificationService extends GetxService {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id: notifId,
         title: 'Waktunya Minum Air!',
-        body: 'Kamu belum minum air sejak pukul $timeStr. Sisa target hari ini: ${shortfallStr}L.',
+        body: 'Sudah pukul $timeStr. Jangan lupa minum air agar tidak dehidrasi! Sisa target hari ini: ${shortfallStr}L.',
         scheduledDate: scheduled,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
@@ -193,6 +221,7 @@ class NotificationService extends GetxService {
       id: 888,
       title: title,
       body: body,
+      payload: 'pomodoro',
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           'pomodoro_channel',
@@ -229,6 +258,33 @@ class NotificationService extends GetxService {
 
   Future<void> cancelPomodoroNotification() async {
     await flutterLocalNotificationsPlugin.cancel(id: 888);
+  }
+
+  Future<void> showChatNotification({
+    required String friendId,
+    required String friendName,
+    required String message,
+  }) async {
+    // Gunakan hash ID agar notif dari orang yang sama menimpa yang lama
+    final notifId = friendId.hashCode;
+    
+    await flutterLocalNotificationsPlugin.show(
+      id: notifId,
+      title: '$friendName',
+      body: message,
+      payload: 'chat_new_${friendId}_$friendName',
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'chat_channel',
+          'Chat Notifications',
+          channelDescription: 'Pemberitahuan pesan obrolan baru',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      ),
+    );
   }
 
   Future<void> schedulePhaseEndNotification({
@@ -287,6 +343,7 @@ class NotificationService extends GetxService {
       id: 888,
       title: title,
       body: body,
+      payload: 'pomodoro',
       scheduledDate: scheduledDate,
       notificationDetails: NotificationDetails(android: androidDetails),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,

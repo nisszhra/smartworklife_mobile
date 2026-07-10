@@ -56,10 +56,13 @@ class ChatDetailView extends GetView<ChatDetailController> {
               children: [
                 CircleAvatar(
                   backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
-                  child: Text(
-                    controller.friendName.value.isNotEmpty ? controller.friendName.value[0].toUpperCase() : '?',
-                    style: const TextStyle(color: Color(0xFF005AB4), fontWeight: FontWeight.bold),
-                  ),
+                  backgroundImage: controller.avatarUrl.value != null ? NetworkImage(controller.avatarUrl.value!) : null,
+                  child: controller.avatarUrl.value == null
+                      ? Text(
+                          controller.friendName.value.isNotEmpty ? controller.friendName.value[0].toUpperCase() : '?',
+                          style: const TextStyle(color: Color(0xFF005AB4), fontWeight: FontWeight.bold),
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

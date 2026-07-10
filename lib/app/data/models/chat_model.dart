@@ -68,6 +68,7 @@ class ChatListItem {
   final String? lastMessage;
   final DateTime? lastMessageTime;
   final int unreadCount;
+  final String? avatarUrl;
 
   ChatListItem({
     required this.friendshipId,
@@ -78,5 +79,6 @@ class ChatListItem {
     this.lastMessage,
     this.lastMessageTime,
     this.unreadCount = 0,
+    this.avatarUrl,
   });
 }

@@ -169,33 +169,44 @@ class HealthView extends GetView<HealthController> {
           const SizedBox(height: 20),
           // BMI scale labels
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'underweight'.tr,
-                style: const TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF717785),
-                  letterSpacing: 1.5,
+              Expanded(
+                flex: 185,
+                child: Text(
+                  'underweight'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF717785),
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ),
-              Text(
-                'normal'.tr,
-                style: const TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF717785),
-                  letterSpacing: 1.5,
+              Expanded(
+                flex: 255,
+                child: Text(
+                  'normal'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF717785),
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ),
-              Text(
-                'obese'.tr,
-                style: const TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF717785),
-                  letterSpacing: 1.5,
+              Expanded(
+                flex: 200 + 160 + 200,
+                child: Text(
+                  'obese'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF717785),
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ),
             ],
@@ -482,6 +493,7 @@ class HealthView extends GetView<HealthController> {
         Obx(() => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(
                   controller.scheduleItems.length * 2 - 1,
                   (index) {
@@ -496,8 +508,8 @@ class HealthView extends GetView<HealthController> {
                           controller.scheduleItems[index ~/ 2]['completed'] as bool;
                       return Container(
                         width: 20,
-                        height: 1,
-                        margin: const EdgeInsets.only(bottom: 18),
+                        height: 2,
+                        margin: const EdgeInsets.only(top: 11),
                         color: prevCompleted
                             ? const Color(0xFFC1C6D5)
                             : const Color(0xFFC1C6D5).withValues(alpha: 0.3),
@@ -515,6 +527,7 @@ class HealthView extends GetView<HealthController> {
     return Opacity(
       opacity: completed ? 1.0 : 0.4,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.water_drop,
@@ -748,13 +761,16 @@ class HealthView extends GetView<HealthController> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
                       ),
-                      child: Text(
-                        'cancel'.tr,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF181C22),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'cancel'.tr,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF181C22),
+                          ),
                         ),
                       ),
                     ),
@@ -774,11 +790,14 @@ class HealthView extends GetView<HealthController> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
                       ),
-                      child: Text(
-                        'save_changes'.tr,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'save_changes'.tr,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
