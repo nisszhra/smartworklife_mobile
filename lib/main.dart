@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:worklife_mobile/app/bindings/initial_binding.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
@@ -13,6 +14,8 @@ import 'package:worklife_mobile/app/data/services/translation_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp();
 
   await Get.putAsync<DioService>(() async => DioService());
   Get.put(BeritaService());

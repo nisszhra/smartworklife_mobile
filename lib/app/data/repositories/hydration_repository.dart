@@ -90,7 +90,23 @@ class HydrationRepositoryImpl implements HydrationRepository {
     final data = e.response?.data;
     String message = 'Terjadi kesalahan. Silakan coba lagi.';
     if (data is Map<String, dynamic> && data.containsKey('detail')) {
-      message = data['detail'].toString();
+      final detail = data['detail'];
+      if (detail is String) {
+        message = detail;
+      } else if (detail is List && detail.isNotEmpty) {
+        final firstError = detail[0];
+        if (firstError is Map<String, dynamic> && firstError.containsKey('msg')) {
+          message = firstError['msg'].toString();
+          if (message.contains('String should have at least')) {
+            final minLength = firstError['ctx']?['limit_value'] ?? firstError['ctx']?['min_length'] ?? 8;
+            message = 'Harus terdiri dari minimal $minLength karakter.';
+          }
+        } else {
+          message = detail.toString();
+        }
+      } else {
+        message = detail.toString();
+      }
     }
     return Exception(message);
   }

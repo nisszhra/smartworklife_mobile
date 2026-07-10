@@ -120,10 +120,13 @@ class ChatView extends GetView<ChatController> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       leading: CircleAvatar(
                         backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
-                        child: Text(
-                          name[0].toUpperCase(),
-                          style: const TextStyle(color: Color(0xFF005AB4), fontWeight: FontWeight.bold),
-                        ),
+                        backgroundImage: item.avatarUrl != null ? NetworkImage(item.avatarUrl!) : null,
+                        child: item.avatarUrl == null
+                            ? Text(
+                                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                                style: const TextStyle(color: Color(0xFF005AB4), fontWeight: FontWeight.bold),
+                              )
+                            : null,
                       ),
                       title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(
@@ -173,6 +176,7 @@ class ChatView extends GetView<ChatController> {
                         Get.toNamed(Routes.CHAT_DETAIL, arguments: {
                           'friendName': name,
                           'friendId': item.friendId,
+                          'avatarUrl': item.avatarUrl,
                         })?.then((_) {
                           controller.fetchFriends(silent: true);
                         });
