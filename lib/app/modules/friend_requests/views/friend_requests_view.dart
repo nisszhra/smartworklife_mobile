@@ -40,6 +40,11 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
         ),
       ),
       body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF005AB4)),
+          );
+        }
         if (controller.requests.isEmpty) {
           return Center(
             child: Text(
@@ -69,14 +74,19 @@ class FriendRequestsView extends GetView<FriendRequestsController> {
                     CircleAvatar(
                       radius: 24,
                       backgroundColor: const Color(0xFF005AB4).withValues(alpha: 0.1),
-                      child: Text(
-                        reqName[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Color(0xFF005AB4), 
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
+                      backgroundImage: req.requester?.avatarUrl != null && req.requester!.avatarUrl!.isNotEmpty 
+                          ? NetworkImage(req.requester!.avatarUrl!) 
+                          : null,
+                      child: req.requester?.avatarUrl == null || req.requester!.avatarUrl!.isEmpty
+                          ? Text(
+                              reqName[0].toUpperCase(),
+                              style: const TextStyle(
+                                color: Color(0xFF005AB4), 
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            )
+                          : null,
                     ),
                     const SizedBox(width: 16),
                     Expanded(

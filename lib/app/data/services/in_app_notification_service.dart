@@ -23,7 +23,37 @@ class InAppNotificationService extends GetxService {
 
   Future<InAppNotificationService> init() async {
     await _loadDismissedIds();
+    await _loadCachedNotifications();
+    
+    // Auto-save when the list changes
+    ever(notifications, (_) => _saveNotifications());
     return this;
+  }
+
+  Future<void> _loadCachedNotifications() async {
+    try {
+      final jsonStr = await _storage.read(key: 'cached_notifications');
+      if (jsonStr != null) {
+        final List<dynamic> decoded = jsonDecode(jsonStr);
+        final list = decoded.map((e) => NotifikasiModel.fromJson(e)).toList();
+        notifications.assignAll(list);
+        for (final n in list) {
+          _addedIds.add(n.id);
+        }
+      }
+    } catch (e) {
+      print('[InAppNotificationService] Gagal load cached notifications: $e');
+    }
+  }
+
+  Future<void> _saveNotifications() async {
+    try {
+      final list = notifications.map((n) => n.toJson()).toList();
+      final jsonStr = jsonEncode(list);
+      await _storage.write(key: 'cached_notifications', value: jsonStr);
+    } catch (e) {
+      print('[InAppNotificationService] Gagal save notifications: $e');
+    }
   }
 
   Future<void> _loadDismissedIds() async {
@@ -141,6 +171,7 @@ class InAppNotificationService extends GetxService {
     for (int i = 0; i < notifications.length; i++) {
       notifications[i] = notifications[i].copyWith(isRead: true);
     }
+    notifications.refresh(); // Trigger save
   }
 
   void remove(String id) {
