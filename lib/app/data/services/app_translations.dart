@@ -410,6 +410,7 @@ class AppTranslations {
       'clear_history_tooltip': 'Clear History',
       'no_new_requests': 'No new requests',
       'now_friends': 'You are now colleagues.',
+      'already_friends': 'Already your colleague.',
       'wants_to_connect': 'Wants to connect with you',
       
       // Profile
@@ -592,6 +593,26 @@ class AppTranslations {
       'privacy_section4_desc': 'We implement data encryption security standards to protect your account credentials and personal data from unauthorized access, misuse, or data leaks.',
       'privacy_section5_title': '5. Account Deletion',
       'privacy_section5_desc': 'If you choose to delete your account through the Account & Security menu, all your personal data, recording transcripts, and activity history will be permanently deleted from our database and cannot be recovered.',
+      
+      // Chat
+      'chats_title': 'Chats',
+      'no_chats': 'No chats yet.',
+      'start_new_chat': 'Start a new chat',
+      'waiting_friend_confirmation': 'Waiting for confirmation',
+      'sending_minutes': 'Sent Meeting Minutes',
+      'delete_chat_confirm': 'Are you sure you want to delete this chat?',
+      'add_friend_title': 'Add Colleague',
+      'find_colleagues': 'Find Colleagues',
+      'search_by_username_desc': 'Search by full name or email',
+      'enter_username_hint': 'Enter name or email',
+      'search': 'Search',
+      'not_found': 'User not found.',
+      'already_friends': 'Already on your friend list',
+      'add': 'Add',
+      'no_messages': 'No messages yet.',
+      'write_message': 'Write a message...',
+      'choose_notulen': 'Choose Meeting Minutes',
+      'no_saved_notulen': 'No saved meeting minutes.',
     },
     'id_ID': {
       // General
@@ -1001,6 +1022,7 @@ class AppTranslations {
       'clear_history_tooltip': 'Hapus Riwayat',
       'no_new_requests': 'Tidak ada permintaan baru',
       'now_friends': 'Anda sekarang rekan.',
+      'already_friends': 'Sudah menjadi rekan anda.',
       'wants_to_connect': 'Ingin terhubung dengan Anda',
 
       // Profile
@@ -1182,6 +1204,26 @@ class AppTranslations {
       'privacy_section4_desc': 'Kami menerapkan standar keamanan enkripsi data guna melindungi kredensial akun dan data pribadi Anda dari akses yang tidak sah, penyalahgunaan, atau kebocoran data.',
       'privacy_section5_title': '5. Penghapusan Akun',
       'privacy_section5_desc': 'Apabila Anda memilih untuk menghapus akun melalui menu Akun & Keamanan, seluruh data personal, transkrip rekaman, serta histori aktivitas Anda akan dihapus secara permanen dari basis data kami dan tidak dapat dikembalikan.',
+      
+      // Chat
+      'chats_title': 'Obrolan',
+      'no_chats': 'Belum ada obrolan.',
+      'start_new_chat': 'Mulai obrolan baru',
+      'waiting_friend_confirmation': 'Menunggu konfirmasi',
+      'sending_minutes': 'Mengirim Notulen',
+      'delete_chat_confirm': 'Apakah Anda yakin ingin menghapus obrolan ini?',
+      'add_friend_title': 'Tambah Rekan',
+      'find_colleagues': 'Cari Rekan Kerja',
+      'search_by_username_desc': 'Cari berdasarkan nama atau email',
+      'enter_username_hint': 'Masukkan nama atau email',
+      'search': 'Cari',
+      'not_found': 'Pengguna tidak ditemukan.',
+      'already_friends': 'Sudah ada di daftar teman',
+      'add': 'Tambah',
+      'no_messages': 'Belum ada pesan.',
+      'write_message': 'Tulis pesan...',
+      'choose_notulen': 'Pilih Notulen',
+      'no_saved_notulen': 'Tidak ada notulen tersimpan.',
     }
   };
 

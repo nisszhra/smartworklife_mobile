@@ -71,6 +71,8 @@ class ChatView extends GetView<ChatController> {
             final lastMsg = item.lastMessage;
             final unreadCount = item.unreadCount;
             final timeStr = item.lastMessageTime != null ? DateFormat('HH:mm').format(item.lastMessageTime!) : '';
+            final isMyMessage = item.lastMessageSenderId != null && item.lastMessageSenderId != item.friendId;
+            final isRead = item.lastMessageIsRead ?? false;
 
             String subtitleText = 'start_new_chat'.tr;
             if (isPending) {
@@ -167,7 +169,13 @@ class ChatView extends GetView<ChatController> {
                                     unreadCount.toString(),
                                     style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
-                                ),
+                                )
+                               else if (isMyMessage && !isPending && item.lastMessage != null)
+                                 Icon(
+                                   isRead ? Icons.done_all : Icons.check,
+                                   size: 16,
+                                   color: isRead ? Colors.green : Colors.grey,
+                                 ),
                             ],
                           ),
                         ],

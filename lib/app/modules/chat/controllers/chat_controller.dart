@@ -26,7 +26,12 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     fetchFriends();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+    startPolling();
+  }
+
+  void startPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       fetchFriends(silent: true);
     });
   }
@@ -53,6 +58,8 @@ class ChatController extends GetxController {
              isRequester: isRequester,
              lastMessage: f.lastMessage,
              lastMessageTime: f.lastMessageTime,
+             lastMessageSenderId: f.lastMessageSenderId,
+             lastMessageIsRead: f.lastMessageIsRead,
              unreadCount: f.unreadCount,
              avatarUrl: otherUser?.avatarUrl,
            );
@@ -77,7 +84,9 @@ class ChatController extends GetxController {
 
             if (newUnread > oldUnread) {
               final isViewingThisChat = (currentRoute == Routes.CHAT_DETAIL && currentFriendId == item.friendId);
-              if (!isViewingThisChat) {
+              final isAppForeground = WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+              
+              if (!isViewingThisChat && isAppForeground) {
                 Get.find<NotificationService>().showChatNotification(
                   friendId: item.friendId,
                   friendName: item.friendName,

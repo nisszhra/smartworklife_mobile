@@ -187,6 +187,7 @@ class AddFriendView extends GetView<ChatController> {
               }
               
               final foundName = foundUser.fullName ?? foundUser.email;
+              final isAlreadyFriend = controller.chatList.any((chat) => chat.friendId == foundUser.id && chat.status == 'accepted');
               
               return Container(
                 decoration: BoxDecoration(
@@ -199,14 +200,19 @@ class AddFriendView extends GetView<ChatController> {
                   leading: CircleAvatar(
                     radius: 20,
                     backgroundColor: const Color(0xFF005AB4).withOpacity(0.1),
-                    child: Text(
-                      foundName[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Color(0xFF005AB4), 
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+                    backgroundImage: foundUser.avatarUrl != null && foundUser.avatarUrl!.isNotEmpty 
+                        ? NetworkImage(foundUser.avatarUrl!) 
+                        : null,
+                    child: foundUser.avatarUrl == null || foundUser.avatarUrl!.isEmpty 
+                        ? Text(
+                            foundName[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFF005AB4), 
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          )
+                        : null,
                   ),
                   title: Text(
                     foundName,
@@ -218,23 +224,37 @@ class AddFriendView extends GetView<ChatController> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: ElevatedButton.icon(
-                    onPressed: () {
-                       controller.addFriendFromSearch();
-                    },
-                    icon: const Icon(Icons.add, size: 16),
-                    label: Text('add'.tr, style: const TextStyle(fontSize: 13)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF005AB4),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      minimumSize: const Size(0, 32),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
+                  subtitle: isAlreadyFriend
+                      ? Text(
+                          'already_friends'.tr,
+                          style: const TextStyle(
+                            color: Color(0xFF005AB4),
+                            fontSize: 13,
+                          ),
+                        )
+                      : null,
+                  trailing: isAlreadyFriend
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(Icons.handshake, color: Color(0xFF005AB4)),
+                        )
+                      : ElevatedButton.icon(
+                          onPressed: () {
+                             controller.addFriendFromSearch();
+                          },
+                          icon: const Icon(Icons.add, size: 16),
+                          label: Text('add'.tr, style: const TextStyle(fontSize: 13)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF005AB4),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            minimumSize: const Size(0, 32),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
                 ),
               );
             }),

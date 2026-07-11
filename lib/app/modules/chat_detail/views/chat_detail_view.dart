@@ -95,6 +95,11 @@ class ChatDetailView extends GetView<ChatDetailController> {
           children: [
             Expanded(
               child: () {
+                if (controller.isLoading.value && controller.messages.isEmpty) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF005AB4)),
+                  );
+                }
                 if (controller.messages.isEmpty) {
                   return Center(
                     child: Text('no_messages'.tr, style: const TextStyle(color: Colors.grey)),
@@ -141,7 +146,18 @@ class ChatDetailView extends GetView<ChatDetailController> {
   }
 
   Widget _buildDateSeparator(DateTime date) {
-    final formattedDate = DateFormat('EEEE, d MMMM yyyy').format(date);
+    final isEn = Get.locale?.languageCode == 'en';
+    final monthNamesId = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    final monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    final dayNamesId = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    final dayNamesEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    final day = isEn ? dayNamesEn[date.weekday - 1] : dayNamesId[date.weekday - 1];
+    final month = isEn ? monthNamesEn[date.month - 1] : monthNamesId[date.month - 1];
+    
+    final formattedDate = '$day, ${date.day} $month ${date.year}';
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Center(

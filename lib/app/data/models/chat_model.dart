@@ -30,6 +30,8 @@ class FriendshipResponse {
   final UserPublic? addressee;
   final String? lastMessage;
   final DateTime? lastMessageTime;
+  final String? lastMessageSenderId;
+  final bool? lastMessageIsRead;
   final int unreadCount;
 
   FriendshipResponse({
@@ -41,6 +43,8 @@ class FriendshipResponse {
     this.addressee,
     this.lastMessage,
     this.lastMessageTime,
+    this.lastMessageSenderId,
+    this.lastMessageIsRead,
     this.unreadCount = 0,
   });
 
@@ -54,6 +58,8 @@ class FriendshipResponse {
       addressee: json['addressee'] != null ? UserPublic.fromJson(json['addressee']) : null,
       lastMessage: json['last_message'],
       lastMessageTime: json['last_message_time'] != null ? DateTime.parse(json['last_message_time']).toLocal() : null,
+      lastMessageSenderId: json['last_message_sender_id'],
+      lastMessageIsRead: json['last_message_is_read'],
       unreadCount: json['unread_count'] ?? 0,
     );
   }
@@ -67,6 +73,8 @@ class ChatListItem {
   final bool isRequester;
   final String? lastMessage;
   final DateTime? lastMessageTime;
+  final String? lastMessageSenderId;
+  final bool? lastMessageIsRead;
   final int unreadCount;
   final String? avatarUrl;
 
@@ -78,6 +86,8 @@ class ChatListItem {
     required this.isRequester,
     this.lastMessage,
     this.lastMessageTime,
+    this.lastMessageSenderId,
+    this.lastMessageIsRead,
     this.unreadCount = 0,
     this.avatarUrl,
   });

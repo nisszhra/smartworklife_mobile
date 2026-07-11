@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'package:worklife_mobile/app/bindings/initial_binding.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
@@ -11,11 +12,13 @@ import 'package:worklife_mobile/app/data/services/notification_service.dart';
 import 'package:worklife_mobile/app/data/services/in_app_notification_service.dart';
 import 'package:worklife_mobile/app/data/services/berita_service.dart';
 import 'package:worklife_mobile/app/data/services/translation_service.dart';
+import 'package:worklife_mobile/app/data/services/fcm_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await Get.putAsync<DioService>(() async => DioService());
   Get.put(BeritaService());
@@ -24,6 +27,9 @@ Future<void> main() async {
   );
   Get.put(UserService());
   await Get.putAsync<NotificationService>(() => NotificationService().init());
+  
+  // Register FCMService untuk Firebase Cloud Messaging
+  await Get.putAsync<FCMService>(() => FCMService().init(), permanent: true);
 
   // Register InAppNotificationService sebagai singleton global secara async
   await Get.putAsync<InAppNotificationService>(

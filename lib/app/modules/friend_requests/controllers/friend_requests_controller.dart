@@ -10,6 +10,7 @@ import '../../../data/models/chat_model.dart';
 
 class FriendRequestsController extends GetxController {
   final requests = <FriendshipResponse>[].obs;
+  final isLoading = true.obs;
   
   final _dioService = Get.find<DioService>();
   final _storage = const FlutterSecureStorage(
@@ -40,6 +41,7 @@ class FriendRequestsController extends GetxController {
   }
 
   Future<void> _fetchRequests() async {
+    isLoading.value = true;
     try {
       final response = await _dioService.client.get('/chat/friends');
       if (response.statusCode == 200) {
@@ -57,6 +59,8 @@ class FriendRequestsController extends GetxController {
       }
     } catch (e) {
       print(e);
+    } finally {
+      isLoading.value = false;
     }
   }
 

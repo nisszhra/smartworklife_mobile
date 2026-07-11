@@ -16,6 +16,9 @@ import '../../pomodoro/controllers/pomodoro_controller.dart';
 import '../../notulen/controllers/notulen_controller.dart';
 import '../../todolist/controllers/todolist_controller.dart';
 import '../../notifikasi/controllers/notifikasi_controller.dart';
+import '../../chat/controllers/chat_controller.dart';
+import '../../friend_requests/controllers/friend_requests_controller.dart';
+import '../../leaderboard/controllers/leaderboard_controller.dart';
 
 class MainBinding extends Bindings {
   @override
@@ -42,6 +45,9 @@ class MainBinding extends Bindings {
       ),
       permanent: true,
     );
+    Get.put<ChatController>(ChatController(), permanent: true);
+    Get.put<FriendRequestsController>(FriendRequestsController(), permanent: true);
+    Get.put<LeaderboardController>(LeaderboardController(), permanent: true);
   }
 }
 
