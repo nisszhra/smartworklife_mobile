@@ -144,11 +144,10 @@ class NotificationService extends GetxService {
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
-    await _requestPermission();
     return this;
   }
 
-  Future<void> _requestPermission() async {
+  Future<void> requestPermission() async {
     if (await Permission.notification.isDenied) {
       await Permission.notification.request();
     }

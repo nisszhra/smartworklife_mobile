@@ -105,6 +105,8 @@ class AuthService extends GetxService {
       await GoogleSignIn().signOut();
     } catch (_) {}
     await clearSession();
-    Get.offAllNamed(Routes.LOGIN);
+    if (Get.currentRoute != Routes.LOGIN) {
+      Get.offAllNamed(Routes.LOGIN);
+    }
   }
 }
