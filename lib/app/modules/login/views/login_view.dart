@@ -36,7 +36,7 @@ class LoginView extends GetView<LoginController> {
                     children: [
                       // Logo
                       Image.asset(
-                        'assets/images/logo smart-worklife trans.png',
+                        'assets/images/Smart-WorkLife_transparant1.png',
                         height: 100, // Adjust height as needed
                         fit: BoxFit.contain,
                       ),

@@ -48,6 +48,86 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076153756387:android:74f95b1e8deb9d9746f3d6",
+        "android_client_info": {
+          "package_name": "com.hn.smartworklife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7IIOUk199j7R248kJhpcAhf2zxJADKBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1076153756387-cfrk1gn4c09hoismh34ait3dj1htbc8l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.worklifeMobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076153756387:android:eca31e283ebc6a5846f3d6",
+        "android_client_info": {
+          "package_name": "id.ac.hn.smartworklife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076153756387-59c2q7v7mih22qrkh0to0004jhedektm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ac.hn.smartworklife",
+            "certificate_hash": "a0b89c0dbb0ab32f117a5ec10a2e297851afbc91"
+          }
+        },
+        {
+          "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7IIOUk199j7R248kJhpcAhf2zxJADKBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076153756387-ok0snjo5j02hbrc0tbfesuf5a51d6d3p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1076153756387-cfrk1gn4c09hoismh34ait3dj1htbc8l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.worklifeMobile"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

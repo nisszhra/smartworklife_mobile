@@ -14,7 +14,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Create Account',
-      'join_assistant': 'Join Smart Work-Life Assistant',
+      'join_assistant': 'Join Smart-WorkLife Assistant',
       'full_name_hint': 'full name',
       'email_address': 'Email Address',
       'email_hint': 'email address',
@@ -563,7 +563,7 @@ class AppTranslations {
       'save_preferences': 'Save Preferences',
 
       // Privacy Policy
-      'privacy_policy_title': 'Smart Work-Life Privacy Policy',
+      'privacy_policy_title': 'Smart-WorkLife Privacy Policy',
       'last_updated': 'Last updated: June 2026',
 
       // News Categories
@@ -626,7 +626,7 @@ class AppTranslations {
 
       // Auth
       'create_account': 'Buat Akun',
-      'join_assistant': 'Bergabunglah dengan Smart Work-Life Assistant',
+      'join_assistant': 'Bergabunglah dengan Smart-WorkLife Assistant',
       'full_name_hint': 'nama lengkap',
       'email_address': 'Alamat Email',
       'email_hint': 'alamat email',
@@ -1174,7 +1174,7 @@ class AppTranslations {
       'save_preferences': 'Simpan Preferensi',
 
       // Privacy Policy
-      'privacy_policy_title': 'Kebijakan Privasi Smart Work-Life',
+      'privacy_policy_title': 'Kebijakan Privasi Smart-WorkLife',
       'last_updated': 'Terakhir diperbarui: Juni 2026',
 
       // News Categories

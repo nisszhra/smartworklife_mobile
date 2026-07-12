@@ -304,9 +304,10 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
     final title = pomodoroState.value == PomodoroState.working
         ? 'Sesi Fokus Berjalan'
         : 'Waktu Istirahat';
+    final durationMinutes = totalSeconds.value ~/ 60;
     final body = selectedMode.value == PomodoroMode.klasik
-        ? 'Pomodoro Klasik - Sesi ${completedSessions.value + 1}'
-        : 'Pomodoro - Sesi ${completedSessions.value + 1}';
+        ? 'Pomodoro Klasik - Sesi ${completedSessions.value + 1} ($durationMinutes Menit)'
+        : 'Pomodoro - Sesi ${completedSessions.value + 1} ($durationMinutes Menit)';
 
     _notificationService.showPomodoroNotification(
       remainingSeconds: remainingSeconds.value,
@@ -414,11 +415,13 @@ class PomodoroController extends GetxController with WidgetsBindingObserver {
       }
 
       if (nextState == PomodoroState.breaking) {
+        final minutes = nextPhaseSeconds != null ? nextPhaseSeconds ~/ 60 : 5;
         title = 'Waktu Istirahat Tiba!';
-        body = 'Saatnya beristirahat sejenak.';
+        body = 'Saatnya beristirahat sejenak selama $minutes menit.';
       } else {
+        final minutes = nextPhaseSeconds != null ? nextPhaseSeconds ~/ 60 : 15;
         title = 'Sesi Fokus Dimulai!';
-        body = 'Mari kembali fokus bekerja.';
+        body = 'Mari kembali fokus bekerja selama $minutes menit.';
       }
     }
 
