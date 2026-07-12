@@ -1,4 +1,4 @@
-package com.example.worklife_mobile
+package com.hn.smartworklife
 
 import io.flutter.embedding.android.FlutterActivity
 

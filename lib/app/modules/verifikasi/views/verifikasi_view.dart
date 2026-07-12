@@ -37,7 +37,7 @@ class VerifikasiView extends GetView<VerifikasiController> {
                     children: [
                       // Logo
                       Image.asset(
-                        'assets/images/logo smart-worklife NEW.png',
+                        'assets/images/Smart-WorkLife_transparant.png',
                         height: 80,
                       ),
                       const SizedBox(height: 32),

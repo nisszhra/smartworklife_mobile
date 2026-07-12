@@ -39,7 +39,7 @@ class ProfileController extends GetxController {
   final fullName = ''.obs;
   final email = ''.obs;
   final phone = '+62 812 3456 7890'.obs;
-  final bio = 'Product Manager at Smart Work-Life. Passionate about productivity and team collaboration.'.obs;
+  final bio = 'Product Manager at Smart-WorkLife. Passionate about productivity and team collaboration.'.obs;
   
   // Health Profile (from Onboarding)
   final gender = 'Laki-laki'.obs;

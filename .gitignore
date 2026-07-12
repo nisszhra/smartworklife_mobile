@@ -13,6 +13,9 @@
 migrate_working_dir/
 .env
 lib/firebase_options.dart
+android/key.properties
+*.jks
+google-services.json
 
 
 # IntelliJ related

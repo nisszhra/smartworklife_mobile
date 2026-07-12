@@ -10,6 +10,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:worklife_mobile/app/routes/app_pages.dart';
 import 'package:worklife_mobile/app/modules/main/controllers/main_controller.dart';
 import 'package:worklife_mobile/app/data/services/in_app_notification_service.dart';
+import 'package:worklife_mobile/app/modules/pomodoro/controllers/pomodoro_controller.dart';
+import 'package:worklife_mobile/app/modules/pomodoro/views/pomodoro_timer_view.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -54,11 +56,31 @@ class NotificationService extends GetxService {
           if (payload != null) {
             if (payload == 'pomodoro') {
               try {
-                if (Get.currentRoute != Routes.MAIN) {
-                  Get.offAllNamed(Routes.MAIN);
-                }
                 if (Get.isRegistered<MainController>()) {
                   Get.find<MainController>().changePage(1); // Pomodoro
+                  
+                  if (Get.isRegistered<PomodoroController>()) {
+                    final pController = Get.find<PomodoroController>();
+                    if (pController.pomodoroState.value != PomodoroState.idle) {
+                      // Buka halaman timer jika belum terbuka
+                      if (!Get.currentRoute.contains('PomodoroTimerView')) {
+                        Get.to(() => const PomodoroTimerView());
+                      }
+                    }
+                  }
+                } else {
+                  Get.offAllNamed(Routes.MAIN);
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    if (Get.isRegistered<MainController>()) {
+                      Get.find<MainController>().changePage(1);
+                    }
+                    if (Get.isRegistered<PomodoroController>()) {
+                      final pController = Get.find<PomodoroController>();
+                      if (pController.pomodoroState.value != PomodoroState.idle) {
+                        Get.to(() => const PomodoroTimerView());
+                      }
+                    }
+                  });
                 }
               } catch (e) {
                 print('[NotificationService] Error navigating to pomodoro page: $e');
@@ -232,9 +254,6 @@ class NotificationService extends GetxService {
           ongoing: true,
           autoCancel: false,
           showWhen: true,
-          usesChronometer: !isPaused,
-          chronometerCountDown: !isPaused,
-          when: isPaused ? null : targetTime.millisecondsSinceEpoch,
           // timeoutAfter = tepat di remainingSeconds agar 888 mati saat 889 muncul (tidak negatif)
           timeoutAfter: isPaused ? null : remainingSeconds * 1000,
           actions: <AndroidNotificationAction>[
@@ -293,9 +312,8 @@ class NotificationService extends GetxService {
     required String body,
     int? nextPhaseSeconds,
   }) async {
-    // Kita gunakan ID 888 untuk SEMUA notifikasi Pomodoro (ongoing & alarm).
-    // Ini memastikan alarm yang muncul akan otomatis menimpa notifikasi lama,
-    // mencegah terjadinya notif ganda di perangkat yang mengabaikan timeoutAfter (seperti MIUI).
+    // Gunakan ID 889 untuk alarm perpindahan fase, terpisah dari ongoing timer (888).
+    // Hal ini mencegah race condition di mana alarm menimpa notifikasi ongoing.
     
     final scheduledDate = tz.TZDateTime.now(
       tz.local,
@@ -313,11 +331,6 @@ class NotificationService extends GetxService {
         ongoing: true,
         autoCancel: false,
         showWhen: true,
-        usesChronometer: true,
-        chronometerCountDown: true,
-        when: scheduledDate
-            .add(Duration(seconds: nextPhaseSeconds))
-            .millisecondsSinceEpoch,
         // Auto-cancel saat fase berikutnya selesai (jika app tidak membuka)
         timeoutAfter: (nextPhaseSeconds + 3) * 1000,
         playSound: true,
@@ -340,7 +353,7 @@ class NotificationService extends GetxService {
     }
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      id: 888,
+      id: 889,
       title: title,
       body: body,
       payload: 'pomodoro',
@@ -351,7 +364,7 @@ class NotificationService extends GetxService {
   }
 
   Future<void> cancelPhaseEndNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(id: 888);
+    await flutterLocalNotificationsPlugin.cancel(id: 889);
   }
 
   // ─── Todo Deadlines ────────────────────────────────────────────────────────
