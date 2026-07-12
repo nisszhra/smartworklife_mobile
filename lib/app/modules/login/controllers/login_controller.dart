@@ -72,9 +72,7 @@ class LoginController extends GetxController {
       final err = e.toString().replaceFirst('Exception: ', '');
       if (err.contains('Email belum diverifikasi')) {
         Get.toNamed(Routes.VERIFIKASI, arguments: {'email': email});
-        Get.snackbar(
-          'Verifikasi Diperlukan', 
-          'Email Anda belum diverifikasi.',
+        Get.snackbar('warning'.tr, 'sb_msg_13'.tr,
           backgroundColor: Colors.orange.withOpacity(0.8),
           colorText: Colors.white,
         );
@@ -148,9 +146,7 @@ class LoginController extends GetxController {
       if (isClosed) return;
       final err = e.toString().replaceFirst('Exception: ', '');
       if (err.contains('Akun belum terdaftar')) {
-        Get.snackbar(
-          'Akun Tidak Ditemukan',
-          'Akun Anda belum terdaftar. Silakan Sign Up terlebih dahulu.',
+        Get.snackbar('error'.tr, 'sb_msg_14'.tr,
           backgroundColor: Colors.red.withOpacity(0.8),
           colorText: Colors.white,
           duration: const Duration(seconds: 4),

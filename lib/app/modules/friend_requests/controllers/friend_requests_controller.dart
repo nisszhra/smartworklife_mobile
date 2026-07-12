@@ -76,7 +76,7 @@ class FriendRequestsController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menerima pertemanan.');
+      Get.snackbar('error'.tr, 'sb_msg_8'.tr);
     }
   }
 
@@ -87,7 +87,7 @@ class FriendRequestsController extends GetxController {
         requests.removeWhere((r) => r.id == req.id);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menolak pertemanan.');
+      Get.snackbar('error'.tr, 'sb_msg_9'.tr);
     }
   }
 
@@ -113,9 +113,7 @@ class FriendRequestsController extends GetxController {
               requests.removeWhere((req) => req.status == 'accepted');
               
               Get.back();
-              Get.snackbar(
-                'Terhapus',
-                'Riwayat konfirmasi berhasil dibersihkan.',
+              Get.snackbar('success'.tr, 'sb_msg_10'.tr,
                 snackPosition: SnackPosition.BOTTOM,
                 backgroundColor: Colors.blue[50],
                 colorText: Colors.blue[900],

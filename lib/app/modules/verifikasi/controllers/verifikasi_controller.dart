@@ -91,9 +91,7 @@ class VerifikasiController extends GetxController {
       }
 
       // Beri snackbar dulu baru pindah agar transisi lebih aman
-      Get.snackbar(
-        'Berhasil', 
-        'Email terverifikasi. Mari lengkapi profil Anda.',
+      Get.snackbar('success'.tr, 'sb_msg_55'.tr,
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.green.withOpacity(0.8),
         colorText: Colors.white,
@@ -125,7 +123,7 @@ class VerifikasiController extends GetxController {
       await _repository.resendOtp(_email);
       if (isClosed) return;
       
-      Get.snackbar('Info', 'OTP baru telah dikirim ke email Anda.');
+      Get.snackbar('info'.tr, 'sb_msg_56'.tr);
       startTimer(); // Reset timer
     } catch (e) {
       if (!isClosed) {

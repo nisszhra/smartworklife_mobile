@@ -179,7 +179,7 @@ class NotulenController extends GetxController {
     try {
       final hasPermission = await Permission.microphone.request().isGranted;
       if (!hasPermission) {
-        Get.snackbar('⚠️ Izin Diperlukan', 'Berikan izin mikrofon.',
+        Get.snackbar('warning'.tr, 'sb_msg_17'.tr,
             backgroundColor: Colors.orange, colorText: Colors.white);
         return;
       }
@@ -203,14 +203,14 @@ class NotulenController extends GetxController {
         if (_speechAvailable) {
           _startLiveSpeech();
         } else {
-          Get.snackbar('❌ Gagal', 'Layanan Speech-to-Text tidak tersedia di perangkat ini.',
+          Get.snackbar('error'.tr, 'sb_msg_18'.tr,
               backgroundColor: Colors.red, colorText: Colors.white);
         }
       }
     } catch (e) {
       print('❌ Start recording error: $e');
       isRecording.value = false;
-      Get.snackbar('❌ Error', 'Gagal memulai transkripsi: $e',
+      Get.snackbar('error'.tr, 'sb_msg_19'.tr + ' $e',
           backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
@@ -282,7 +282,7 @@ class NotulenController extends GetxController {
     try {
       final res = await provider.createFromText(transcript, durationSeconds: _recordDuration);
       currentNotulenId.value = res.data['id']?.toString() ?? '';
-      // Get.snackbar('✅ Transkripsi AI Selesai', 'Notulen draft berhasil dibuat.');
+      // Get.snackbar('info'.tr, 'sb_msg_20'.tr);
     } catch (e) {
       print('❌ Create draft from text error: $e');
     }
@@ -364,7 +364,7 @@ class NotulenController extends GetxController {
         liveText.value = refinedLive;
         await _createDraftFromText(refinedLive);
       } else {
-        Get.snackbar('⚠️ Info', 'Tidak ada suara yang terdeteksi.');
+        Get.snackbar('info'.tr, 'sb_msg_21'.tr);
       }
     } catch (e) {
       print('❌ Stop recording error: $e');
@@ -454,7 +454,7 @@ class NotulenController extends GetxController {
       fetchNotulen();
     } catch (e) {
       print('❌ Update error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal memperbarui notulen.',
+      Get.snackbar('error'.tr, 'sb_msg_22'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isProcessing.value = false;
@@ -490,7 +490,7 @@ class NotulenController extends GetxController {
       fetchNotulen();
     } catch (e) {
       print('❌ Update error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal memperbarui notulen.',
+      Get.snackbar('error'.tr, 'sb_msg_22'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isProcessing.value = false;
@@ -566,7 +566,7 @@ class NotulenController extends GetxController {
       detailShowAiSummary.value = true;
     } catch (e) {
       print('❌ Analyze error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal membuat ringkasan AI.',
+      Get.snackbar('error'.tr, 'sb_msg_24'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       detailIsAnalyzing.value = false;
@@ -658,7 +658,7 @@ class NotulenController extends GetxController {
       hasStopped.value = false;
     } catch (e) {
       print('❌ Analyze error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal membuat ringkasan AI.',
+      Get.snackbar('error'.tr, 'sb_msg_24'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isAnalyzing.value = false;
@@ -678,12 +678,12 @@ class NotulenController extends GetxController {
         'meeting_date': DateTime.now().toIso8601String(),
         'transcript': transcriptionText.value,
       });
-      Get.snackbar('✅ Tersimpan', 'Notulen berhasil disimpan ke arsip!');
+      Get.snackbar('info'.tr, 'sb_msg_26'.tr);
       _resetState();
       fetchNotulen();
     } catch (e) {
       print('❌ Save error: $e');
-      Get.snackbar('❌ Gagal', 'Gagal menyimpan notulen.',
+      Get.snackbar('error'.tr, 'sb_msg_27'.tr,
           backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
@@ -698,12 +698,12 @@ class NotulenController extends GetxController {
       }
       
       _resetState();
-      Get.snackbar('🗑️ Dibatalkan', 'Draft rekaman berhasil dibatalkan dan dihapus.',
+      Get.snackbar('info'.tr, 'sb_msg_28'.tr,
           backgroundColor: Colors.blueGrey, colorText: Colors.white);
     } catch (e) {
       print('❌ Discard error: $e');
       _resetState();
-      Get.snackbar('⚠️ Info', 'Draft dibersihkan dari layar.',
+      Get.snackbar('info'.tr, 'sb_msg_29'.tr,
           backgroundColor: Colors.orange, colorText: Colors.white);
     } finally {
       isProcessing.value = false;
@@ -848,7 +848,7 @@ class NotulenController extends GetxController {
       detailShowAiSummary.value = data['summary'] != null && (data['summary'] as String).isNotEmpty;
       detailIsEditing.value = false;
       
-      // Get.snackbar('✅ Berhasil', 'Notulen "${detailTitle.value}" berhasil dimuat.',
+      // Get.snackbar('success'.tr, 'sb_msg_30'.tr + ' ${detailTitle.value}" berhasil dimuat.',
       //     backgroundColor: const Color(0xFF005AB4), colorText: Colors.white);
     } catch (e) {
       print('❌ Load archive error: $e');
@@ -874,9 +874,9 @@ class NotulenController extends GetxController {
       await provider.delete(id);
       archivedMeetings.removeWhere((m) => m.id == id);
       selectedIds.remove(id);
-      Get.snackbar('✅ Dihapus', 'Notulen berhasil dihapus.');
+      Get.snackbar('info'.tr, 'sb_msg_31'.tr);
     } catch (e) {
-      Get.snackbar('❌ Gagal', 'Gagal menghapus notulen.');
+      Get.snackbar('error'.tr, 'sb_msg_32'.tr);
     }
   }
 
@@ -906,9 +906,9 @@ class NotulenController extends GetxController {
       await provider.bulkDelete(ids: ids);
       archivedMeetings.removeWhere((m) => ids.contains(m.id));
       exitSelectionMode();
-      Get.snackbar('✅ Dihapus', '${ids.length} notulen berhasil dihapus.');
+      Get.snackbar('info'.tr, 'sb_msg_33'.tr + ' ${ids.length} notulen berhasil dihapus.');
     } catch (e) {
-      Get.snackbar('❌ Gagal', 'Gagal menghapus notulen yang dipilih.');
+      Get.snackbar('error'.tr, 'sb_msg_34'.tr);
     }
   }
 
@@ -917,9 +917,9 @@ class NotulenController extends GetxController {
       await provider.bulkDelete(deleteAll: true);
       archivedMeetings.clear();
       exitSelectionMode();
-      Get.snackbar('✅ Semua Dihapus', 'Semua notulen berhasil dihapus.');
+      Get.snackbar('info'.tr, 'sb_msg_35'.tr);
     } catch (e) {
-      Get.snackbar('❌ Gagal', 'Gagal menghapus semua notulen.');
+      Get.snackbar('error'.tr, 'sb_msg_36'.tr);
     }
   }
 }

@@ -227,9 +227,7 @@ class ProfileController extends GetxController {
         profileImageUrl.value = updatedUser.avatarUrl ?? '';
         
         isSaving.value = false;
-        Get.snackbar(
-          'Berhasil',
-          'Foto profil berhasil diperbarui',
+        Get.snackbar('success'.tr, 'sb_msg_42'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFF4CAF50),
           colorText: const Color(0xFFFFFFFF),
@@ -238,9 +236,7 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       isSaving.value = false;
-      Get.snackbar(
-        'Gagal',
-        'Gagal mengunggah foto profil: ${e.toString()}',
+      Get.snackbar('error'.tr, 'sb_msg_43'.tr + ' ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -257,9 +253,7 @@ class ProfileController extends GetxController {
     final nameParts = fullNameText.split(RegExp(r'\s+'));
     if (fullNameText.isEmpty || nameParts.length < 2) {
       isSaving.value = false;
-      Get.snackbar(
-        'Validasi',
-        'Nama Lengkap harus terdiri dari minimal 2 kata',
+      Get.snackbar('warning'.tr, 'sb_msg_44'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -310,9 +304,7 @@ class ProfileController extends GetxController {
 
       isSaving.value = false;
       hasChanges.value = false;
-      Get.snackbar(
-        'Berhasil',
-        'Profil berhasil diperbarui',
+      Get.snackbar('success'.tr, 'sb_msg_45'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF),
@@ -320,7 +312,7 @@ class ProfileController extends GetxController {
       );
     } catch (e) {
       isSaving.value = false;
-      Get.snackbar('Error', 'Gagal menyimpan profil: ${e.toString()}');
+      Get.snackbar('error'.tr, 'sb_msg_46'.tr + ' ${e.toString()}');
     }
   }
 
@@ -604,9 +596,7 @@ class ProfileController extends GetxController {
                         : () async {
                             final otp = deleteOtpController.text.trim();
                             if (otp.length < 4) {
-                              Get.snackbar(
-                                'Validasi',
-                                'Kode OTP harus 4 digit',
+                              Get.snackbar('warning'.tr, 'sb_msg_47'.tr,
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: const Color(0xFFDC2626),
                                 colorText: Colors.white,
@@ -623,7 +613,7 @@ class ProfileController extends GetxController {
                               
                               Get.snackbar(
                                 'success'.tr,
-                                'Akun Anda masuk ke status Pending Deletion selama 14 hari.',
+                                'account_deleted_pending_desc'.tr,
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: const Color(0xFF4CAF50),
                                 colorText: Colors.white,
@@ -685,9 +675,7 @@ class ProfileController extends GetxController {
     final confirmPassword = confirmPasswordController.text;
 
     if (hasPassword && currentPassword.isEmpty) {
-      Get.snackbar(
-        'Validasi',
-        'Password saat ini harus diisi',
+      Get.snackbar('warning'.tr, 'sb_msg_48'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -697,9 +685,7 @@ class ProfileController extends GetxController {
     }
 
     if (newPassword.isEmpty) {
-      Get.snackbar(
-        'Validasi',
-        'Password baru harus diisi',
+      Get.snackbar('warning'.tr, 'sb_msg_49'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -709,9 +695,7 @@ class ProfileController extends GetxController {
     }
 
     if (newPassword.length < 8) {
-      Get.snackbar(
-        'Validasi',
-        'Password baru minimal harus 8 karakter',
+      Get.snackbar('warning'.tr, 'sb_msg_50'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -721,9 +705,7 @@ class ProfileController extends GetxController {
     }
 
     if (newPassword != confirmPassword) {
-      Get.snackbar(
-        'Validasi',
-        'Konfirmasi password baru tidak cocok',
+      Get.snackbar('warning'.tr, 'sb_msg_51'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),
         colorText: const Color(0xFFFFFFFF),
@@ -744,8 +726,8 @@ class ProfileController extends GetxController {
       confirmPasswordController.clear();
 
       Get.snackbar(
-        'Berhasil',
-        hasPassword ? 'Password berhasil diubah' : 'Password berhasil dibuat',
+        'success'.tr,
+        hasPassword ? 'pass_changed_success'.tr : 'pass_created_success'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF),
@@ -762,7 +744,7 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        'Gagal',
+        'error'.tr,
         e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFDC2626),

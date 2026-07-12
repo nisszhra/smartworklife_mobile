@@ -55,17 +55,13 @@ class RatingController extends GetxController {
     isSubmitting.value = false;
 
     if (success) {
-      Get.snackbar(
-        'Berhasil',
-        'Terima kasih atas penilaian Anda!',
+      Get.snackbar('success'.tr, 'sb_msg_52'.tr,
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
       fetchMyRatings();
     } else {
-      Get.snackbar(
-        'Gagal',
-        'Gagal mengirim rating. Coba lagi nanti.',
+      Get.snackbar('error'.tr, 'sb_msg_53'.tr,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

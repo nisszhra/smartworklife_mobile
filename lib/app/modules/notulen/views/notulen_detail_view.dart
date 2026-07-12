@@ -658,9 +658,7 @@ class NotulenDetailView extends GetView<NotulenController> {
           );
           
           Get.back();
-          Get.snackbar(
-            'Tugas Ditambahkan',
-            'Tugas berhasil ditambahkan ke Smart To-Do.',
+          Get.snackbar('success'.tr, 'sb_msg_37'.tr,
             backgroundColor: const Color(0xFFEFF6FF),
             colorText: const Color(0xFF005AB4),
             snackPosition: SnackPosition.BOTTOM,
@@ -1075,7 +1073,7 @@ class NotulenDetailView extends GetView<NotulenController> {
           .toList();
 
         if (friends.isEmpty) {
-          Get.snackbar('Share', 'Anda belum memiliki teman chat');
+          Get.snackbar('info'.tr, 'sb_msg_38'.tr);
           return;
         }
 
@@ -1119,15 +1117,13 @@ class NotulenDetailView extends GetView<NotulenController> {
                               'receiver_id': friend.id,
                               'content': text,
                             });
-                            Get.snackbar(
-                              'Berhasil', 
-                              'Notulen berhasil dibagikan ke ${friend.fullName ?? friend.email}',
+                            Get.snackbar('success'.tr, 'sb_msg_39'.tr + ' ${friend.fullName ?? friend.email}',
                               backgroundColor: Colors.green,
                               colorText: Colors.white,
                               snackPosition: SnackPosition.BOTTOM,
                             );
                           } catch (e) {
-                            Get.snackbar('Error', 'Gagal membagikan notulen');
+                            Get.snackbar('error'.tr, 'sb_msg_40'.tr);
                           }
                         },
                       );
@@ -1141,7 +1137,7 @@ class NotulenDetailView extends GetView<NotulenController> {
       }
     } catch (e) {
       Get.back(); // close loading
-      Get.snackbar('Error', 'Gagal mengambil daftar rekan');
+      Get.snackbar('error'.tr, 'sb_msg_41'.tr);
     }
   }
 

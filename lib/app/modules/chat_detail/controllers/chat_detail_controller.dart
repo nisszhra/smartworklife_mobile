@@ -312,7 +312,7 @@ class ChatDetailController extends GetxController {
       );
       _loadMessages();
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menghapus pesan');
+      Get.snackbar('error'.tr, 'sb_msg_5'.tr);
     }
   }
 
@@ -349,7 +349,7 @@ class ChatDetailController extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to send message');
+      Get.snackbar('error'.tr, 'sb_msg_6'.tr);
       messages.removeWhere((m) => m.id == tempId);
     }
   }
@@ -370,7 +370,7 @@ class ChatDetailController extends GetxController {
       );
       _loadMessages();
     } catch (e) {
-      Get.snackbar('Error', 'Gagal mengirim notulen');
+      Get.snackbar('error'.tr, 'sb_msg_7'.tr);
       messages.removeWhere((m) => m.id == tempId);
     }
   }
