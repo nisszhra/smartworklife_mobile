@@ -28,13 +28,13 @@ class OnboardingController extends GetxController {
   var selectedIndustry = ''.obs;
   final otherIndustryController = TextEditingController();
 
-  final List<String> industries = [
-    'Teknologi',
-    'Kesehatan',
-    'Pendidikan',
-    'Kreatif',
-    'Bisnis',
-    'Lainnya'
+  List<String> get industries => [
+    'ind_technology'.tr,
+    'ind_health'.tr,
+    'ind_education'.tr,
+    'ind_creative'.tr,
+    'ind_business'.tr,
+    'ind_other'.tr
   ];
 
   @override
@@ -54,17 +54,17 @@ class OnboardingController extends GetxController {
       final fullNameText = nameController.text.trim();
       final nameParts = fullNameText.split(RegExp(r'\s+'));
       if (fullNameText.isEmpty || nameParts.length < 2) {
-        Get.snackbar('Data Belum Lengkap', 'Nama Lengkap harus terdiri dari minimal 2 kata.',
+        Get.snackbar('incomplete_data'.tr, 'err_name_2_words'.tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
       if (selectedGender.value.isEmpty) {
-        Get.snackbar('Data Belum Lengkap', 'Silakan pilih Jenis Kelamin Anda.',
+        Get.snackbar('incomplete_data'.tr, 'err_select_gender'.tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
       if (ageController.text.isEmpty || weightController.text.isEmpty || heightController.text.isEmpty) {
-        Get.snackbar('Data Belum Lengkap', 'Silakan isi Umur, Berat Badan, dan Tinggi Badan Anda.',
+        Get.snackbar('incomplete_data'.tr, 'err_fill_health_data'.tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
@@ -76,12 +76,12 @@ class OnboardingController extends GetxController {
     } else {
       // Validasi Step 2: Profil Pekerjaan
       if (selectedIndustry.value.isEmpty) {
-        Get.snackbar('Data Belum Lengkap', 'Silakan pilih Bidang Industri Anda.',
+        Get.snackbar('incomplete_data'.tr, 'err_select_industry'.tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
-      if (selectedIndustry.value == 'Lainnya' && otherIndustryController.text.trim().isEmpty) {
-        Get.snackbar('Data Belum Lengkap', 'Silakan isi Bidang Industri Anda.',
+      if (selectedIndustry.value == 'ind_other'.tr && otherIndustryController.text.trim().isEmpty) {
+        Get.snackbar('incomplete_data'.tr, 'err_fill_industry'.tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red[100]);
         return;
       }
@@ -123,7 +123,7 @@ class OnboardingController extends GetxController {
     
     try {
       // 1. Save to Backend Database
-      final industryToSave = selectedIndustry.value == 'Lainnya' ? otherIndustryController.text.trim() : selectedIndustry.value;
+      final industryToSave = selectedIndustry.value == 'ind_other'.tr ? otherIndustryController.text.trim() : selectedIndustry.value;
       final updatedUser = await _repository.onboarding(
         fullName: nameController.text.isNotEmpty ? nameController.text : null,
         gender: selectedGender.value,
@@ -150,7 +150,7 @@ class OnboardingController extends GetxController {
 
       Get.offAllNamed('/main');
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menyimpan profil: ${e.toString()}');
+      Get.snackbar('error'.tr, '${'err_save_profile'.tr} ${e.toString()}');
     }
   }
 

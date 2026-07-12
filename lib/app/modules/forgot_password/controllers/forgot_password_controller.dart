@@ -32,7 +32,7 @@ class ForgotPasswordController extends GetxController {
   Future<void> sendOtp() async {
     final email = emailController.text.trim();
     if (email.isEmpty) {
-      errorMessage.value = 'Email tidak boleh kosong.';
+      errorMessage.value = 'err_email_empty'.tr;
       return;
     }
 
@@ -42,7 +42,7 @@ class ForgotPasswordController extends GetxController {
     try {
       await _repository.forgotPassword(email);
       currentStep.value = ForgotPasswordStep.resetPassword;
-      Get.snackbar('Info', 'Jika email terdaftar, kode OTP telah dikirim.');
+      Get.snackbar('info'.tr, 'otp_sent_info'.tr);
     } catch (e) {
       errorMessage.value = e.toString().replaceFirst('Exception: ', '');
     } finally {
@@ -56,11 +56,11 @@ class ForgotPasswordController extends GetxController {
     final confirmPassword = confirmNewPasswordController.text;
 
     if (newPassword != confirmPassword) {
-      errorMessage.value = 'Password baru tidak cocok.';
+      errorMessage.value = 'err_pass_not_match'.tr;
       return;
     }
     if (newPassword.length < 8) {
-      errorMessage.value = 'Password minimal 8 karakter.';
+      errorMessage.value = 'err_pass_length'.tr;
       return;
     }
 
@@ -74,7 +74,7 @@ class ForgotPasswordController extends GetxController {
         newPassword: newPassword,
       );
       Get.offAllNamed(Routes.LOGIN);
-      Get.snackbar('Berhasil', 'Password berhasil diperbarui. Silakan login.');
+      Get.snackbar('success'.tr, 'pass_reset_success'.tr);
     } catch (e) {
       errorMessage.value = e.toString().replaceFirst('Exception: ', '');
     } finally {

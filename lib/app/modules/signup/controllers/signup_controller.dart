@@ -59,9 +59,7 @@ class SignupController extends GetxController {
       if (isClosed) return;
 
       // Pindah ke verifikasi dan beri snackbar
-      Get.snackbar(
-        'Berhasil', 
-        'Pendaftaran berhasil. Silakan cek email untuk kode verifikasi.',
+      Get.snackbar('success'.tr, 'sb_msg_54'.tr,
         backgroundColor: Colors.green.withOpacity(0.8),
         colorText: Colors.white,
       );

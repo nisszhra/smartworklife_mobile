@@ -85,7 +85,7 @@ class LeaderboardController extends GetxController {
         } catch (_) {}
       }
     } catch (e) {
-      Get.snackbar('Error', 'Gagal memuat leaderboard');
+      Get.snackbar('error'.tr, 'sb_msg_12'.tr);
     } finally {
       isLoading.value = false;
     }

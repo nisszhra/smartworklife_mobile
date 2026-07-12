@@ -1210,9 +1210,7 @@ class HomeView extends GetView<HomeController> {
                       newDeadline: deadline,
                     );
                     Get.back();
-                    Get.snackbar(
-                      'Sukses',
-                      'Tenggat waktu berhasil diperpanjang & ditandai Penting!',
+                    Get.snackbar('success'.tr, 'sb_msg_11'.tr,
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.green,
                       colorText: Colors.white,

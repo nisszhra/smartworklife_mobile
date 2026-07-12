@@ -116,7 +116,7 @@ class ChatController extends GetxController {
       await _dioService.client.delete('/chat/messages/all/${item.friendId}');
       fetchFriends();
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menghapus obrolan');
+      Get.snackbar('error'.tr, 'sb_msg_0'.tr);
     }
   }
 
@@ -162,9 +162,7 @@ class ChatController extends GetxController {
       });
       
         if (response.statusCode == 200 || response.statusCode == 201) {
-         Get.snackbar(
-          'Sukses', 
-          'Berhasil mengirim permintaan pertemanan ke ${targetUser.fullName ?? targetUser.email}.',
+         Get.snackbar('success'.tr, 'sb_msg_1'.tr + ' ${targetUser.fullName ?? targetUser.email}.',
           snackPosition: SnackPosition.BOTTOM, 
           backgroundColor: Colors.green[50],
           colorText: Colors.green[900],
@@ -180,9 +178,7 @@ class ChatController extends GetxController {
         colorText: Colors.orange[900],
       );
     } catch (e) {
-      Get.snackbar(
-        'Gagal', 
-        'Terjadi kesalahan saat mengirim permintaan.',
+      Get.snackbar('error'.tr, 'sb_msg_2'.tr,
         snackPosition: SnackPosition.BOTTOM, 
         backgroundColor: Colors.orange[50],
         colorText: Colors.orange[900],
@@ -212,15 +208,13 @@ class ChatController extends GetxController {
                 await _dioService.client.delete('/chat/friends/${item.friendshipId}');
                 chatList.removeWhere((i) => i.friendshipId == item.friendshipId);
                 Get.back();
-                Get.snackbar(
-                  'Terhapus',
-                  'Obrolan dengan ${item.friendName} telah dihapus.',
+                Get.snackbar('success'.tr, 'sb_msg_3'.tr + ' ${item.friendName} telah dihapus.',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.blue[50],
                   colorText: Colors.blue[900],
                 );
               } catch (e) {
-                Get.snackbar('Error', 'Gagal menghapus obrolan.');
+                Get.snackbar('error'.tr, 'sb_msg_4'.tr);
               }
             },
             style: ElevatedButton.styleFrom(

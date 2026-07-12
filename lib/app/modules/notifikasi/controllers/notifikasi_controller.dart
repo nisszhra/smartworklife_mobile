@@ -200,9 +200,7 @@ class NotifikasiController extends GetxController {
 
   void markAllAsRead() {
     _store.markAllAsRead();
-    Get.snackbar(
-      'Berhasil',
-      'Semua notifikasi telah ditandai sebagai dibaca',
+    Get.snackbar('success'.tr, 'sb_msg_15'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: const Color(0xFF005AB4),
       colorText: Colors.white,
@@ -214,9 +212,7 @@ class NotifikasiController extends GetxController {
 
   void clearAll() {
     _store.clearAll();
-    Get.snackbar(
-      'Kotak Masuk Bersih',
-      'Semua notifikasi berhasil dihapus',
+    Get.snackbar('success'.tr, 'sb_msg_16'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: const Color(0xFF717785),
       colorText: Colors.white,
