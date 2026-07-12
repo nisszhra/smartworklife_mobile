@@ -66,7 +66,9 @@ class DioService extends GetxService {
         final authService = Get.find<AuthService>();
         authService.logout();
       } catch (_) {}
-      Get.offAllNamed(Routes.LOGIN);
+      if (Get.currentRoute != Routes.LOGIN) {
+        Get.offAllNamed(Routes.LOGIN);
+      }
     }
     handler.next(err);
   }

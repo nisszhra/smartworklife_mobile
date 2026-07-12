@@ -12,50 +12,46 @@ class FCMService extends GetxService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   
   Future<FCMService> init() async {
-    // Meminta izin notifikasi (untuk iOS dan Android 13+)
+    // Mendaftarkan background handler
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    
+    // Menangani pesan saat aplikasi berada di foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+
+    // Ambil token secara asinkron tanpa menahan proses utama (splash screen)
+    _messaging.getToken().then((token) {
+      if (token != null) {
+        print("FCM Token: $token");
+        sendTokenToBackend(token);
+      }
+    }).catchError((e) => print("Error getting FCM token: $e"));
+
+    // Dengarkan perubahan token
+    _messaging.onTokenRefresh.listen((newToken) {
+      sendTokenToBackend(newToken);
+    });
+    
+    return this;
+  }
+
+  Future<void> requestPermission() async {
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
-
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted FCM permission');
-      
-      // Mendaftarkan background handler
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-      
-      // Menangani pesan saat aplikasi berada di foreground
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
-
-        if (message.notification != null) {
-          print('Message also contained a notification: ${message.notification}');
-          // Flutter local notifications is handled by NotificationService, 
-          // tapi FCM defaultnya TIDAK muncul pop-up saat aplikasi di buka,
-          // Kecuali kita integrasikan dengan Flutter Local Notification.
-          // Tapi tidak apa-apa, sementara kita bisa rely on ChatController polling 
-          // atau kita bisa panggil NotificationService di sini.
-        }
-      });
-
-      // Ambil token
-      String? token = await _messaging.getToken();
-      if (token != null) {
-        print("FCM Token: $token");
-        await sendTokenToBackend(token);
-      }
-
-      // Dengarkan perubahan token
-      _messaging.onTokenRefresh.listen((newToken) {
-        sendTokenToBackend(newToken);
-      });
-      
     } else {
-      print('User declined or has not accepted permission');
+      print('User declined or has not accepted FCM permission');
     }
-    return this;
   }
   
   Future<void> sendTokenToBackend(String token) async {
